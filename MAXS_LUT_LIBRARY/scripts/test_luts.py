@@ -41,7 +41,10 @@ def main(argv=None) -> int:
     ap.add_argument("--quick", action="store_true")
     args = ap.parse_args(argv)
 
-    th = load_config()["tests"]
+    cfg = load_config()
+    th = dict(cfg["tests"])
+    # the hue test enforces the same limit as the engine (global.max_hue_shift_deg)
+    th["max_hue_shift_deg"] = float(cfg["global"]["max_hue_shift_deg"])
     files = all_cube_files()
     if not files:
         print("Aucune LUT. Lancer scripts/generate_luts.py")

@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from lutlib import colorspace as cs  # noqa: E402
 from lutlib import technical  # noqa: E402
 from lutlib.checks import validate_cube  # noqa: E402
-from lutlib.config import load_config, load_looks  # noqa: E402
+from lutlib.config import MASTER_SIZE, load_config, load_looks, look_path  # noqa: E402
 from lutlib.cube import Cube, CubeError, identity_table, read_cube, write_cube  # noqa: E402
 from lutlib.interp import apply_lut, resample  # noqa: E402
 from lutlib.look import apply_look, gamut_soft  # noqa: E402
@@ -149,27 +149,50 @@ def test_config_has_five_looks():
 # --- technical LUT policy ---------------------------------------------------------
 def test_technical_stops_without_official_source(tmp_path, capsys):
     (tmp_path / "source").mkdir()
-    assert technical.build_official(tmp_path / "source", tmp_path, [33]) == []
+    assert technical.build_official(tmp_path / "source", tmp_path) == []
     assert "NON GÉNÉRÉE" in capsys.readouterr().out
     assert not list(tmp_path.rglob("AppleLog_to_Rec709*.cube"))
 
 
-def test_technical_imports_source_bit_exact(tmp_path):
+@pytest.mark.parametrize("size", [33, 65, 17])
+def test_technical_uses_source_as_is(tmp_path, size):
     src = tmp_path / "source"
     src.mkdir()
-    write_cube(src / "vendor.cube", Cube(table=identity_table(33) ** 0.9))
-    out = technical.build_official(src, tmp_path, [33, 65])
-    assert (tmp_path / "AppleLog_to_Rec709.cube").read_bytes() == (src / "vendor.cube").read_bytes()
-    big = read_cube(out[1])
-    assert big.size == 65
-    assert np.allclose(big.table[::2, ::2, ::2], identity_table(33) ** 0.9, atol=1e-7)
+    write_cube(src / "vendor.cube", Cube(table=identity_table(size) ** 0.9))
+    before = technical.sha256(src / "vendor.cube")
+    out = technical.build_official(src, tmp_path)
+    assert out == [tmp_path / "AppleLog_to_Rec709.cube"]
+    assert out[0].read_bytes() == (src / "vendor.cube").read_bytes()   # never re-sampled
+    assert technical.sha256(src / "vendor.cube") == before              # source untouched
+    prov = (tmp_path / "AppleLog_to_Rec709.provenance.txt").read_text()
+    assert f"sha256={before}" in prov and f"lut_3d_size={size}" in prov
 
 
 def test_aces_reference_is_labelled_non_apple(tmp_path):
     pytest.importorskip("PyOpenColorIO")
     out = technical.build_aces_reference(tmp_path, [33])
-    assert "NON-APPLE" in out[0].name
+    assert "NON-APPLE" in out[0].name and "33_compat" in str(out[0])
     cube = read_cube(out[0])
     assert any("NON OFFICIEL APPLE" in c for c in cube.comments)
     rep, _ = validate_cube(out[0])
     assert not rep.failed
+
+
+def test_master_is_65():
+    assert MASTER_SIZE == 65
+    assert look_path("X", 65).name == "X.cube"
+    assert look_path("X", 33).parent.name == "33_compat"
+
+
+@pytest.mark.parametrize("look", load_looks(), ids=lambda l: l.name)
+def test_hue_guard_enforced(look):
+    """Final hue of chromatic colours never moves more than max_hue_shift."""
+    rng = np.random.default_rng(7)
+    lch = np.stack([rng.uniform(0.3, 0.9, 20000), rng.uniform(0.04, 0.2, 20000),
+                    rng.uniform(0, 360, 20000)], -1)
+    lin = cs.oklab_to_linear_rgb(cs.lch_to_lab(lch))
+    ok = np.all((lin >= 0) & (lin <= 1), axis=1)
+    x = cs.linear_to_display(lin[ok])
+    a, b = cs.display_to_oklch(x), cs.display_to_oklch(apply_look(x, look))
+    dh = np.abs(cs.hue_diff(a[:, 2], b[:, 2]))
+    assert dh.max() <= look.max_hue_shift + 1e-6

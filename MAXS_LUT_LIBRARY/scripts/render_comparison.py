@@ -34,9 +34,9 @@ import numpy as np  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
 from lutlib import colorspace as cs  # noqa: E402
-from lutlib import testimages  # noqa: E402
+from lutlib import technical, testimages  # noqa: E402
 from lutlib.config import (IMAGES_DIR, LOOKS_DIR, RENDERS_DIR, REPORTS_DIR, ROOT, TECH_DIR,  # noqa: E402
-                           load_looks, look_path)
+                           MASTER_SIZE, load_looks, look_path)
 from lutlib.cube import read_cube  # noqa: E402
 from lutlib.interp import apply_lut  # noqa: E402
 
@@ -118,7 +118,7 @@ def main(argv=None) -> int:
     looks = [l.name for l in load_looks()]
     luts = {}
     for name in looks:
-        p = look_path(name, 33)
+        p = look_path(name, MASTER_SIZE)
         if p.exists():
             luts[name] = read_cube(p)
         else:
@@ -148,9 +148,8 @@ def main(argv=None) -> int:
             REPORTS_DIR / "overview.jpg", quality=90, subsampling=0)
 
     # technical LUT(s): official and/or documented alternatives
-    tech_files = sorted(p for p in TECH_DIR.rglob("*.cube")
-                        if "source" not in p.parts and not p.parent.name.isdigit()
-                        and not p.stem.endswith("_65"))
+    tech_files = [p for p in (technical.official_lut_path(TECH_DIR),
+                              technical.aces_path(TECH_DIR, MASTER_SIZE)) if p and p.exists()]
     tech_rows = []
     for tp in tech_files:
         tc = read_cube(tp)

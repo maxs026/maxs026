@@ -16,6 +16,8 @@ Processing chain (float64 everywhere, all steps documented in README.md)
               attenuated on skin (skin_protect)
 6. split tone small (a, b) offsets in shadows / mids / highlights; the weights
               fall to 0 at L=0 and L=1 so pure black and pure white stay neutral
+6b. hue guard final hue of chromatic inputs kept within +/- max_hue_shift_deg
+              of the input hue (covers bands AND split toning)
 7. gamut      soft chroma compression relative to the largest in-gamut chroma
               at constant L and hue (knee + tanh) -> no hue skew, no hard clip
 8. encode     display light -> V ** (1/2.4)
@@ -110,6 +112,7 @@ class LookParams:
     skin: SkinProtect = field(default_factory=SkinProtect)
     max_hue_shift: float = 6.0
     gamut_knee: float = 0.85
+    hue_guard_chroma: tuple = (0.02, 0.04)   # OkLab C ramp of the hue guard
 
 
 def _raised_cos(d, width):
@@ -172,6 +175,18 @@ def apply_look(rgb: np.ndarray, p: LookParams) -> np.ndarray:
         w = _zone_weight(L0, zone_name) * (1.0 - w_skin) * strength
         lab[:, 1] += w * np.cos(np.radians(hue))
         lab[:, 2] += w * np.sin(np.radians(hue))
+
+    # 6b. global hue guard: the FINAL hue of every chromatic input colour stays
+    #     within +/- max_hue_shift of its input hue, whatever step moved it
+    #     (bands or split toning). Near-neutral inputs (hue undefined) are
+    #     exempt: tinting them is the purpose of split toning. The allowance
+    #     widens smoothly from max_hue_shift (C >= c1) to 180 deg (C <= c0).
+    c0, c1 = p.hue_guard_chroma
+    lch_out = cs.lab_to_lch(lab)
+    allowed = p.max_hue_shift + (180.0 - p.max_hue_shift) * (1.0 - cs.smoothstep(c0, c1, lch[:, 1]))
+    dh = np.clip(cs.hue_diff(lch[:, 2], lch_out[:, 2]), -allowed, allowed)
+    lch_out[:, 2] = lch[:, 2] + dh
+    lab = cs.lch_to_lab(lch_out)
 
     # 7. soft gamut mapping: keep L and hue, compress chroma relative to the
     #    largest in-gamut chroma so nothing is hard-clipped (see gamut_soft)
@@ -242,4 +257,5 @@ def params_from_config(name: str, cfg: dict, global_cfg: dict) -> LookParams:
         skin=SkinProtect(**sk),
         max_hue_shift=float(global_cfg.get("max_hue_shift_deg", 6.0)),
         gamut_knee=float(global_cfg.get("gamut_knee", 0.85)),
+        hue_guard_chroma=tuple(global_cfg.get("hue_guard_chroma", (0.02, 0.04))),
     )

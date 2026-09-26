@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate the whole MAXS LUT LIBRARY from config/looks.toml.
 
-    python scripts/generate_luts.py                     # 33 + 65 (config sizes)
-    python scripts/generate_luts.py --sizes 33          # 33 only
+    python scripts/generate_luts.py                     # 65 (MASTER) + 33 (compatibilite)
+    python scripts/generate_luts.py --sizes 65          # MASTER only
     python scripts/generate_luts.py --looks MAXS_Paris  # one look
     python scripts/generate_luts.py --aces-reference    # + non-Apple ACES reference
     python scripts/generate_luts.py --strict            # exit 1 if the technical LUT is missing
@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np  # noqa: E402
 
 from lutlib import technical  # noqa: E402
-from lutlib.config import (CONFIG_PATH, TECH_DIR, TECH_SOURCE_DIR, load_config,  # noqa: E402
+from lutlib.config import (CONFIG_PATH, LOOKS_DIR, MASTER_SIZE, TECH_DIR, TECH_SOURCE_DIR, load_config,  # noqa: E402
                            load_looks, look_path)
 from lutlib.cube import Cube, identity_table, write_cube  # noqa: E402
 from lutlib.look import apply_look  # noqa: E402
@@ -46,7 +46,7 @@ def header(look, size: int) -> list[str]:
         "Entree : Rec.709 (BT.1886) / Sortie : Rec.709 (BT.1886)",
         "A placer APRES la LUT technique AppleLog_to_Rec709",
         f"Genere : {datetime.now(timezone.utc).strftime('%Y-%m-%d')} depuis config/looks.toml",
-        f"Taille : {size}^3, calcul float64",
+        f"Taille : {size}^3 ({'MASTER' if size == MASTER_SIZE else 'compatibilite, preferer la version 65^3 MASTER'}), calcul float64",
         f"tone : contrast={t.contrast} pivot={t.pivot} black_lift={t.black_lift} "
         f"white_out={t.white_out} chroma_follow={t.chroma_follow}",
         f"saturation : global={look.saturation} shadows={look.sat_shadows} "
@@ -82,7 +82,7 @@ def main(argv=None) -> int:
     print(f"{VERSION} — génération ({', '.join(map(str, sizes))})")
 
     print("\n[00_TECHNICAL]")
-    tech = technical.build_official(TECH_SOURCE_DIR, TECH_DIR, sizes)
+    tech = technical.build_official(TECH_SOURCE_DIR, TECH_DIR)
     if args.aces_reference:
         technical.build_aces_reference(TECH_DIR, sizes)
 
@@ -98,7 +98,8 @@ def main(argv=None) -> int:
             table = build_look(look, n)
             path = look_path(look.name, n)
             write_cube(path, Cube(table=table, title=f"{look.name} {n}", comments=header(look, n)))
-            print(f"  {path.relative_to(path.parents[2])}  min={table.min():.4f} max={table.max():.4f}")
+            role = "MASTER" if n == MASTER_SIZE else "compat"
+            print(f"  {path.relative_to(LOOKS_DIR.parent)}  [{role}]  min={table.min():.4f} max={table.max():.4f}")
 
     if not tech:
         print("\nATTENTION : LUT technique officielle absente (voir message ci-dessus).")

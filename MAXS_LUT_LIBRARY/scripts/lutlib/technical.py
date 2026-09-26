@@ -7,8 +7,7 @@ Official path (the only one that produces ``AppleLog_to_Rec709.cube``)
 Apple distributes an official Apple Log -> Rec.709 LUT on
 https://developer.apple.com/download/all/?q=Apple%20log (Apple ID required).
 Place the .cube you downloaded in ``00_TECHNICAL/source/``. It is copied
-unmodified when its size matches, otherwise re-gridded with tetrahedral
-interpolation (documented in the output header). Its SHA-256 is recorded.
+byte for byte (never modified, never re-sampled) and its SHA-256 recorded.
 
 If no source file is present, generation of the technical LUT STOPS with an
 explicit message. No approximation is produced under that name.
@@ -32,7 +31,6 @@ from pathlib import Path
 import numpy as np
 
 from .cube import Cube, identity_table, read_cube, write_cube
-from .interp import apply_lut
 
 OFFICIAL_BASENAME = "AppleLog_to_Rec709"
 
@@ -78,54 +76,48 @@ def find_official_source(source_dir: Path) -> Path | None:
     return cubes[0]
 
 
-def build_official(source_dir: Path, out_dir: Path, sizes: list[int]) -> list[Path]:
-    """Import the official Apple LUT. Returns written paths, or [] if missing."""
+def build_official(source_dir: Path, out_dir: Path) -> list[Path]:
+    """Import the official Apple LUT, used AS IS. Returns [dst] or [] if missing.
+
+    The source file is never modified or re-sampled: ``AppleLog_to_Rec709.cube``
+    is a byte-for-byte copy (verified by SHA-256), whatever its grid size.
+    Provenance (file name, size, SHA-256) is written next to it.
+    """
     src = find_official_source(source_dir)
     if src is None:
         print(MISSING_MESSAGE.format(source_dir=source_dir))
         return []
 
-    cube = read_cube(src)
+    cube = read_cube(src)                      # validation only, never re-written
     if not np.all(np.isfinite(cube.table)):
         raise RuntimeError(f"{src}: contient des NaN/Inf, refusé")
     digest = sha256(src)
-    written = []
-    for n in sizes:
-        dst = _technical_path(out_dir, n)
-        if n == cube.size and np.allclose(cube.domain_min, 0) and np.allclose(cube.domain_max, 1):
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            dst.write_bytes(src.read_bytes())   # bit-exact copy
-            note = "copie exacte"
-        else:
-            # re-grid on the source's own domain (kept in the output header)
-            grid = identity_table(n) * (cube.domain_max - cube.domain_min) + cube.domain_min
-            table = apply_lut(cube.table, grid, cube.domain_min, cube.domain_max)
-            write_cube(dst, Cube(
-                table=table,
-                title=f"{OFFICIAL_BASENAME} {n}",
-                domain_min=cube.domain_min,
-                domain_max=cube.domain_max,
-                comments=[
-                    "MAXS LUT LIBRARY v1 - 00_TECHNICAL",
-                    f"Source officielle Apple : {src.name}",
-                    f"SHA-256 source : {digest}",
-                    f"Re-echantillonnage tetraedrique {cube.size} -> {n} points "
-                    "(aucune information ajoutee)",
-                    "Entree : Apple Log (BT.2020) / Sortie : Rec.709",
-                ]))
-            note = f"ré-échantillonnée {cube.size}->{n}"
-        (dst.parent / (dst.stem + ".provenance.txt")).write_text(
-            f"source={src.name}\nsha256={digest}\nsource_size={cube.size}\n"
-            f"output_size={n}\nmethod={note}\n", encoding="utf-8")
-        written.append(dst)
-        print(f"  [technique] {dst.relative_to(out_dir.parent)}  ({note})")
-    return written
+    dst = out_dir / f"{OFFICIAL_BASENAME}.cube"
+    dst.write_bytes(src.read_bytes())
+    if sha256(dst) != digest:
+        raise RuntimeError(f"copie de {src} altérée (SHA-256 différent)")
+    dst.with_suffix(".provenance.txt").write_text(
+        f"source={src.name}\n"
+        f"sha256={digest}\n"
+        f"lut_3d_size={cube.size}\n"
+        f"domain_min={cube.domain_min.tolist()}\n"
+        f"domain_max={cube.domain_max.tolist()}\n"
+        "method=copie octet par octet, aucune modification, aucun re-echantillonnage\n"
+        "origine_declaree=LUT officielle Apple (developer.apple.com, Apple ID)\n",
+        encoding="utf-8")
+    print(f"  [technique] {dst.name}  (copie exacte de {src.name}, {cube.size}^3, sha256={digest[:16]}...)")
+    return [dst]
 
 
-def _technical_path(out_dir: Path, n: int) -> Path:
-    if n == 33:
-        return out_dir / f"{OFFICIAL_BASENAME}.cube"
-    return out_dir / str(n) / f"{OFFICIAL_BASENAME}_{n}.cube"
+def official_lut_path(out_dir: Path) -> Path | None:
+    p = out_dir / f"{OFFICIAL_BASENAME}.cube"
+    return p if p.exists() else None
+
+
+def aces_path(out_dir: Path, n: int, master: int = 65) -> Path:
+    if n == master:
+        return out_dir / "alternatives" / f"{ACES_NAME}.cube"
+    return out_dir / "alternatives" / f"{n}_compat" / f"{ACES_NAME}_{n}.cube"
 
 
 ACES_NAME = "AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE"
@@ -149,7 +141,7 @@ def build_aces_reference(out_dir: Path, sizes: list[int]) -> list[Path]:
         table = flat.reshape(n, n, n, 3).astype(np.float64)
         n_out = int(np.sum((table < 0) | (table > 1)))
         table = np.clip(table, 0.0, 1.0)
-        dst = out_dir / "alternatives" / f"{ACES_NAME}_{n}.cube"
+        dst = aces_path(out_dir, n)
         write_cube(dst, Cube(table=table, title=f"{ACES_NAME} {n}", comments=[
             "MAXS LUT LIBRARY v1 - 00_TECHNICAL/alternatives",
             "!!! NON OFFICIEL APPLE - reference documentee, pas le rendu Apple !!!",

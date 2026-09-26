@@ -21,8 +21,9 @@
 # =============================================================================
 
 [global]
-sizes = [33, 65]
-max_hue_shift_deg = 6.0
+sizes = [65, 33]   # 65 = MASTER, 33 = compatibilite (01_LOOKS/33_compat/)
+max_hue_shift_deg = 6.0       # limite de rotation de teinte FINALE (bandes + split toning)
+hue_guard_chroma = [0.02, 0.04] # sous C=0.02 (quasi-neutres) la limite ne s'applique pas
 
 # Seuils utilisés par scripts/test_luts.py (le test échoue si dépassés)
 [tests]
@@ -34,7 +35,7 @@ white_min_display = 0.90       # blanc de sortie : valeur affichée min (pas de 
 skin_max_hue_shift = 4.0       # degrés OkLCh
 skin_chroma_ratio = [0.85, 1.20]
 skin_max_dL = 0.06
-general_max_hue_shift = 8.0    # couleurs moyennement saturées
+hue_interp_tolerance = 0.5     # degrés tolérés en plus de global.max_hue_shift_deg (interpolation LUT)
 mean_chroma_ratio_max = 1.20
 shadow_detail_min_ratio = 0.50 # séparation des basses lumières conservée ≥ 50 %
 monotonic_tolerance = 1e-5

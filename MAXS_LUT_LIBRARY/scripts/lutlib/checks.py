@@ -193,8 +193,9 @@ def test_look(cube, th: dict, rep: Report, images: dict | None = None):
     mc = mid_chroma_colours()
     m_in, m_out = _oklch(mc), _oklch(f(mc))
     dh = np.abs(cs.hue_diff(m_in[:, 2], m_out[:, 2]))
-    rep.add("teinte : décalage max (couleurs moyennes)", dh.max() <= th["general_max_hue_shift"],
-            f"max {dh.max():.2f}°, moyen {dh.mean():.2f}°")
+    lim = th["max_hue_shift_deg"] + th["hue_interp_tolerance"]
+    rep.add("teinte : décalage max (couleurs moyennes)", dh.max() <= lim,
+            f"max {dh.max():.2f}° (≤ {lim:g}°), moyen {dh.mean():.2f}°")
     cc = colorchecker_display()
     c_in, c_out = _oklch(cc), _oklch(f(cc))
     chrom = c_in[:, 1] > 0.03

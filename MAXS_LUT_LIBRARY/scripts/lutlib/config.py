@@ -29,10 +29,13 @@ def load_looks(cfg: dict | None = None) -> list[LookParams]:
     return [params_from_config(name, body, g) for name, body in cfg.get("looks", {}).items()]
 
 
+MASTER_SIZE = 65   # 65^3 = version MASTER ; 33^3 = compatibilite
+
+
 def look_path(name: str, size: int) -> Path:
-    if size == 33:
+    if size == MASTER_SIZE:
         return LOOKS_DIR / f"{name}.cube"
-    return LOOKS_DIR / str(size) / f"{name}_{size}.cube"
+    return LOOKS_DIR / f"{size}_compat" / f"{name}_{size}.cube"
 
 
 def all_cube_files() -> list[Path]:
