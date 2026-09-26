@@ -56,3 +56,22 @@ python scripts/test_luts.py && python scripts/render_comparison.py && python -m 
 | `testimages.py` | images de test procédurales (seed fixe) + mire Apple Log |
 | `checks.py` | validation et tests de comportement |
 | `config.py` | chemins et chargement du TOML |
+
+## Rush réel Apple Log (phase 2)
+
+```bash
+pip install imageio-ffmpeg                                   # si ffmpeg n'est pas installé
+python scripts/real_footage.py extract IMG_7068.MOV IMG_7073.MOV   # ProRes original uniquement
+python scripts/real_footage.py analyze                        # planches + 02_TESTS/reports/real_footage_report.html
+```
+
+`extract` refuse tout fichier non ProRes, calcule le SHA-256, décode en 16 bits avec la matrice
+et la plage déclarées par le fichier (sinon arrêt ; `--assume-matrix` / `--assume-range` pour
+forcer une valeur connue), choisit les frames (ciel, végétation, architecture, blancs, peau,
+sombres + représentatives ; `--at peau=12.5` pour imposer un instant) et les enregistre sans
+transformation dans `02_TESTS/real_footage/<clip>/frames/*.npz` (Apple Log 16 bits).
+Ces frames sont légères : on peut extraire sur son Mac, pousser le dossier, et analyser ailleurs.
+
+`analyze` : A = LUT officielle Apple (si présente), B = ACES 2.0 (NON-APPLE), C–G = looks 65³
+après la référence technique. Le diagnostic écrit et les notes viennent de
+`02_TESTS/real_footage/diagnostic.toml` (rédigé après examen visuel, jamais généré automatiquement).

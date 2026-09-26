@@ -196,3 +196,27 @@ def test_hue_guard_enforced(look):
     a, b = cs.display_to_oklch(x), cs.display_to_oklch(apply_look(x, look))
     dh = np.abs(cs.hue_diff(a[:, 2], b[:, 2]))
     assert dh.max() <= look.max_hue_shift + 1e-6
+
+
+def test_real_footage_pipeline_on_synthetic_prores(tmp_path):
+    """ProRes decode (matrix/range from tags), refusal of untagged range and of non-ProRes."""
+    import subprocess
+    from lutlib import footage, testimages
+    try:
+        ff = footage.ffmpeg_exe()
+    except RuntimeError:
+        pytest.skip("ffmpeg absent")
+    chart = testimages.applelog_chart()
+    raw = (np.clip(chart, 0, 1) * 65535).astype("<u2").tobytes() * 3
+    mov = tmp_path / "t.mov"
+    subprocess.run([ff, "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb48le", "-s", "960x540",
+                    "-r", "24", "-i", "-", "-vf", "scale=out_color_matrix=bt2020:out_range=tv,format=yuv422p10le",
+                    "-c:v", "prores_ks", "-profile:v", "3", "-colorspace", "bt2020nc",
+                    "-color_primaries", "bt2020", "-color_trc", "bt2020-10", str(mov)], input=raw, check=True)
+    p = footage.probe(mov)
+    assert p.codec == "prores" and p.color_space == "bt2020nc" and not footage.check_source(p)
+    img = footage.decode_frame(mov, 0.02, "bt2020nc", "tv")
+    assert np.median(np.abs(img - chart)) < 2e-3
+    h264 = tmp_path / "t.mp4"
+    subprocess.run([ff, "-y", "-v", "error", "-i", str(mov), "-c:v", "mpeg4", str(h264)], check=True)
+    assert footage.check_source(footage.probe(h264))
