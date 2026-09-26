@@ -1,0 +1,512 @@
+{
+  "MAXS_Natural": {
+    "01_ciel": {
+      "L_moyen_avant": 0.7703,
+      "L_moyen_apres": 0.7817,
+      "ratio_chroma_moyen": 0.9943,
+      "decalage_teinte_moyen_deg": 0.005,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "02_peau": {
+      "L_moyen_avant": 0.409,
+      "L_moyen_apres": 0.398,
+      "ratio_chroma_moyen": 0.9818,
+      "decalage_teinte_moyen_deg": 0.017,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "03_vegetation": {
+      "L_moyen_avant": 0.4335,
+      "L_moyen_apres": 0.4244,
+      "ratio_chroma_moyen": 0.9851,
+      "decalage_teinte_moyen_deg": 0.003,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "04_architecture": {
+      "L_moyen_avant": 0.6369,
+      "L_moyen_apres": 0.6425,
+      "ratio_chroma_moyen": 0.9846,
+      "decalage_teinte_moyen_deg": 0.015,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "05_eau": {
+      "L_moyen_avant": 0.4883,
+      "L_moyen_apres": 0.4821,
+      "ratio_chroma_moyen": 0.9964,
+      "decalage_teinte_moyen_deg": 0.015,
+      "pixels_clippes_avant_pct": 1.588,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "06_blanc_neutre": {
+      "L_moyen_avant": 0.95,
+      "L_moyen_apres": 0.9479,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 54.583,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "07_gris_neutre": {
+      "L_moyen_avant": 0.5526,
+      "L_moyen_apres": 0.55,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 2.135,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 2.448,
+      "pixels_noirs_apres_pct": 2.5
+    },
+    "08_faible_lumiere": {
+      "L_moyen_avant": 0.251,
+      "L_moyen_apres": 0.2369,
+      "ratio_chroma_moyen": 0.9604,
+      "decalage_teinte_moyen_deg": 0.02,
+      "pixels_clippes_avant_pct": 0.096,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.579,
+      "pixels_noirs_apres_pct": 0.579
+    },
+    "09_forte_lumiere": {
+      "L_moyen_avant": 0.8958,
+      "L_moyen_apres": 0.9011,
+      "ratio_chroma_moyen": 0.9585,
+      "decalage_teinte_moyen_deg": 0.011,
+      "pixels_clippes_avant_pct": 7.5,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "10_colorchecker": {
+      "L_moyen_avant": 0.5403,
+      "L_moyen_apres": 0.5372,
+      "ratio_chroma_moyen": 0.9962,
+      "decalage_teinte_moyen_deg": 0.003,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    }
+  },
+  "MAXS_Paris": {
+    "01_ciel": {
+      "L_moyen_avant": 0.7703,
+      "L_moyen_apres": 0.7891,
+      "ratio_chroma_moyen": 0.7797,
+      "decalage_teinte_moyen_deg": 0.397,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "02_peau": {
+      "L_moyen_avant": 0.409,
+      "L_moyen_apres": 0.3932,
+      "ratio_chroma_moyen": 0.9275,
+      "decalage_teinte_moyen_deg": 2.115,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "03_vegetation": {
+      "L_moyen_avant": 0.4335,
+      "L_moyen_apres": 0.4204,
+      "ratio_chroma_moyen": 0.7374,
+      "decalage_teinte_moyen_deg": 3.436,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "04_architecture": {
+      "L_moyen_avant": 0.6369,
+      "L_moyen_apres": 0.6479,
+      "ratio_chroma_moyen": 0.9601,
+      "decalage_teinte_moyen_deg": 1.622,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "05_eau": {
+      "L_moyen_avant": 0.4883,
+      "L_moyen_apres": 0.4791,
+      "ratio_chroma_moyen": 0.7804,
+      "decalage_teinte_moyen_deg": 5.333,
+      "pixels_clippes_avant_pct": 1.588,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "06_blanc_neutre": {
+      "L_moyen_avant": 0.95,
+      "L_moyen_apres": 0.9405,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 54.583,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "07_gris_neutre": {
+      "L_moyen_avant": 0.5526,
+      "L_moyen_apres": 0.5497,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 2.135,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 2.448,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "08_faible_lumiere": {
+      "L_moyen_avant": 0.251,
+      "L_moyen_apres": 0.2335,
+      "ratio_chroma_moyen": 0.8207,
+      "decalage_teinte_moyen_deg": 4.086,
+      "pixels_clippes_avant_pct": 0.096,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.579,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "09_forte_lumiere": {
+      "L_moyen_avant": 0.8958,
+      "L_moyen_apres": 0.9008,
+      "ratio_chroma_moyen": 0.8595,
+      "decalage_teinte_moyen_deg": 0.07,
+      "pixels_clippes_avant_pct": 7.5,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "10_colorchecker": {
+      "L_moyen_avant": 0.5403,
+      "L_moyen_apres": 0.5367,
+      "ratio_chroma_moyen": 0.8876,
+      "decalage_teinte_moyen_deg": 1.375,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    }
+  },
+  "MAXS_Film": {
+    "01_ciel": {
+      "L_moyen_avant": 0.7703,
+      "L_moyen_apres": 0.7989,
+      "ratio_chroma_moyen": 0.7741,
+      "decalage_teinte_moyen_deg": 3.514,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "02_peau": {
+      "L_moyen_avant": 0.409,
+      "L_moyen_apres": 0.3923,
+      "ratio_chroma_moyen": 0.9066,
+      "decalage_teinte_moyen_deg": 0.23,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "03_vegetation": {
+      "L_moyen_avant": 0.4335,
+      "L_moyen_apres": 0.4197,
+      "ratio_chroma_moyen": 0.8017,
+      "decalage_teinte_moyen_deg": 4.463,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "04_architecture": {
+      "L_moyen_avant": 0.6369,
+      "L_moyen_apres": 0.6574,
+      "ratio_chroma_moyen": 0.9845,
+      "decalage_teinte_moyen_deg": 2.314,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "05_eau": {
+      "L_moyen_avant": 0.4883,
+      "L_moyen_apres": 0.4782,
+      "ratio_chroma_moyen": 0.9321,
+      "decalage_teinte_moyen_deg": 0.05,
+      "pixels_clippes_avant_pct": 1.588,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "06_blanc_neutre": {
+      "L_moyen_avant": 0.95,
+      "L_moyen_apres": 0.9372,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 54.583,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "07_gris_neutre": {
+      "L_moyen_avant": 0.5526,
+      "L_moyen_apres": 0.5562,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 2.135,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 2.448,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "08_faible_lumiere": {
+      "L_moyen_avant": 0.251,
+      "L_moyen_apres": 0.2441,
+      "ratio_chroma_moyen": 0.8098,
+      "decalage_teinte_moyen_deg": 2.963,
+      "pixels_clippes_avant_pct": 0.096,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.579,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "09_forte_lumiere": {
+      "L_moyen_avant": 0.8958,
+      "L_moyen_apres": 0.9038,
+      "ratio_chroma_moyen": 0.8544,
+      "decalage_teinte_moyen_deg": 1.989,
+      "pixels_clippes_avant_pct": 7.5,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "10_colorchecker": {
+      "L_moyen_avant": 0.5403,
+      "L_moyen_apres": 0.5397,
+      "ratio_chroma_moyen": 0.9026,
+      "decalage_teinte_moyen_deg": 1.193,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    }
+  },
+  "MAXS_Golden": {
+    "01_ciel": {
+      "L_moyen_avant": 0.7703,
+      "L_moyen_apres": 0.7819,
+      "ratio_chroma_moyen": 0.8073,
+      "decalage_teinte_moyen_deg": 0.655,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "02_peau": {
+      "L_moyen_avant": 0.409,
+      "L_moyen_apres": 0.3988,
+      "ratio_chroma_moyen": 1.0105,
+      "decalage_teinte_moyen_deg": 1.142,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "03_vegetation": {
+      "L_moyen_avant": 0.4335,
+      "L_moyen_apres": 0.425,
+      "ratio_chroma_moyen": 1.0099,
+      "decalage_teinte_moyen_deg": 3.299,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "04_architecture": {
+      "L_moyen_avant": 0.6369,
+      "L_moyen_apres": 0.6433,
+      "ratio_chroma_moyen": 1.0562,
+      "decalage_teinte_moyen_deg": 1.138,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "05_eau": {
+      "L_moyen_avant": 0.4883,
+      "L_moyen_apres": 0.4824,
+      "ratio_chroma_moyen": 0.8132,
+      "decalage_teinte_moyen_deg": 10.367,
+      "pixels_clippes_avant_pct": 1.588,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "06_blanc_neutre": {
+      "L_moyen_avant": 0.95,
+      "L_moyen_apres": 0.9446,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 54.583,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "07_gris_neutre": {
+      "L_moyen_avant": 0.5526,
+      "L_moyen_apres": 0.5504,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 2.135,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 2.448,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "08_faible_lumiere": {
+      "L_moyen_avant": 0.251,
+      "L_moyen_apres": 0.2389,
+      "ratio_chroma_moyen": 1.0441,
+      "decalage_teinte_moyen_deg": 0.864,
+      "pixels_clippes_avant_pct": 0.096,
+      "pixels_clippes_apres_pct": 0.048,
+      "pixels_noirs_avant_pct": 0.579,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "09_forte_lumiere": {
+      "L_moyen_avant": 0.8958,
+      "L_moyen_apres": 0.8993,
+      "ratio_chroma_moyen": 0.9593,
+      "decalage_teinte_moyen_deg": 0.794,
+      "pixels_clippes_avant_pct": 7.5,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "10_colorchecker": {
+      "L_moyen_avant": 0.5403,
+      "L_moyen_apres": 0.5377,
+      "ratio_chroma_moyen": 0.9895,
+      "decalage_teinte_moyen_deg": 2.246,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    }
+  },
+  "MAXS_Night": {
+    "01_ciel": {
+      "L_moyen_avant": 0.7703,
+      "L_moyen_apres": 0.78,
+      "ratio_chroma_moyen": 0.8134,
+      "decalage_teinte_moyen_deg": 0.063,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "02_peau": {
+      "L_moyen_avant": 0.409,
+      "L_moyen_apres": 0.4036,
+      "ratio_chroma_moyen": 0.903,
+      "decalage_teinte_moyen_deg": 2.503,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "03_vegetation": {
+      "L_moyen_avant": 0.4335,
+      "L_moyen_apres": 0.429,
+      "ratio_chroma_moyen": 0.8713,
+      "decalage_teinte_moyen_deg": 2.431,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "04_architecture": {
+      "L_moyen_avant": 0.6369,
+      "L_moyen_apres": 0.6441,
+      "ratio_chroma_moyen": 0.9352,
+      "decalage_teinte_moyen_deg": 0.6,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "05_eau": {
+      "L_moyen_avant": 0.4883,
+      "L_moyen_apres": 0.4849,
+      "ratio_chroma_moyen": 0.9433,
+      "decalage_teinte_moyen_deg": 2.053,
+      "pixels_clippes_avant_pct": 1.588,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "06_blanc_neutre": {
+      "L_moyen_avant": 0.95,
+      "L_moyen_apres": 0.9403,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 54.583,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "07_gris_neutre": {
+      "L_moyen_avant": 0.5526,
+      "L_moyen_apres": 0.5531,
+      "ratio_chroma_moyen": null,
+      "decalage_teinte_moyen_deg": null,
+      "pixels_clippes_avant_pct": 2.135,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 2.448,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "08_faible_lumiere": {
+      "L_moyen_avant": 0.251,
+      "L_moyen_apres": 0.2485,
+      "ratio_chroma_moyen": 0.7733,
+      "decalage_teinte_moyen_deg": 6.142,
+      "pixels_clippes_avant_pct": 0.096,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.579,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "09_forte_lumiere": {
+      "L_moyen_avant": 0.8958,
+      "L_moyen_apres": 0.8958,
+      "ratio_chroma_moyen": 0.8692,
+      "decalage_teinte_moyen_deg": 0.072,
+      "pixels_clippes_avant_pct": 7.5,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    },
+    "10_colorchecker": {
+      "L_moyen_avant": 0.5403,
+      "L_moyen_apres": 0.54,
+      "ratio_chroma_moyen": 0.9041,
+      "decalage_teinte_moyen_deg": 0.231,
+      "pixels_clippes_avant_pct": 0.0,
+      "pixels_clippes_apres_pct": 0.0,
+      "pixels_noirs_avant_pct": 0.0,
+      "pixels_noirs_apres_pct": 0.0
+    }
+  }
+}
