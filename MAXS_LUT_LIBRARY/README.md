@@ -45,8 +45,8 @@ MAXS_LUT_LIBRARY/
 │   ├── alternatives/                (optionnel) référence ACES 2.0 NON Apple
 │   └── AppleLog_to_Rec709.cube      (généré seulement depuis la source officielle)
 ├── 01_LOOKS/
-│   ├── MAXS_Natural.cube  MAXS_Paris.cube  MAXS_Film.cube  MAXS_Golden.cube  MAXS_Night.cube   (33³)
-│   └── 65/MAXS_*_65.cube                                                                        (65³)
+│   ├── MAXS_Natural.cube  MAXS_Paris.cube  MAXS_Film.cube  MAXS_Golden.cube  MAXS_Night.cube   (65³ MASTER)
+│   └── 33_compat/MAXS_*_33.cube                                                                 (33³ compatibilité)
 ├── 02_TESTS/
 │   ├── images/                      images de test synthétiques (aperçus PNG)
 │   └── reports/                     avant/après, overview, metrics.json, test_results.md, index.html
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 ## Utilisation
 
 ```bash
-python scripts/generate_luts.py            # génère 33³ + 65³ (+ technique si source Apple présente)
+python scripts/generate_luts.py            # génère 65³ MASTER + 33³ compat (+ technique si source Apple présente)
 python scripts/validate_luts.py            # validité mathématique de tous les .cube
 python scripts/test_luts.py                # tests de comportement -> 02_TESTS/reports/test_results.md
 python scripts/render_comparison.py        # avant/après -> 02_TESTS/reports/index.html
@@ -99,8 +99,9 @@ Chaque look est une fonction pure Rec.709 → Rec.709, calculée en float64 sur 
 | 2 | Espace de travail | Rec.709 linéaire → **OkLab / OkLCh** (Ottosson 2020) : luminosité, chroma et teinte séparés | – |
 | 3 | Courbe de ton | Spline monotone **PCHIP** (Fritsch-Carlson) sur L uniquement → la teinte ne bouge pas ; points (0,0), (shadow_x, ·), (pivot, pivot), (highlight_x, ·), (1, white_out) ; relevé des noirs `lift·(1−y)^4` (monotone) ; le chroma suit la luminosité `C·(L'/L)^chroma_follow` | `tone.*` |
 | 4 | Saturation | `C × global × zone(L)` (ombres / hautes lumières) ; la peau récupère une part du changement (`skin_protect.saturation`) | `saturation.*` |
-| 5 | Bandes de teinte | Gain de chroma + rotation de teinte bornée (±`max_hue_shift_deg`), poids cosinus surélevé, **inactif sur les neutres** (rampe `min_chroma`), atténué sur la peau | `hue_bands` |
+| 5 | Bandes de teinte | Gain de chroma + rotation de teinte (bornée ensuite par l'étape 6b), poids cosinus surélevé, **inactif sur les neutres** (rampe `min_chroma`), atténué sur la peau | `hue_bands` |
 | 6 | Split toning | Petits décalages a/b OkLab par zone, zones évaluées sur la luminosité **d'entrée** : noir et blanc purs restent neutres | `split_tone.*` |
+| 6b | Garde de teinte | La teinte **finale** de toute couleur saturée (C ≥ 0,04) reste à ±`max_hue_shift_deg` (6°) de sa teinte d'entrée, quelle que soit l'étape (bandes ou split toning). Les quasi-neutres (C < 0,02) sont exemptés : les teinter est le rôle du split toning | `global.max_hue_shift_deg`, `global.hue_guard_chroma` |
 | 7 | Gamut | Compression **douce** du chroma relative au chroma max Rec.709 à (L, h) constants (genou 0.85 + tanh) : aucune teinte déviée, aucun écrêtage dur | `global.gamut_knee` |
 | 8 | Encodage | lumière → V^(1/2.4) | – |
 
@@ -128,6 +129,13 @@ Chaque look est une fonction pure Rec.709 → Rec.709, calculée en float64 sur 
   OkLab vs colour-science, monotonie PCHIP, gamut, arrêt de la LUT technique sans source, copie
   bit-exacte de la source, étiquetage « NON-APPLE » de la référence ACES.
 
+## Validation sur rush réel (phase 2)
+
+`scripts/real_footage.py` : voir [`scripts/README.md`](scripts/README.md). Rapport :
+`02_TESTS/reports/real_footage_report.html` (planches A–G, recadrages 100 %, mesures, diagnostic et
+notes rédigés dans `02_TESTS/real_footage/diagnostic.toml`). Sans LUT officielle Apple, tous les
+résultats passent par la référence ACES 2.0 et sont marqués **NON-APPLE**.
+
 ## Limites connues
 
 * **LUT technique officielle absente** tant que la LUT Apple n'est pas déposée dans `00_TECHNICAL/source/`.
@@ -138,7 +146,8 @@ Chaque look est une fonction pure Rec.709 → Rec.709, calculée en float64 sur 
 * Une LUT 3D est bornée à [0,1] : les valeurs hors plage (super-blancs) sont écrêtées à l'entrée.
   Faire la récupération des hautes lumières **avant** le look.
 * La compression de gamut désature légèrement (≤ ~5 %) les couleurs déjà à la limite du Rec.709.
-* **33³ vs 65³** (mesuré sur 200 000 couleurs aléatoires) : écart moyen 0.0001–0.0003, mais
+* **65³ = version MASTER** (`01_LOOKS/MAXS_*.cube`) ; **33³ = compatibilité uniquement**
+  (`01_LOOKS/33_compat/`). Écart 33³ vs 65³ (mesuré sur 200 000 couleurs aléatoires) : écart moyen 0.0001–0.0003, mais
   jusqu'à 0.04 (Natural) / 0.08 (Golden) en valeur affichée sur les couleurs **extrêmes au bord du
   gamut Rec.709** (un canal ≈ 0, les autres ≈ 1 : jaune ou bleu purs, néons), soit ~1–1.6 % du cube
   RGB. Préférer le 65³ pour ce type de contenu.

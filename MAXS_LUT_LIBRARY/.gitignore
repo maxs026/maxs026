@@ -2,3 +2,4 @@ __pycache__/
 .venv/
 .pytest_cache/
 02_TESTS/renders/
+02_TESTS/real_footage/*/frames/*.npz

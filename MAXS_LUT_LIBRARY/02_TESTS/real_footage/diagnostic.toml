@@ -1,0 +1,110 @@
+# Diagnostic visuel — rushes réels Apple Log (IMG_7068, IMG_7073)
+# Rédigé après examen des planches et de recadrages à 100 %, et appuyé sur
+# 02_TESTS/reports/real_footage_metrics.json. Aucune note n'est calculée automatiquement.
+# Aucune correction n'a été appliquée : la liste "corrections_proposees" attend un accord.
+
+contexte = """Base technique : ACES 2.0 SDR Rec.709 (NON-APPLE) — la LUT officielle Apple n'est pas fournie.
+Les looks ont été conçus pour se placer après la LUT Apple : ce diagnostic est à confirmer avec elle.
+Rushes : Paris, 26/09/2026, iPhone 15 Pro Max, ProRes 422 HQ Apple Log, plans verticaux.
+IMG_7068 (15h23) : ciel couvert, Seine, pont, bateau-mouche à coque blanche.
+IMG_7073 (16h22) : soleil voilé et nuages, façade de l'Île Saint-Louis, arbres, quai en pierre claire.
+Non couverts par ces rushes : tons chair exploitables (passagers trop petits, ~0,1 % des pixels),
+nuit, golden hour, blancs proches de 1.0 (la coque blanche plafonne vers 0,8 après ACES 2.0).
+Les notes valent pour ces deux rushes de jour, pas pour tous les usages."""
+
+recommandation_globale = """MAXS_Natural est le plus polyvalent : sur les deux rushes il reste fidèle à la base (chroma du ciel ×1,01,
+végétation ×0,97, aucun décalage de teinte mesurable, aucun écrêtage, noirs intacts) tout en ajoutant un léger
+contraste (+4 %). MAXS_Paris est le plus proche de l'intention esthétique de ces plans (architecture, Seine, pierre),
+mais il vide le ciel bleu (-35 à -47 % de chroma) et renforce le bruit chroma dans les ombres ensoleillées
+(+28 à +38 %) : à corriger avant d'en faire un look par défaut."""
+
+corrections_proposees = [
+  "MOTEUR (touche Paris, Golden, Film, Night) : rendre le split toning dépendant de la chroma d'entrée (pleine force sur les quasi-neutres, s'annulant vers C≈0,05) ou ajouter une protection 'ciel' (h 220–275) sur le modèle de skin_protect. Cause mesurée : sans split toning, la chroma du ciel passe de 0,66 à 0,95 (Golden) et de 0,65 à 0,87 (Paris).",
+  "MAXS_Paris : bande 'blues' chroma 0,88 → 0,95 (le ciel bleu reste bleu ; le ciel gris est déjà préservé par les quasi-neutres).",
+  "MAXS_Paris : split_tone.shadows strength 0,010 → 0,007, et/ou saturation.shadows 0,90 → 0,85, pour limiter la hausse du bruit chroma dans les ombres (+28 à +38 % sur IMG_7073).",
+  "MAXS_Paris : split_tone.midtones strength 0,006 → 0,004 : la pierre claire du quai vire au beige, contraire à 'blancs propres'.",
+  "MAXS_Golden : split_tone.shadows strength 0,003 → 0 (eau et ombres brunâtres, bruit chroma +18 à +22 %).",
+  "MAXS_Golden : split_tone.midtones 0,008 → 0,005 (en plus de la correction moteur) ; réserver Golden aux scènes de golden hour, à valider sur un rush de fin de journée.",
+  "MAXS_Film : black_lift 0,06 → 0,045 à tester : sur ciel couvert (IMG_7068) le relevé des noirs donne une image laiteuse ; à arbitrer, c'est une intention du look.",
+  "MAXS_Night : aucune modification avant un vrai rush de nuit ; sur ces rushes de jour la dominante froide des ombres (eau, pierre) est visible, ce qui est attendu. Documenter 'nuit uniquement'.",
+  "TECHNIQUE : fournir la LUT officielle Apple puis relancer l'analyse (colonne A) avant toute retouche ; ACES 2.0 donne des tons moyens bas (L médian 0,41) et des blancs gris (coque ~0,8), que les looks ne doivent pas compenser.",
+  "TESTS : ajouter un rush avec visages en plan moyen/serré, un rush de nuit et un rush golden hour ; le détecteur 'blancs' doit devenir relatif (quantile de luminosité) car aucun pixel ne dépasse 0,9 après ACES 2.0.",
+]
+
+[looks.MAXS_Natural]
+note = 8
+forces = [
+  "Très fidèle à la base : chroma ciel ×1,01, végétation ×0,97, décalage de teinte ≈ 0° (mesuré).",
+  "Léger gain de contraste (+4 % sur l'écart L p95–p5) qui donne un peu de densité aux façades et aux arbres.",
+  "Aucun écrêtage, noirs non écrasés (0 % de pixels à 0), bruit des ombres inchangé (±9 %).",
+  "Pierre, façade et ciel gris restent neutres.",
+]
+defauts = [
+  "Très peu d'effet visible : sur une base sombre (ACES 2.0) il ne corrige pas les tons moyens bas — ce n'est pas son rôle.",
+  "Tons moyens très légèrement plus sombres que la base (L médian -0,011).",
+]
+fonctionne = ["Toutes les scènes des deux rushes : ciel couvert, soleil voilé, architecture, végétation, eau."]
+fonctionne_moins = ["Aucune scène problématique observée ; à vérifier sur peau (non disponible)."]
+recommandations = ["Look par défaut / de sécurité. Aucune correction proposée."]
+
+[looks.MAXS_Paris]
+note = 6
+forces = [
+  "Rendu le plus 'Paris' sur l'architecture : façades denses, zinc et ardoises bien séparés, verts désaturés comme voulu (végétation ×0,81).",
+  "Ciel couvert conservé gris, sans dominante.",
+  "Aucun écrêtage ni noir écrasé ; pas d'effet teal/orange.",
+]
+defauts = [
+  "Vide le ciel bleu : chroma du ciel ×0,53 (couvert) à ×0,69 (soleil voilé) ; visible sur le recadrage ciel, qui devient gris-bleu terne.",
+  "Bruit chroma des ombres renforcé de +28 à +38 % sur IMG_7073 (ombres froides 0,010).",
+  "La pierre claire du quai vire au beige (chaleur des tons moyens) : 'blancs propres' pas totalement tenu.",
+  "Feuillage un peu lourd / olive sur le recadrage arbre.",
+]
+fonctionne = ["Architecture et ciel couvert (IMG_7068) : c'est là qu'il est le plus convaincant."]
+fonctionne_moins = ["Ciel bleu et ombres ensoleillées (IMG_7073) : ciel délavé, bruit chroma plus visible."]
+recommandations = ["Corrections proposées 1 à 4 ; re-tester ensuite sur ces mêmes frames."]
+
+[looks.MAXS_Film]
+note = 6
+forces = [
+  "Réduit le bruit perçu dans les ombres (luminance ×0,89, chroma ×0,78 à 0,93) grâce au relevé des noirs.",
+  "Hautes lumières douces, aucune coupure ; rendu doux et cohérent sur l'eau.",
+  "Ciel mieux préservé que Paris/Golden (×0,76 à ×0,94).",
+]
+defauts = [
+  "Sur ciel couvert (IMG_7068), noirs relevés + base peu contrastée = image laiteuse, voile gris-lavande.",
+  "Décalage de teinte du feuillage le plus fort (~4,4° en moyenne), feuillage un peu éteint.",
+]
+fonctionne = ["Scènes contrastées au soleil (IMG_7073) : le relevé des noirs y reste élégant."]
+fonctionne_moins = ["Scènes plates / ciel couvert : manque de densité."]
+recommandations = ["Correction proposée 7 (à arbitrer : le relevé des noirs est l'intention du look)."]
+
+[looks.MAXS_Golden]
+note = 4
+forces = [
+  "Réchauffe joliment la pierre et le feuillage au soleil (végétation ×1,05, teinte chaude sur la façade).",
+  "Aucun écrêtage ; peau non évaluable ici.",
+]
+defauts = [
+  "Neutralise le ciel bleu : chroma ×0,47 (couvert) à ×0,67 ; ciel gris-mauve terne sur le recadrage.",
+  "Chroma moyenne de l'image -23 % : sur ces rushes il désature au lieu d'enrichir.",
+  "Ombres et eau brunâtres (split ombres 0,003), bruit chroma +18 à +22 % au soleil.",
+]
+fonctionne = ["Pierre et feuillage ensoleillés, pris isolément."]
+fonctionne_moins = ["Tout plan avec ciel bleu ou couvert ; scènes de mi-journée — ces rushes ne sont pas des golden hours, le test n'est pas représentatif de son usage prévu."]
+recommandations = ["Corrections proposées 1, 5, 6 ; tester sur un vrai rush de golden hour avant de conclure."]
+
+[looks.MAXS_Night]
+note = 5
+forces = [
+  "Contraste maîtrisé, hautes lumières neutres, aucun écrêtage, détails des ombres conservés.",
+  "Pas de bleu excessif dans le ciel (×0,86 à ×0,92, décalage de teinte ≈ 0,07°).",
+]
+defauts = [
+  "Sur ces rushes de jour, dominante froide visible dans l'eau et sur la pierre.",
+  "Bruit chroma des ombres +14 à +23 % sur IMG_7073.",
+  "Végétation ×0,78 : terne en plein jour.",
+]
+fonctionne = ["Non évaluable dans son usage prévu : aucun plan de nuit dans ces rushes."]
+fonctionne_moins = ["Plans de jour (attendu)."]
+recommandations = ["Correction proposée 8 : pas de modification avant un rush de nuit ; la note est provisoire."]

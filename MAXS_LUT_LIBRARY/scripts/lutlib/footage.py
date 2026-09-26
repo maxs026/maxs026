@@ -51,6 +51,7 @@ class Probe:
     color_space: str | None
     color_primaries: str | None
     color_trc: str | None
+    rotation_deg: float
     raw_stream_line: str
 
 
@@ -78,12 +79,14 @@ def probe(path: Path) -> Probe:
         trc = parts[2] if len(parts) > 2 else parts[0]
     fps = re.search(r"([\d.]+) fps", line)
     dur = re.search(r"Duration: (\d+):(\d+):([\d.]+)", out)
+    rot = re.search(r"rotation of (-?[\d.]+) degrees", out)
     return Probe(
         path=str(path), codec=m.group("codec"), profile=m.group("profile") or "",
         pix_fmt=m.group("pix"), width=int(m.group("w")), height=int(m.group("h")),
         fps=float(fps.group(1)) if fps else 0.0,
         duration=(int(dur.group(1)) * 3600 + int(dur.group(2)) * 60 + float(dur.group(3))) if dur else 0.0,
         color_range=rng, color_space=space, color_primaries=prim, color_trc=trc,
+        rotation_deg=float(rot.group(1)) if rot else 0.0,
         raw_stream_line=line.strip())
 
 
@@ -108,7 +111,13 @@ MATRICES = {"bt2020nc": "bt2020", "bt2020c": "bt2020", "bt709": "bt709", "smpte1
 
 
 def decode_frame(path: Path, t: float, matrix: str, rng: str, width: int | None = None) -> np.ndarray:
-    """Decode the frame at time ``t`` (s) to float RGB in [0,1] (still Apple Log encoded)."""
+    """Decode the frame at time ``t`` (s) to float RGB in [0,1] (still Apple Log encoded).
+
+    ffmpeg applies the file's display rotation (iPhone portrait clips carry a
+    -90 deg display matrix), exactly like a player or an NLE: pixel values are
+    not changed, only their orientation. Output size is read from the 16-bit
+    PPM header, so rotated frames get their true dimensions.
+    """
     if matrix not in MATRICES:
         raise ValueError(f"matrice {matrix!r} non gérée")
     in_range = {"tv": "tv", "pc": "pc"}[rng]
@@ -116,18 +125,17 @@ def decode_frame(path: Path, t: float, matrix: str, rng: str, width: int | None 
         (f"in_color_matrix={MATRICES[matrix]}:in_range={in_range}:out_range=pc:"
          "flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp")
     cmd = [ffmpeg_exe(), "-v", "error", "-ss", f"{t:.3f}", "-i", str(path), "-frames:v", "1",
-           "-vf", f"{scale},format=rgb48le", "-f", "rawvideo", "-"]
+           "-vf", f"{scale},format=rgb48be", "-f", "image2pipe", "-vcodec", "ppm", "-"]
     raw = subprocess.run(cmd, capture_output=True, check=True).stdout
     if not raw:
         raise RuntimeError(f"aucune image décodée à t={t:.3f}s")
-    probe_w = width
-    arr = np.frombuffer(raw, dtype="<u2")
-    if probe_w is None:
-        p = probe(path)
-        probe_w, h = p.width, p.height
-    else:
-        h = arr.size // 3 // probe_w
-    return arr.reshape(h, probe_w, 3).astype(np.float64) / 65535.0
+    # P6 header: "P6\n<w> <h>\n65535\n"
+    parts = raw.split(b"\n", 3)
+    if parts[0] != b"P6" or parts[2] != b"65535":
+        raise RuntimeError("sortie ffmpeg inattendue (PPM 16 bits attendu)")
+    w, h = map(int, parts[1].split())
+    arr = np.frombuffer(parts[3], dtype=">u2", count=w * h * 3)
+    return arr.reshape(h, w, 3).astype(np.float64) / 65535.0
 
 
 # ----------------------------------------------------------------------------

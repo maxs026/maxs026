@@ -47,7 +47,6 @@ from lutlib.interp import apply_lut  # noqa: E402
 
 RF_DIR = TESTS_DIR / "real_footage"
 DIAG_PATH = RF_DIR / "diagnostic.toml"
-TILE = (640, 360)
 
 
 # ----------------------------------------------------------------------------
@@ -118,7 +117,9 @@ def cmd_extract(args) -> int:
             name = f"{i:02d}_{label}_{t:07.3f}s"
             np.savez_compressed(out / "frames" / f"{name}.npz",
                                 applelog=np.round(img * 65535).astype(np.uint16))
-            to8(img).save(out / "frames" / f"{name}_applelog_preview.jpg", quality=90)
+            prev = to8(img)
+            prev.thumbnail((1080, 1080), Image.LANCZOS)
+            prev.save(out / "frames" / f"{name}_applelog_preview.jpg", quality=90)
             d = dict(next((d for tt, d in descs if tt == t), {}))
             frames.append({"name": name, "label": label, "t": t, "descripteurs_echantillon": d})
             print(f"  frame {name}")
@@ -126,6 +127,7 @@ def cmd_extract(args) -> int:
             "source": src.name, "sha256": digest, "taille_octets": src.stat().st_size,
             "probe": p.__dict__, "decodage": {"matrice": matrix, "plage": rng,
                                              "matrice_declaree": p.color_space, "plage_declaree": p.color_range,
+                                             "justification_plage": args.range_note,
                                              "largeur": args.width, "profondeur": "16 bits (rgb48)"},
             "selection": {"reference_technique": ref_name, "echantillons": len(times)},
             "frames": frames,
@@ -136,7 +138,9 @@ def cmd_extract(args) -> int:
 
 # ----------------------------------------------------------------------------
 def sheet(title, tiles):
-    w, h = TILE
+    """Grid of 4 columns; tiles keep the frame's aspect ratio (portrait clips stay portrait)."""
+    ih, iw = tiles[0][1].shape[:2]
+    w, h = (360, int(round(360 * ih / iw))) if ih > iw else (640, int(round(640 * ih / iw)))
     cols = 4
     rows = (len(tiles) + cols - 1) // cols
     out = Image.new("RGB", (w * cols, 50 + (h + 30) * rows), (16, 16, 16))
@@ -145,8 +149,8 @@ def sheet(title, tiles):
     for i, (lab, img) in enumerate(tiles):
         r, c = divmod(i, cols)
         x, y = c * w, 50 + r * (h + 30)
-        d.text((x + 8, y + 6), footage_ascii(lab), fill=(230, 230, 230), font=font(17))
-        out.paste(to8(img).resize(TILE, Image.LANCZOS), (x, y + 30))
+        d.text((x + 6, y + 6), footage_ascii(lab), fill=(230, 230, 230), font=font(13 if ih > iw else 17))
+        out.paste(to8(img).resize((w, h), Image.LANCZOS), (x, y + 30))
     return out
 
 
@@ -280,6 +284,11 @@ def write_report(results, clips, ref_name, official, look_names):
         P.append(f"<tr><td>{e(n)}</td>" + "".join(f"<td>{v}</td>" for v in row) + "</tr>")
     P.append("</table>")
 
+    crops = sorted((REPORTS_DIR / "real_crops").glob("*.jpg")) if (REPORTS_DIR / "real_crops").exists() else []
+    if crops:
+        P.append("<h2>Recadrages à 100 % (base ACES 2.0 NON-APPLE + 5 looks)</h2>")
+        for c in crops:
+            P.append(f"<h3>{e(c.stem.replace('crop2_', ''))}</h3><img src='real_crops/{e(c.name)}'>")
     P.append("<h2>Planches comparatives</h2>")
     for r in results:
         P.append(f"<h3>{e(r['clip'])} — t={r['t']:.2f}s — {e(r['label'])}</h3>"
@@ -305,12 +314,21 @@ def main(argv=None) -> int:
         s.add_argument("--at", action="append", help="label=secondes, ex. peau=12.5")
         s.add_argument("--assume-matrix", choices=sorted(footage.MATRICES))
         s.add_argument("--assume-range", choices=["tv", "pc"])
+        s.add_argument("--range-note", default=None, help="justification de --assume-range (manifest)")
     sub.add_parser("analyze")
+    sub.add_parser("report", help="régénère le HTML depuis real_footage_metrics.json et diagnostic.toml")
     args = ap.parse_args(argv)
     if args.cmd == "extract":
         return cmd_extract(args)
     if args.cmd == "analyze":
         return cmd_analyze(args)
+    if args.cmd == "report":
+        data = json.loads((REPORTS_DIR / "real_footage_metrics.json").read_text(encoding="utf-8"))
+        clips = sorted(d for d in RF_DIR.iterdir() if (d / "manifest.json").exists())
+        write_report(data["frames"], clips, data["reference"], data["officielle_apple"],
+                     [l.name for l in load_looks()])
+        print(f"Rapport : {(REPORTS_DIR / 'real_footage_report.html').relative_to(ROOT)}")
+        return 0
     return cmd_extract(args) or cmd_analyze(args)
 
 
