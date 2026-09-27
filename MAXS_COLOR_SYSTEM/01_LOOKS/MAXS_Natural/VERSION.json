@@ -1,0 +1,51 @@
+{
+  "system": "MAXS COLOR SYSTEM",
+  "look": "MAXS_Natural",
+  "version": "1.0",
+  "date": "2026-09-27",
+  "layer": "CREATIVE Rec.709 -> Rec.709",
+  "files": {
+    "65": {
+      "file": "MAXS_Natural_65.cube",
+      "sha256": "9a492454481a75496ffd54370ccbcfaa10098dc7645deaf570325d43a324936d",
+      "role": "MASTER",
+      "min": 0.0,
+      "max": 0.997741
+    },
+    "33": {
+      "file": "MAXS_Natural_33.cube",
+      "sha256": "fca051b1bd469995ca91e7f6f8038d0a7074a94d127f5595365992a45fc3e96d",
+      "role": "compat",
+      "min": 0.0,
+      "max": 0.997719
+    }
+  },
+  "params": {
+    "description": "Rendu naturel, contraste modéré, peau naturelle, hautes lumières douces.",
+    "tone": {
+      "contrast": 1.05,
+      "black_lift": 0.0,
+      "white_out": 0.99
+    },
+    "saturation": {
+      "global": 1.02,
+      "shadows": 0.95,
+      "highlights": 0.9
+    }
+  },
+  "engine": {
+    "max_hue_shift_deg": 6.0,
+    "hue_guard_chroma": [
+      0.02,
+      0.04
+    ],
+    "gamut_knee": 0.85
+  },
+  "history": [
+    {
+      "version": "1.0",
+      "date": "2026-09-27",
+      "note": "Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1)"
+    }
+  ]
+}

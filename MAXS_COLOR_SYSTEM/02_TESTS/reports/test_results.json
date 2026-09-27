@@ -1,0 +1,1718 @@
+[
+  {
+    "path": "00_TECHNICAL/alternatives/33_compat/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_33.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 33",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "33^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "35937",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000000 max=1.000000",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance non décroissante (entrée log)",
+        "status": "PASS",
+        "value": "min dY=0.000e+00",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0000",
+        "detail": ""
+      },
+      {
+        "name": "continuité (info, entrée log)",
+        "status": "PASS",
+        "value": "gain local OkLab max 4.931",
+        "detail": ""
+      },
+      {
+        "name": "gris Apple Log -> neutres",
+        "status": "PASS",
+        "value": "C max=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "monotonie (-8 à +6 IL)",
+        "status": "PASS",
+        "value": "min dY=9.30e-08",
+        "detail": ""
+      },
+      {
+        "name": "gris 18 % (info)",
+        "status": "PASS",
+        "value": "V=0.383",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "00_TECHNICAL/alternatives/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 65",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "65^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "274625",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000000 max=1.000000",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance non décroissante (entrée log)",
+        "status": "PASS",
+        "value": "min dY=0.000e+00",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0000",
+        "detail": ""
+      },
+      {
+        "name": "continuité (info, entrée log)",
+        "status": "PASS",
+        "value": "gain local OkLab max 3.174",
+        "detail": ""
+      },
+      {
+        "name": "gris Apple Log -> neutres",
+        "status": "PASS",
+        "value": "C max=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "monotonie (-8 à +6 IL)",
+        "status": "PASS",
+        "value": "min dY=1.70e-07",
+        "detail": ""
+      },
+      {
+        "name": "gris 18 % (info)",
+        "status": "PASS",
+        "value": "V=0.383",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/33_compat/MAXS_Film_33.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 33",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "33^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "35937",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000758 max=0.999414",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=6.135e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0239",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.544 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0060 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0600",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9564, 0.9564, 0.9564]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=1.23e-05",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=5.16e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.655",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.68°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.876..0.984",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.034",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 4.87° (≤ 6.5°), moyen 1.43°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.902",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/33_compat/MAXS_Golden_33.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 33",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "33^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "35937",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.001330 max=0.999800",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=1.986e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0315",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.589 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0083 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0050",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9813, 0.9813, 0.9813]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=2.86e-07",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=8.45e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.861",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 1.28°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.989..1.036",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.014",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 6.09° (≤ 6.5°), moyen 3.44°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.981",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/33_compat/MAXS_Natural_33.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 33",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "33^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "35937",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000000 max=0.997719",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=1.614e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0000",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.759 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0000 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9875, 0.9875, 0.9875]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=3.94e-08",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=8.71e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.861",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.03°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.967..1.010",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.013",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 0.03° (≤ 6.5°), moyen 0.00°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.997",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/33_compat/MAXS_Night_33.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 33",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "33^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "35937",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.002480 max=0.994547",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=3.742e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0312",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.149 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0110 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0200",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9751, 0.9751, 0.9751]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=2.60e-06",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=8.26e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.941",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.99°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.888..0.969",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.012",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 2.34° (≤ 6.5°), moyen 0.36°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.904",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/33_compat/MAXS_Paris_33.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 33",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "33^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "35937",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000642 max=0.998097",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=2.098e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0286",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.117 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0100 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0120",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9688, 0.9688, 0.9688]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=9.44e-07",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=7.02e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.817",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.92°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.904..1.002",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.022",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 5.95° (≤ 6.5°), moyen 2.10°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.885",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/MAXS_Film.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 65",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "65^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "274625",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000748 max=0.999420",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=2.744e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0240",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.123 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0060 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0600",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9564, 0.9564, 0.9564]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=1.34e-05",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=5.03e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.636",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.65°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.883..0.984",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.034",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 4.88° (≤ 6.5°), moyen 1.44°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.903",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/MAXS_Golden.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 65",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "65^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "274625",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000854 max=0.999800",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=4.434e-05",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0315",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.153 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0083 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0050",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9813, 0.9813, 0.9813]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=2.97e-07",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=8.50e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.853",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.90°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.982..1.025",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.014",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 6.02° (≤ 6.5°), moyen 3.44°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.981",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/MAXS_Natural.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 65",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "65^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "274625",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000000 max=0.997741",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=2.995e-05",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0000",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.605 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0000 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9875, 0.9875, 0.9875]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=3.86e-08",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=8.77e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.02 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.863",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.00°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.967..1.010",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.013",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 0.01° (≤ 6.5°), moyen 0.00°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.997",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/MAXS_Night.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 65",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "65^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "274625",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.002480 max=0.994618",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=1.167e-04",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0312",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "1.101 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0110 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0200",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9751, 0.9751, 0.9751]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=2.81e-06",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=8.30e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.925",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.77°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.900..0.970",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.012",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 2.34° (≤ 6.5°), moyen 0.35°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.905",
+        "detail": ""
+      }
+    ]
+  },
+  {
+    "path": "01_LOOKS/MAXS_Paris.cube",
+    "results": [
+      {
+        "name": "format .cube",
+        "status": "PASS",
+        "value": "LUT_3D_SIZE 65",
+        "detail": ""
+      },
+      {
+        "name": "dimensions >= 33",
+        "status": "PASS",
+        "value": "65^3",
+        "detail": ""
+      },
+      {
+        "name": "nombre de points",
+        "status": "PASS",
+        "value": "274625",
+        "detail": ""
+      },
+      {
+        "name": "absence de NaN",
+        "status": "PASS",
+        "value": "0 NaN",
+        "detail": ""
+      },
+      {
+        "name": "absence de Inf",
+        "status": "PASS",
+        "value": "0 Inf",
+        "detail": ""
+      },
+      {
+        "name": "valeurs min/max dans [0,1]",
+        "status": "PASS",
+        "value": "min=0.000000 max=0.998134",
+        "detail": ""
+      },
+      {
+        "name": "domaine d'entrée",
+        "status": "PASS",
+        "value": "[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0]",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : luminance croissante",
+        "status": "PASS",
+        "value": "min dY=5.730e-05",
+        "detail": ""
+      },
+      {
+        "name": "axe des gris : écart RGB (info)",
+        "status": "PASS",
+        "value": "0.0286",
+        "detail": ""
+      },
+      {
+        "name": "continuité (gain local OkLab max entre noeuds)",
+        "status": "PASS",
+        "value": "0.913 (seuil 4)",
+        "detail": ""
+      },
+      {
+        "name": "gris : chroma max",
+        "status": "PASS",
+        "value": "0.0100 (≤ 0.02)",
+        "detail": ""
+      },
+      {
+        "name": "blanc pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pur neutre",
+        "status": "PASS",
+        "value": "C=0.0000",
+        "detail": ""
+      },
+      {
+        "name": "noir pas trop relevé",
+        "status": "PASS",
+        "value": "L=0.0120",
+        "detail": ""
+      },
+      {
+        "name": "blanc pas terne",
+        "status": "PASS",
+        "value": "V=[0.9688, 0.9688, 0.9688]",
+        "detail": ""
+      },
+      {
+        "name": "monotonie luminance (gris)",
+        "status": "PASS",
+        "value": "min dY=9.98e-07",
+        "detail": ""
+      },
+      {
+        "name": "monotonie approx. luminance (couleurs)",
+        "status": "PASS",
+        "value": "min dY=0.00e+00",
+        "detail": ""
+      },
+      {
+        "name": "hautes lumières non clippées (gradient 0.85→1)",
+        "status": "PASS",
+        "value": "min dY=7.01e-04",
+        "detail": ""
+      },
+      {
+        "name": "clipping anormal (noeuds intérieurs à 0 ou 1)",
+        "status": "PASS",
+        "value": "0.00 %",
+        "detail": ""
+      },
+      {
+        "name": "détail des basses lumières (0.02 vs 0.06)",
+        "status": "PASS",
+        "value": "ratio=0.808",
+        "detail": ""
+      },
+      {
+        "name": "peau : décalage de teinte",
+        "status": "PASS",
+        "value": "max 0.69°",
+        "detail": ""
+      },
+      {
+        "name": "peau : ratio de chroma",
+        "status": "PASS",
+        "value": "0.908..1.000",
+        "detail": ""
+      },
+      {
+        "name": "peau : variation de luminosité",
+        "status": "PASS",
+        "value": "max dL=0.023",
+        "detail": ""
+      },
+      {
+        "name": "teinte : décalage max (couleurs moyennes)",
+        "status": "PASS",
+        "value": "max 6.01° (≤ 6.5°), moyen 2.10°",
+        "detail": ""
+      },
+      {
+        "name": "saturation : ratio moyen ColorChecker",
+        "status": "PASS",
+        "value": "0.885",
+        "detail": ""
+      }
+    ]
+  }
+]

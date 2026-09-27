@@ -1,0 +1,97 @@
+{
+  "system": "MAXS COLOR SYSTEM",
+  "look": "MAXS_Golden",
+  "version": "1.0",
+  "date": "2026-09-27",
+  "layer": "CREATIVE Rec.709 -> Rec.709",
+  "files": {
+    "65": {
+      "file": "MAXS_Golden_65.cube",
+      "sha256": "a0e409310ad9506b9c1cdb73f54e48e1677d7dbc6e8939577e6ad0ffbf94afbc",
+      "role": "MASTER",
+      "min": 0.000854,
+      "max": 0.9998
+    },
+    "33": {
+      "file": "MAXS_Golden_33.cube",
+      "sha256": "f24218dafecdf7033efee13518856b3c976b27a406d71c3f9a5bcfbef36fa5ae",
+      "role": "compat",
+      "min": 0.00133,
+      "max": 0.9998
+    }
+  },
+  "params": {
+    "description": "Golden hour : chaleur subtile dans les tons moyens, oranges/jaunes saturés légèrement enrichis, peau naturelle, blancs préservés.",
+    "tone": {
+      "contrast": 1.05,
+      "black_lift": 0.005,
+      "white_out": 0.985
+    },
+    "saturation": {
+      "global": 1.01,
+      "shadows": 0.95,
+      "highlights": 0.9
+    },
+    "split_tone": {
+      "shadows": {
+        "hue": 60.0,
+        "strength": 0.003
+      },
+      "midtones": {
+        "hue": 75.0,
+        "strength": 0.008
+      },
+      "highlights": {
+        "hue": 80.0,
+        "strength": 0.005
+      }
+    },
+    "hue_bands": [
+      {
+        "name": "oranges",
+        "center": 62.0,
+        "width": 32.0,
+        "chroma": 1.12,
+        "min_chroma": [
+          0.08,
+          0.13
+        ]
+      },
+      {
+        "name": "yellows",
+        "center": 95.0,
+        "width": 28.0,
+        "chroma": 1.1,
+        "hue_shift": -2.0,
+        "min_chroma": [
+          0.06,
+          0.11
+        ]
+      },
+      {
+        "name": "blues",
+        "center": 258.0,
+        "width": 40.0,
+        "chroma": 0.92
+      }
+    ],
+    "skin_protect": {
+      "amount": 0.85
+    }
+  },
+  "engine": {
+    "max_hue_shift_deg": 6.0,
+    "hue_guard_chroma": [
+      0.02,
+      0.04
+    ],
+    "gamut_knee": 0.85
+  },
+  "history": [
+    {
+      "version": "1.0",
+      "date": "2026-09-27",
+      "note": "Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1)"
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+# =============================================================================
+# MAXS COLOR SYSTEM — paramètres des looks (couche CREATIVE, Rec.709 -> Rec.709)
+# =============================================================================
+# Modifier ce fichier puis relancer :
+#     python scripts/generate_luts.py && python scripts/validate_luts.py && python scripts/test_luts.py
+#
+# Tous les looks travaillent en Rec.709 affiché (BT.1886) -> Rec.709 affiché.
+# Ils se placent APRÈS la LUT technique AppleLog_to_Rec709.cube.
+#
+# Unités (voir README.md, section "Moteur de look") :
+#   * L, C, h = OkLab / OkLCh (L 0..1, C ~0..0.3, h en degrés)
+#     Repères de teinte OkLCh (ColorChecker 2014) :
+#       rouge ~23, peau ~38-42, orange ~54, jaune ~95, feuillage ~126,
+#       vert ~146, cyan ~217, ciel bleu ~253, bleu ~268, magenta ~346
+#   * tone.pivot = L du gris moyen affiché (V=0.5 -> L≈0.574)
+#   * tone.contrast = pente de la courbe au pivot (1 = neutre)
+#   * tone.black_lift = L ajouté au noir (0.06 ≈ noir affiché à ~2 %)
+#   * tone.white_out = L atteint par le blanc d'entrée (<1 = roll-off doux)
+#   * split_tone.<zone>.strength = décalage a/b OkLab (0.01 = subtil)
+#   * hue_bands[].hue_shift est bridé par global.max_hue_shift_deg
+# =============================================================================
+
+[global]
+version = "1.0"                # version publiée ; changer un résultat impose de l'incrémenter (1.1, ...)
+gamut_knee = 0.85              # compression douce du chroma à partir de 85 % du chroma max Rec.709 (surcharge possible par look)
+max_hue_shift_deg = 6.0       # limite de rotation de teinte FINALE (bandes + split toning)
+hue_guard_chroma = [0.02, 0.04] # sous C=0.02 (quasi-neutres) la limite ne s'applique pas
+
+# Seuils utilisés par scripts/test_luts.py (le test échoue si dépassés)
+[tests]
+gray_max_chroma = 0.020        # chroma OkLab max autorisé sur l'axe des gris
+white_max_chroma = 0.003       # blanc pur doit rester neutre
+black_max_chroma = 0.003       # noir pur doit rester neutre
+black_max_L = 0.12             # noir de sortie : L OkLab max (0.12 ≈ 0.7 % luminance)
+white_min_display = 0.90       # blanc de sortie : valeur affichée min (pas de blancs ternes)
+skin_max_hue_shift = 4.0       # degrés OkLCh
+skin_chroma_ratio = [0.85, 1.20]
+skin_max_dL = 0.06
+hue_interp_tolerance = 0.5     # degrés tolérés en plus de global.max_hue_shift_deg (interpolation LUT)
+mean_chroma_ratio_max = 1.20
+shadow_detail_min_ratio = 0.50 # séparation des basses lumières conservée ≥ 50 %
+monotonic_tolerance = 1e-5
+clip_fraction_increase_max = 0.01  # sur les images de test
+
+# -----------------------------------------------------------------------------
+[looks.MAXS_Natural]
+description = "Rendu naturel, contraste modéré, peau naturelle, hautes lumières douces."
+[looks.MAXS_Natural.tone]
+contrast = 1.05
+black_lift = 0.0
+white_out = 0.99
+[looks.MAXS_Natural.saturation]
+global = 1.02
+shadows = 0.95
+highlights = 0.90
+
+# -----------------------------------------------------------------------------
+[looks.MAXS_Paris]
+description = "Paris contemporain : ombres légèrement froides, tons moyens légèrement chauds, verts désaturés, bleus contrôlés, blancs propres."
+[looks.MAXS_Paris.tone]
+contrast = 1.08
+black_lift = 0.012
+white_out = 0.975
+[looks.MAXS_Paris.saturation]
+global = 0.96
+shadows = 0.90
+highlights = 0.85
+[looks.MAXS_Paris.split_tone]
+shadows = { hue = 250.0, strength = 0.010 }   # bleu froid (pas teal : 250 et non 200)
+midtones = { hue = 70.0, strength = 0.006 }   # chaleur légère
+highlights = { hue = 0.0, strength = 0.0 }    # blancs et ciel gris neutres
+[[looks.MAXS_Paris.hue_bands]]
+name = "greens"
+center = 135.0
+width = 45.0
+chroma = 0.80
+[[looks.MAXS_Paris.hue_bands]]
+name = "blues"
+center = 258.0
+width = 40.0
+chroma = 0.88
+[[looks.MAXS_Paris.hue_bands]]
+name = "cyans"
+center = 205.0
+width = 30.0
+chroma = 0.90
+
+# -----------------------------------------------------------------------------
+[looks.MAXS_Film]
+description = "Inspiration pellicule : contraste organique, noirs légèrement relevés, saturation contrôlée, légère séparation des couleurs."
+[looks.MAXS_Film.tone]
+contrast = 1.12
+black_lift = 0.06
+white_out = 0.965
+[looks.MAXS_Film.saturation]
+global = 0.95
+shadows = 0.85
+highlights = 0.80
+[looks.MAXS_Film.split_tone]
+shadows = { hue = 215.0, strength = 0.006 }
+highlights = { hue = 80.0, strength = 0.006 }
+[[looks.MAXS_Film.hue_bands]]
+name = "greens"
+center = 135.0
+width = 40.0
+chroma = 0.90
+hue_shift = 3.0     # vers le cyan : verts "pellicule"
+[[looks.MAXS_Film.hue_bands]]
+name = "blues"
+center = 262.0
+width = 35.0
+chroma = 0.92
+hue_shift = -3.0    # légèrement vers le cyan
+[[looks.MAXS_Film.hue_bands]]
+name = "reds"
+center = 25.0
+width = 25.0
+chroma = 1.04
+
+# -----------------------------------------------------------------------------
+[looks.MAXS_Golden]
+description = "Golden hour : chaleur subtile dans les tons moyens, oranges/jaunes saturés légèrement enrichis, peau naturelle, blancs préservés."
+[looks.MAXS_Golden.tone]
+contrast = 1.05
+black_lift = 0.005
+white_out = 0.985
+[looks.MAXS_Golden.saturation]
+global = 1.01
+shadows = 0.95
+highlights = 0.90
+[looks.MAXS_Golden.split_tone]
+shadows = { hue = 60.0, strength = 0.003 }
+midtones = { hue = 75.0, strength = 0.008 }
+highlights = { hue = 80.0, strength = 0.005 }   # s'annule au blanc pur
+[[looks.MAXS_Golden.hue_bands]]
+name = "oranges"
+center = 62.0
+width = 32.0
+chroma = 1.12
+min_chroma = [0.08, 0.13]   # uniquement les oranges déjà saturés (pas la peau)
+[[looks.MAXS_Golden.hue_bands]]
+name = "yellows"
+center = 95.0
+width = 28.0
+chroma = 1.10
+hue_shift = -2.0
+min_chroma = [0.06, 0.11]
+[[looks.MAXS_Golden.hue_bands]]
+name = "blues"
+center = 258.0
+width = 40.0
+chroma = 0.92
+[looks.MAXS_Golden.skin_protect]
+amount = 0.85
+
+# -----------------------------------------------------------------------------
+[looks.MAXS_Night]
+description = "Nuit : ombres légèrement froides, hautes lumières neutres, contraste contrôlé, détails des basses lumières conservés."
+[looks.MAXS_Night.tone]
+contrast = 1.04
+black_lift = 0.02
+white_out = 0.98
+shadow_x = 0.22
+[looks.MAXS_Night.saturation]
+global = 0.94
+shadows = 0.80    # limite le bruit chromatique dans le noir
+highlights = 0.90
+[looks.MAXS_Night.split_tone]
+shadows = { hue = 255.0, strength = 0.011 }
+[[looks.MAXS_Night.hue_bands]]
+name = "blues"
+center = 262.0
+width = 40.0
+chroma = 0.88     # évite le bleu excessif

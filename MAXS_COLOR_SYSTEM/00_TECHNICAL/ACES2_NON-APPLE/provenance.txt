@@ -1,0 +1,7 @@
+NON OFFICIEL APPLE
+opencolorio=2.5.2
+config=studio-config-v4.0.0_aces-v2.0_ocio-v2.5
+transform=DisplayViewTransform(src='Apple Log', display='Rec.1886 Rec.709 - Display', view='ACES 2.0 - SDR 100 nits (Rec.709)')
+apple_log_decoding=OCIO builtin APPLE_LOG_to_ACES2065-1 (Apple Log Profile White Paper 2023 / IDT.Apple.AppleLog_BT2020.ctl)
+AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_65.cube: sha256=c4e1233f1eaec8974b93184b5ba91de508e2dc649bff3ed2870d79a95feb077f clamp=119859/823875
+AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_33.cube: sha256=d9e8f2a57f4311715cf74ff9feca31e183de293573124c766c3a79fdcc0f03c0 clamp=16064/107811
