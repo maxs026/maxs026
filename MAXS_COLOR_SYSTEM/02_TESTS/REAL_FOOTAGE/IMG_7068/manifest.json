@@ -18,12 +18,86 @@
     "rotation_deg": -90.0,
     "raw_stream_line": "Stream #0:0[0x1](und): Video: prores (HQ) (apch / 0x68637061), yuv422p10le(bt2020nc/bt2020/unknown, progressive), 2816x1584, 414507 kb/s, 30 fps, 30 tbr, 600 tbn (default)"
   },
+  "identification": {
+    "verdict": "compatible Apple Log (indices convergents ; aucun tag explicite 'Apple Log' lisible)",
+    "indices": [
+      {
+        "indice": "codec ProRes",
+        "ok": true,
+        "valeur": "prores HQ"
+      },
+      {
+        "indice": "fabricant Apple / iPhone",
+        "ok": true,
+        "valeur": "Apple iPhone 15 Pro Max iOS 27.0"
+      },
+      {
+        "indice": "primaires BT.2020 (Apple Log)",
+        "ok": true,
+        "valeur": "bt2020"
+      },
+      {
+        "indice": "transfert non SDR/HLG/PQ (Apple Log n'a pas de code standard)",
+        "ok": true,
+        "valeur": "unknown"
+      },
+      {
+        "indice": "niveau de noir = noir Apple Log",
+        "ok": true,
+        "valeur": "Y10 min 185, plancher p0.01 206 (noir Apple Log : vidéo 195.8 / complète 153.9)"
+      }
+    ],
+    "plage": "tv",
+    "plage_justification": "déduite des données : plancher 206 / min 185 ≈ noir Apple Log en plage vidéo (195.8)",
+    "luma_brute": {
+      "times": [
+        0.3,
+        2.066,
+        3.832,
+        5.598,
+        7.364,
+        9.13
+      ],
+      "y10_min": [
+        185,
+        189,
+        187,
+        195,
+        197,
+        197
+      ],
+      "y10_p0.01": [
+        205.0,
+        205.0,
+        205.0,
+        206.0,
+        207.0,
+        207.0
+      ],
+      "y10_p99.99": [
+        607.0,
+        608.0,
+        607.0,
+        608.0,
+        608.0,
+        608.0
+      ],
+      "y10_max": [
+        610,
+        627,
+        622,
+        623,
+        616,
+        613
+      ]
+    }
+  },
   "decodage": {
     "matrice": "bt2020nc",
     "plage": "tv",
     "matrice_declaree": "bt2020nc",
     "plage_declaree": null,
-    "justification_plage": "Plage non declaree dans le fichier. Mesure: Y 10 bits minimal 193-197 sur 6 frames; noir scene Apple Log P(R=0)=0.15048 (courbe officielle) = 195.8 en plage video vs 153.9 en plage complete. Donc plage video (tv).",
+    "justification_plage": "déduite des données : plancher 206 / min 185 ≈ noir Apple Log en plage vidéo (195.8)",
     "largeur": 1920,
     "profondeur": "16 bits (rgb48)"
   },

@@ -1,154 +1,156 @@
-# MAXS LUT LIBRARY v1
+# MAXS COLOR SYSTEM — v1.1
 
-Bibliothèque de LUTs 3D personnelle, **reproductible**, pour des vidéos iPhone 15 Pro Max
-tournées en **Apple Log / ProRes**. Toutes les LUTs sont régénérées à partir de
-`config/looks.toml` par des scripts Python : on modifie les paramètres, on relance, on reteste.
+Système personnel, paramétrique et reproductible de colorimétrie pour rushes **Apple Log / ProRes**
+d'iPhone 15 Pro Max, conçu pour **DaVinci Resolve**. On modifie `config/looks.toml`, on régénère,
+on teste, on compare les versions.
 
-## Principe : technique ≠ look
+## Principe : deux couches strictement séparées
 
 ```
-Clip Apple Log (BT.2020)
-   │
-   ▼  00_TECHNICAL/AppleLog_to_Rec709.cube   ← transformation TECHNIQUE (officielle Apple uniquement)
-Rec.709 (BT.1886)
-   │
-   ▼  01_LOOKS/MAXS_<Look>.cube              ← transformation CRÉATIVE (Rec.709 → Rec.709)
-Rec.709 (BT.1886) final
+Apple Log (BT.2020, ProRes)
+   │  TECHNICAL   00_TECHNICAL/   Apple Log → Rec.709        (Node 01)
+   ▼
+Rec.709 BT.1886
+   │  CREATIVE    01_LOOKS/       Rec.709 → Rec.709          (Node 02)
+   ▼
+Corrections (Node 03-04) → Finishing (Node 05) → Export
 ```
 
-* La LUT technique ne contient **aucun look**. Les looks ne contiennent **aucune conversion Apple Log**.
-* Les looks attendent du Rec.709 en entrée : ils fonctionnent derrière la LUT officielle
-  Apple, derrière la gestion couleur de Resolve / Final Cut, ou sur n'importe quel clip Rec.709.
+Aucune LUT créative ne contient la conversion Apple Log ; aucune LUT technique ne contient de look.
 
-## ⚠️ État de la LUT technique
+## ⚠️ État de la couche technique
 
-**`00_TECHNICAL/AppleLog_to_Rec709.cube` n'est pas générée.** Voir [`00_TECHNICAL/README.md`](00_TECHNICAL/README.md).
+| Priorité | Transformation | État |
+|---|---|---|
+| 1 | LUT officielle Apple | **non fournie** — à déposer dans `00_TECHNICAL/APPLE_OFFICIAL/source/` |
+| 2 | Décodage Apple Log (Apple) + ACES 2.0 SDR Rec.709 | ✅ `00_TECHNICAL/ACES2_NON-APPLE/` — **NON-APPLE** |
+| 3 | Color Space Transform de Resolve | documenté, non générable ici |
 
-* Apple publie la **courbe** Apple Log (white paper *Apple Log Profile*, 2023). Elle est disponible
-  localement dans `colour-science` et `OpenColorIO` (built-in `APPLE_LOG_to_ACES2065-1`) ; les
-  deux implémentations sont comparées dans `tests/test_core.py`.
-* Mais le **rendu Apple Log → Rec.709** (tone mapping + gamut) officiel d'Apple n'existe que sous
-  forme de LUT téléchargeable sur developer.apple.com, **derrière une connexion Apple ID**, donc
-  inaccessible depuis cet environnement.
-* Conformément à la règle du projet, aucune approximation n'est produite sous ce nom.
-  → Déposer la LUT Apple dans `00_TECHNICAL/source/` puis relancer `generate_luts.py`.
-* Option explicite, **non Apple** : `--aces-reference` construit une LUT Apple Log → ACES 2.0
-  SDR Rec.709 via OpenColorIO, nommée `..._NON-APPLE_..` et rangée dans `00_TECHNICAL/alternatives/`.
+Détails et provenance : [`00_TECHNICAL/README.md`](00_TECHNICAL/README.md).
 
 ## Architecture
 
 ```
-MAXS_LUT_LIBRARY/
+MAXS_COLOR_SYSTEM/
 ├── 00_TECHNICAL/
-│   ├── README.md                    provenance, procédure d'import de la LUT Apple
-│   ├── source/                      ← déposer ici la LUT officielle Apple (.cube)
-│   ├── alternatives/                (optionnel) référence ACES 2.0 NON Apple
-│   └── AppleLog_to_Rec709.cube      (généré seulement depuis la source officielle)
+│   ├── APPLE_OFFICIAL/{source/, README.md}        LUT Apple (copie exacte + SHA-256) quand fournie
+│   └── ACES2_NON-APPLE/                            AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_{65,33}.cube + provenance
 ├── 01_LOOKS/
-│   ├── MAXS_Natural.cube  MAXS_Paris.cube  MAXS_Film.cube  MAXS_Golden.cube  MAXS_Night.cube   (65³ MASTER)
-│   └── 33_compat/MAXS_*_33.cube                                                                 (33³ compatibilité)
+│   └── MAXS_<Name>/                                Natural, Paris, Film, Golden, Night
+│       ├── MAXS_<Name>_65.cube                     MASTER
+│       ├── MAXS_<Name>_33.cube                     compatibilité
+│       ├── README.md  VERSION.json                 paramètres, SHA-256, historique
+│       └── versions/v1.0/                          versions précédentes (jamais écrasées)
 ├── 02_TESTS/
-│   ├── images/                      images de test synthétiques (aperçus PNG)
-│   └── reports/                     avant/après, overview, metrics.json, test_results.md, index.html
-├── config/looks.toml                ← TOUS les paramètres des looks + seuils des tests
-├── scripts/
-│   ├── generate_luts.py  validate_luts.py  test_luts.py  render_comparison.py
-│   ├── README.md
-│   └── lutlib/                      moteur (cube IO, OkLab, PCHIP, look, interpolation, tests)
-├── tests/test_core.py               tests unitaires pytest du moteur
-└── requirements.txt
+│   ├── images/                                     images synthétiques (12)
+│   ├── REAL_FOOTAGE/<clip>/                        manifest (SHA-256, identification Apple Log), frames
+│   └── reports/                                    index.html, real_footage_report.html, before/after, scopes, tests
+├── 03_DAVINCI/{README.md, install_luts.py}         installation, node tree, comparaison des versions
+├── config/looks.toml                               TOUS les paramètres + version + seuils de tests
+├── scripts/                                        generate / validate / test / render_comparison / real_footage
+├── tests/test_core.py                              tests unitaires (pytest)
+├── CHANGELOG.md  README.md  requirements.txt
 ```
 
 ## Installation
 
 ```bash
-cd MAXS_LUT_LIBRARY
-python3 -m venv .venv && source .venv/bin/activate      # Python ≥ 3.11 (tomllib)
+cd MAXS_COLOR_SYSTEM
+python3 -m venv .venv && source .venv/bin/activate      # Python ≥ 3.11
 pip install -r requirements.txt
 ```
 
-## Utilisation
+## Cycle de travail
 
 ```bash
-python scripts/generate_luts.py            # génère 65³ MASTER + 33³ compat (+ technique si source Apple présente)
-python scripts/validate_luts.py            # validité mathématique de tous les .cube
-python scripts/test_luts.py                # tests de comportement -> 02_TESTS/reports/test_results.md
-python scripts/render_comparison.py        # avant/après -> 02_TESTS/reports/index.html
-python -m pytest tests/ -q                 # tests unitaires du moteur
+# 1. modifier config/looks.toml (et incrémenter global.version si un résultat change)
+python scripts/generate_luts.py --note "ce qui change"
+python scripts/validate_luts.py            # fichiers .cube : format, dimensions, domaine, NaN/Inf, ASCII…
+python scripts/test_luts.py                # comportement couleur → 02_TESTS/reports/test_results.md
+python scripts/render_comparison.py        # avant/après + scopes → 02_TESTS/reports/index.html
+python -m pytest tests/ -q                 # moteur
+# 2. rushes réels
+python scripts/real_footage.py extract IMG_xxxx.MOV && python scripts/real_footage.py analyze
+# 3. Resolve
+python 03_DAVINCI/install_luts.py --with-archives
 ```
 
-Modifier un look : éditer `config/looks.toml` puis relancer les quatre commandes.
-Détails et options : [`scripts/README.md`](scripts/README.md).
+**Versions** : `global.version` (1.0, 1.1, …). Régénérer une version publiée avec un résultat
+différent est **refusé** ; une nouvelle version archive la précédente dans `versions/v<old>/`.
 
-### Dans un logiciel de montage
+## Moteur de look (`scripts/lutlib/look.py`)
 
-* **DaVinci Resolve** : nœud 1 = LUT technique (ou CST Apple Log → Rec.709), nœud 2 = look.
-  Faire l'exposition / balance des blancs **avant** le look, sur le nœud 1 ou entre les deux.
-* **Final Cut Pro** : Inspecteur → *Camera LUT* : conversion Apple Log (LUT Apple) ;
-  puis effet *Custom LUT* avec le look (entrée/sortie Rec.709).
-* Ne jamais appliquer un look directement sur un clip Apple Log non converti.
+Rec.709 BT.1886 → **OkLab** (Ottosson 2020) → transformations → Rec.709 BT.1886, en float64 :
 
-## Moteur de look (ce que fait chaque LUT)
-
-Chaque look est une fonction pure Rec.709 → Rec.709, calculée en float64 sur une grille N³
-(`scripts/lutlib/look.py`). Étapes, dans l'ordre :
-
-| # | Étape | Détail | Paramètres |
-|---|---|---|---|
-| 1 | Décodage | V → lumière affichée, BT.1886 (V^2.4) | – |
-| 2 | Espace de travail | Rec.709 linéaire → **OkLab / OkLCh** (Ottosson 2020) : luminosité, chroma et teinte séparés | – |
-| 3 | Courbe de ton | Spline monotone **PCHIP** (Fritsch-Carlson) sur L uniquement → la teinte ne bouge pas ; points (0,0), (shadow_x, ·), (pivot, pivot), (highlight_x, ·), (1, white_out) ; relevé des noirs `lift·(1−y)^4` (monotone) ; le chroma suit la luminosité `C·(L'/L)^chroma_follow` | `tone.*` |
-| 4 | Saturation | `C × global × zone(L)` (ombres / hautes lumières) ; la peau récupère une part du changement (`skin_protect.saturation`) | `saturation.*` |
-| 5 | Bandes de teinte | Gain de chroma + rotation de teinte (bornée ensuite par l'étape 6b), poids cosinus surélevé, **inactif sur les neutres** (rampe `min_chroma`), atténué sur la peau | `hue_bands` |
-| 6 | Split toning | Petits décalages a/b OkLab par zone, zones évaluées sur la luminosité **d'entrée** : noir et blanc purs restent neutres | `split_tone.*` |
-| 6b | Garde de teinte | La teinte **finale** de toute couleur saturée (C ≥ 0,04) reste à ±`max_hue_shift_deg` (6°) de sa teinte d'entrée, quelle que soit l'étape (bandes ou split toning). Les quasi-neutres (C < 0,02) sont exemptés : les teinter est le rôle du split toning | `global.max_hue_shift_deg`, `global.hue_guard_chroma` |
-| 7 | Gamut | Compression **douce** du chroma relative au chroma max Rec.709 à (L, h) constants (genou 0.85 + tanh) : aucune teinte déviée, aucun écrêtage dur | `global.gamut_knee` |
-| 8 | Encodage | lumière → V^(1/2.4) | – |
-
-### Les cinq looks (valeurs exactes dans `config/looks.toml`)
-
-| Look | Ton | Couleur |
+| # | Étape | Détail |
 |---|---|---|
-| **MAXS_Natural** | contraste 1.05, blanc 0.99, noirs propres | saturation 1.02, légère désaturation ombres/HL, aucune rotation de teinte |
-| **MAXS_Paris** | contraste 1.08, noirs +0.012, roll-off HL (0.975) | ombres froides (h 250, bleu — pas teal), tons moyens chauds légers, HL neutres (ciel gris conservé), verts ×0.80, bleus ×0.88, cyans ×0.90 |
-| **MAXS_Film** | contraste 1.12, noirs relevés (+0.06), HL douces (0.965) | saturation 0.95, ombres légèrement cyan / HL chaudes (0.006), verts +3° vers cyan, bleus −3°, rouges ×1.04 |
-| **MAXS_Golden** | contraste 1.05 | chaleur surtout dans les tons moyens (0.008), s'annule au blanc pur ; oranges ×1.12 et jaunes ×1.10 **seulement s'ils sont déjà saturés** (la peau est exclue), bleus ×0.92 |
-| **MAXS_Night** | contraste 1.04, noirs +0.02, pied adouci (détails conservés) | ombres froides (h 255, 0.011), HL neutres, saturation des ombres 0.80 (bruit chroma), bleus ×0.88 |
+| 1 | Décodage | V → lumière affichée : V^2.4 (BT.1886, Lb = 0) |
+| 2 | Espace de travail | Rec.709 linéaire → OkLab → OkLCh (L, C, h séparés) |
+| 3 | Ton | spline **monotone PCHIP** sur L seul ; noirs relevés `lift·(1−y)^4` ; roll-off par `white_out` ; le chroma suit L |
+| 4 | Saturation | global × zone (ombres / hautes lumières) ; la peau récupère une part du changement |
+| 5 | Bandes de teinte | gain de chroma + petite rotation, poids cosinus, inactives sur les neutres, atténuées sur la peau |
+| 6 | Split toning | petits décalages a/b par zone (évaluées sur la luminosité **d'entrée** : noir et blanc purs restent neutres) |
+| 7 | Gamut | **compression douce en RGB linéaire** vers le gris de même luminosité (genou + tanh). Le cube est convexe ⇒ continu. *(v1.0 compressait dans OkLCh : discontinu près du bleu primaire, corrigé en v1.1)* |
+| 8 | Garde de teinte | teinte **finale** de toute couleur saturée (C ≥ 0,04) à ±6,00° de son entrée, quelle que soit l'étape responsable ; quasi-neutres (C < 0,02) exemptés |
+| 9 | Encodage | V = L^(1/2.4) |
 
-## Tests effectués (résultats réels dans `02_TESTS/reports/test_results.md`)
+### Limite de teinte ±6° : ce qui est réellement garanti
 
-* **Validation** : syntaxe .cube, taille ≥ 33, nombre de lignes, NaN/Inf, min/max ∈ [0,1],
-  axe des gris croissant, continuité (gain local OkLab entre nœuds voisins < 4).
-* **Comportement** (sur le fichier écrit, interpolation tétraédrique) : chroma des gris, neutralité
-  du blanc et du noir purs, niveau du noir, blanc non terne, monotonie de luminance (gris +
-  rampes de couleurs), gradient 0.85→1 sans plateau, nœuds intérieurs écrêtés, séparation des
-  basses lumières, peau (teinte / chroma / luminosité sur les patchs ColorChecker *dark/light skin*
-  et interpolations), rotation de teinte, ratio de saturation, pixels écrêtés sur les images.
-* **Unitaires** (`tests/test_core.py`) : courbe Apple Log colour-science vs OpenColorIO,
-  aller-retour .cube, ordre des données vs `colour.read_LUT`, interpolation vs colour-science,
-  OkLab vs colour-science, monotonie PCHIP, gamut, arrêt de la LUT technique sans source, copie
-  bit-exacte de la source, étiquetage « NON-APPLE » de la référence ACES.
+| Où | Garantie | Vérifié par |
+|---|---|---|
+| Moteur | ±6,00° pour C ≥ 0,04 | `tests/test_core.py::test_hue_guard_enforced` |
+| Fichier 65³ | ±6,5° pour C ≥ 0,065 (tolérance d'interpolation 0,5°) | `test_luts.py`, 300 000 couleurs |
+| Fichier 33³ | ±7,0° pour C ≥ 0,065 (tolérance 1,0°) | idem |
+| Couleurs peu saturées (0,02 ≤ C < 0,065) | l'angle peut atteindre ~40° mais l'écart perceptuel ΔH ≤ 0,015 OkLab (~seuil de visibilité) | idem |
 
-## Validation sur rush réel (phase 2)
+### Correspondance avec les noms de paramètres « type »
 
-`scripts/real_footage.py` : voir [`scripts/README.md`](scripts/README.md). Rapport :
-`02_TESTS/reports/real_footage_report.html` (planches A–G, recadrages 100 %, mesures, diagnostic et
-notes rédigés dans `02_TESTS/real_footage/diagnostic.toml`). Sans LUT officielle Apple, tous les
-résultats passent par la référence ACES 2.0 et sont marqués **NON-APPLE**.
+| Paramètre type | Dans `looks.toml` | Remarque |
+|---|---|---|
+| `contrast` | `tone.contrast` | pente au gris moyen (1 = neutre) |
+| `saturation` | `saturation.global` | |
+| `shadow_lift` | `tone.black_lift` | en L OkLab |
+| `highlight_rolloff` | `tone.white_out` | roll-off ≈ 1 − white_out |
+| `shadow_hue` / `midtone_hue` / `highlight_hue` | `split_tone.<zone>.hue` + `.strength` | teinte **ajoutée** (direction + force), pas une rotation |
+| `green_saturation`, `blue_saturation` | `[[hue_bands]]` `chroma` | 0,92 = −8 % |
+| `skin_protection` | `skin_protect.amount` | + `skin_protect.saturation` |
+| `gamut_compression` | `gamut_knee` (global ou par look) | compression ≈ 1 − genou |
 
-## Limites connues
+## Les cinq looks (v1.1, paramètres inchangés depuis v1.0)
 
-* **LUT technique officielle absente** tant que la LUT Apple n'est pas déposée dans `00_TECHNICAL/source/`.
-* Les **images de test sont synthétiques** (procédurales) : elles vérifient le comportement
-  numérique par familles de couleurs, pas le rendu sur de vraies images. À valider sur vos rushes.
-* Les looks supposent un Rec.709 **BT.1886 (gamma 2.4)**. Sur une timeline sRGB / gamma 2.2
-  le rendu reste cohérent mais la linéarisation interne est légèrement différente.
-* Une LUT 3D est bornée à [0,1] : les valeurs hors plage (super-blancs) sont écrêtées à l'entrée.
-  Faire la récupération des hautes lumières **avant** le look.
-* La compression de gamut désature légèrement (≤ ~5 %) les couleurs déjà à la limite du Rec.709.
-* **65³ = version MASTER** (`01_LOOKS/MAXS_*.cube`) ; **33³ = compatibilité uniquement**
-  (`01_LOOKS/33_compat/`). Écart 33³ vs 65³ (mesuré sur 200 000 couleurs aléatoires) : écart moyen 0.0001–0.0003, mais
-  jusqu'à 0.04 (Natural) / 0.08 (Golden) en valeur affichée sur les couleurs **extrêmes au bord du
-  gamut Rec.709** (un canal ≈ 0, les autres ≈ 1 : jaune ou bleu purs, néons), soit ~1–1.6 % du cube
-  RGB. Préférer le 65³ pour ce type de contenu.
-* Pas de gestion HDR (Rec.2100 PQ/HLG) dans cette v1.
+| Look | Intention | Réglages principaux |
+|---|---|---|
+| **Natural** | référence quotidienne, fidèle | contraste 1,05, saturation 1,02, aucune teinte ajoutée |
+| **Paris** | éditorial, architecture, Seine | contraste 1,08, noirs +0,012, ombres froides (h 250), tons moyens chauds légers, verts ×0,80, bleus ×0,88 |
+| **Film** | pellicule moderne | contraste 1,12, noirs +0,06, HL 0,965, séparation légère (verts +3°, bleus −3°) |
+| **Golden** | golden hour | chaleur des tons moyens, oranges/jaunes saturés enrichis (peau exclue) |
+| **Night** | nuit / ville | ombres froides, HL neutres, saturation des ombres 0,80, bleus ×0,88 |
+
+Chaque look : `01_LOOKS/MAXS_<Name>/README.md`.
+
+## Tests
+
+* **Fichiers** : syntaxe `.cube`, 33/65, `DOMAIN_MIN/MAX`, NaN/Inf, [0,1], ordre R-rapide (vérifié contre
+  `colour.read_LUT`), lecture identique par **OpenColorIO**, en-têtes ASCII, sans BOM, LF, mots-clés standard.
+* **Couleur** : gris, blanc, noir, monotonie, hautes lumières sans plateau, basses lumières, peau
+  mesurée + **enveloppe de carnations** (très claires à très foncées), continuité autour de la protection
+  peau, teinte (dense), primaires / secondaires / néons (continuité, retournement de chroma, teinte).
+* **Rushes réels** : identification Apple Log, extraction, A–G, mesures, diagnostic écrit.
+
+Résultats actuels : [`02_TESTS/reports/test_results.md`](02_TESTS/reports/test_results.md).
+
+## Limites connues (v1.1)
+
+* **LUT Apple absente** : toute la chaîne réelle passe par ACES 2.0 (NON-APPLE).
+* **Carnations foncées peu saturées** : Paris, Film, Night les désaturent de 19 à 24 % (seuil 15 %) ;
+  Golden et Night 33³ dépassent 4° de teinte sur l'enveloppe. **Tests en échec, correction proposée
+  (v1.2), en attente d'accord.**
+* **Night** : la nouvelle spécification demande « bleus légèrement renforcés », les paramètres actuels les
+  réduisent (×0,88). À arbitrer (v1.2).
+* **Paris / Golden sur ciel bleu** : chroma du ciel −31 à −53 % sur rush réel (diagnostic phase 2). Correction proposée.
+* **Protection peau** : une LUT 3D ne voit qu'une couleur, pas un visage ; la protection est une zone
+  colorimétrique (teinte + chroma), pas une détection de peau. Un mur de même couleur est traité pareil.
+* **33³** : écart jusqu'à ≈ 0,08 sur les couleurs extrêmes. Préférer le 65³.
+* **Images de test synthétiques** : elles vérifient des comportements, pas un rendu esthétique.
+* **Resolve non testé directement** ici (voir `03_DAVINCI/README.md` §7 pour le contrôle à faire).
+* Pas de HDR.

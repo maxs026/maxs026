@@ -1,4 +1,4 @@
-# MAXS_Paris — v1.0
+# MAXS_Paris — v1.1
 
 Paris contemporain : ombres légèrement froides, tons moyens légèrement chauds, verts désaturés, bleus contrôlés, blancs propres.
 
@@ -42,3 +42,4 @@ Voir `02_TESTS/reports/real_footage_report.html` (section MAXS_Paris).
 | Version | Date | Note |
 |---|---|---|
 | v1.0 | 2026-09-27 | Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1) |
+| v1.1 | 2026-09-27 | Moteur : compression de gamut en RGB lineaire (continue) + garde de teinte apres gamut. Parametres des looks inchanges. |

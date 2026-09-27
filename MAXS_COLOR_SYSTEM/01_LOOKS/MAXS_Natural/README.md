@@ -1,4 +1,4 @@
-# MAXS_Natural — v1.0
+# MAXS_Natural — v1.1
 
 Rendu naturel, contraste modéré, peau naturelle, hautes lumières douces.
 
@@ -36,3 +36,4 @@ Voir `02_TESTS/reports/real_footage_report.html` (section MAXS_Natural).
 | Version | Date | Note |
 |---|---|---|
 | v1.0 | 2026-09-27 | Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1) |
+| v1.1 | 2026-09-27 | Moteur : compression de gamut en RGB lineaire (continue) + garde de teinte apres gamut. Parametres des looks inchanges. |

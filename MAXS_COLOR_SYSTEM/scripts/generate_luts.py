@@ -42,6 +42,13 @@ SIZES = (MASTER_SIZE, COMPAT_SIZE)
 SAME_TOL = 2e-6          # 6-decimal files: equal within rounding
 
 
+def rel(p: Path) -> Path:
+    try:
+        return p.relative_to(ROOT)
+    except ValueError:
+        return p
+
+
 def build_look(look, size: int) -> np.ndarray:
     grid = identity_table(size)
     return apply_look(grid.reshape(-1, 3), look).reshape(grid.shape)
@@ -195,7 +202,7 @@ def main(argv=None) -> int:
             continue
         if prev:
             dst = archive(ldir, look.name, prev["version"])
-            print(f"  {look.name} : v{prev['version']} archivée dans {dst.relative_to(ROOT)}")
+            print(f"  {look.name} : v{prev['version']} archivée dans {rel(dst)}")
         ldir.mkdir(parents=True, exist_ok=True)
         files = {}
         for n, table in tables.items():
@@ -205,7 +212,7 @@ def main(argv=None) -> int:
             files[str(n)] = {"file": p.name, "sha256": technical.sha256(p),
                              "role": "MASTER" if n == MASTER_SIZE else "compat",
                              "min": round(float(table.min()), 6), "max": round(float(table.max()), 6)}
-            print(f"  {p.relative_to(ROOT)}  [{files[str(n)]['role']}]  min={table.min():.4f} max={table.max():.4f}")
+            print(f"  {rel(p)}  [{files[str(n)]['role']}]  min={table.min():.4f} max={table.max():.4f}")
         history = history + [{"version": version, "date": today, "note": args.note}]
         vfile.write_text(json.dumps({
             "system": SYSTEM_NAME, "look": look.name, "version": version, "date": today,

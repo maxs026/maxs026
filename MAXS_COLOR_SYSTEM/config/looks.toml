@@ -5,7 +5,7 @@
 #     python scripts/generate_luts.py && python scripts/validate_luts.py && python scripts/test_luts.py
 #
 # Tous les looks travaillent en Rec.709 affiché (BT.1886) -> Rec.709 affiché.
-# Ils se placent APRÈS la LUT technique AppleLog_to_Rec709.cube.
+# Ils se placent APRÈS la couche technique 00_TECHNICAL (Apple Log -> Rec.709), Node 02 dans Resolve.
 #
 # Unités (voir README.md, section "Moteur de look") :
 #   * L, C, h = OkLab / OkLCh (L 0..1, C ~0..0.3, h en degrés)
@@ -21,7 +21,7 @@
 # =============================================================================
 
 [global]
-version = "1.0"                # version publiée ; changer un résultat impose de l'incrémenter (1.1, ...)
+version = "1.1"                # version publiée ; changer un résultat impose de l'incrémenter (1.1, ...)
 gamut_knee = 0.85              # compression douce du chroma à partir de 85 % du chroma max Rec.709 (surcharge possible par look)
 max_hue_shift_deg = 6.0       # limite de rotation de teinte FINALE (bandes + split toning)
 hue_guard_chroma = [0.02, 0.04] # sous C=0.02 (quasi-neutres) la limite ne s'applique pas
@@ -36,7 +36,12 @@ white_min_display = 0.90       # blanc de sortie : valeur affichée min (pas de 
 skin_max_hue_shift = 4.0       # degrés OkLCh
 skin_chroma_ratio = [0.85, 1.20]
 skin_max_dL = 0.06
-hue_interp_tolerance = 0.5     # degrés tolérés en plus de global.max_hue_shift_deg (interpolation LUT)
+hue_file_min_chroma = 0.065    # la limite de teinte est vérifiée sur le FICHIER pour C >= 0.065
+hue_interp_tolerance_65 = 0.5  # degrés tolérés en plus de max_hue_shift_deg (interpolation 65^3)
+hue_interp_tolerance_33 = 1.0  # idem 33^3 (compatibilité, interpolation plus grossière)
+max_delta_H = 0.015            # couleurs peu saturées : écart de teinte perceptuel OkLab max (~seuil de visibilité)
+sweep_max_local_gain = 4.0     # continuité : pas OkLab sortie / pas entrée, max le long d'une rampe (même seuil que validate_luts)
+gamut_max_chroma_reversal = 0.08  # rampe gris -> couleur pure : baisse max de chroma en fin de rampe (au-delà : creux visible)
 mean_chroma_ratio_max = 1.20
 shadow_detail_min_ratio = 0.50 # séparation des basses lumières conservée ≥ 50 %
 monotonic_tolerance = 1e-5

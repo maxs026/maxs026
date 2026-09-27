@@ -1,0 +1,85 @@
+{
+  "system": "MAXS COLOR SYSTEM",
+  "look": "MAXS_Paris",
+  "version": "1.0",
+  "date": "2026-09-27",
+  "layer": "CREATIVE Rec.709 -> Rec.709",
+  "files": {
+    "65": {
+      "file": "MAXS_Paris_65.cube",
+      "sha256": "6f9dafbf1d0d3673d848d08993c58c606e3b93f99f4bfcf395fc5b258bf30280",
+      "role": "MASTER",
+      "min": 0.0,
+      "max": 0.998134
+    },
+    "33": {
+      "file": "MAXS_Paris_33.cube",
+      "sha256": "2e4111700413ef8ccbeb8252d0b42cfeeacb72c7097aa3b562b5d21dc5e60067",
+      "role": "compat",
+      "min": 0.000642,
+      "max": 0.998097
+    }
+  },
+  "params": {
+    "description": "Paris contemporain : ombres légèrement froides, tons moyens légèrement chauds, verts désaturés, bleus contrôlés, blancs propres.",
+    "tone": {
+      "contrast": 1.08,
+      "black_lift": 0.012,
+      "white_out": 0.975
+    },
+    "saturation": {
+      "global": 0.96,
+      "shadows": 0.9,
+      "highlights": 0.85
+    },
+    "split_tone": {
+      "shadows": {
+        "hue": 250.0,
+        "strength": 0.01
+      },
+      "midtones": {
+        "hue": 70.0,
+        "strength": 0.006
+      },
+      "highlights": {
+        "hue": 0.0,
+        "strength": 0.0
+      }
+    },
+    "hue_bands": [
+      {
+        "name": "greens",
+        "center": 135.0,
+        "width": 45.0,
+        "chroma": 0.8
+      },
+      {
+        "name": "blues",
+        "center": 258.0,
+        "width": 40.0,
+        "chroma": 0.88
+      },
+      {
+        "name": "cyans",
+        "center": 205.0,
+        "width": 30.0,
+        "chroma": 0.9
+      }
+    ]
+  },
+  "engine": {
+    "max_hue_shift_deg": 6.0,
+    "hue_guard_chroma": [
+      0.02,
+      0.04
+    ],
+    "gamut_knee": 0.85
+  },
+  "history": [
+    {
+      "version": "1.0",
+      "date": "2026-09-27",
+      "note": "Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1)"
+    }
+  ]
+}

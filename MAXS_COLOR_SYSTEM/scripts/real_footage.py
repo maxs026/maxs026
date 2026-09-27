@@ -41,7 +41,8 @@ import numpy as np  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
 from lutlib import footage, technical  # noqa: E402
-from lutlib.config import ACES_DIR, APPLE_DIR, MASTER_SIZE, REAL_FOOTAGE_DIR, REPORTS_DIR, ROOT, load_looks, look_path  # noqa: E402
+from lutlib.config import (ACES_DIR, APPLE_DIR, MASTER_SIZE, REAL_FOOTAGE_DIR, REPORTS_DIR, ROOT, load_looks,  # noqa: E402
+                           look_path, system_version)  # noqa: E402
 from lutlib.cube import read_cube  # noqa: E402
 from lutlib.interp import apply_lut  # noqa: E402
 
@@ -86,8 +87,21 @@ def cmd_extract(args) -> int:
         if problems:
             print("\n".join(f"REFUS {src.name}: {x}" for x in problems))
             return 1
+        stats = footage.raw_luma_stats(src, np.linspace(0.3, max(p.duration - 0.3, 0.4), 6))
+        ident = footage.identify_apple_log(src, p, stats)
+        print(f"  identification : {ident['verdict']}")
+        for ev in ident["indices"]:
+            print(f"    [{ {True: 'OK', False: 'NON', None: '??'}[ev['ok']] }] {ev['indice']} : {ev['valeur']}")
+        print(f"  plage : {ident['plage']} ({ident['plage_justification']})")
         matrix = p.color_space or args.assume_matrix
-        rng = p.color_range or args.assume_range
+        rng = args.assume_range or ident["plage"]
+        if args.assume_range and not ident["plage"]:
+            args.range_note = args.range_note or "imposée par --assume-range"
+        elif args.assume_range and args.assume_range != ident["plage"]:
+            print(f"ARRÊT {src.name}: --assume-range {args.assume_range} contredit les données ({ident['plage_justification']})")
+            return 1
+        else:
+            args.range_note = ident["plage_justification"]
         if not matrix or not rng:
             print(f"ARRÊT {src.name}: matrice ({p.color_space}) ou plage ({p.color_range}) non déclarée "
                   "dans le fichier. Relancer avec --assume-matrix bt2020nc --assume-range tv|pc "
@@ -125,7 +139,7 @@ def cmd_extract(args) -> int:
             print(f"  frame {name}")
         footage.save_manifest(out / "manifest.json", {
             "source": src.name, "sha256": digest, "taille_octets": src.stat().st_size,
-            "probe": p.__dict__, "decodage": {"matrice": matrix, "plage": rng,
+            "probe": p.__dict__, "identification": ident, "decodage": {"matrice": matrix, "plage": rng,
                                              "matrice_declaree": p.color_space, "plage_declaree": p.color_range,
                                              "justification_plage": args.range_note,
                                              "largeur": args.width, "profondeur": "16 bits (rgb48)"},
@@ -210,14 +224,14 @@ def cmd_analyze(args) -> int:
 def write_report(results, clips, ref_name, official, look_names):
     e = html.escape
     diag = tomllib.loads(DIAG_PATH.read_text(encoding="utf-8")) if DIAG_PATH.exists() else {}
-    P = ["<!doctype html><meta charset='utf-8'><title>MAXS LUT LIBRARY v1 — rush réel</title>",
+    P = ["<!doctype html><meta charset='utf-8'><title>MAXS COLOR SYSTEM — rush réel</title>",
          "<style>body{font-family:system-ui,sans-serif;background:#111;color:#ddd;margin:24px;max-width:1500px}"
          "img{max-width:100%;border:1px solid #333}table{border-collapse:collapse;font-size:12px;margin:8px 0 20px}"
          "td,th{border:1px solid #333;padding:3px 7px;text-align:right}th{background:#222}td:first-child{text-align:left}"
          ".warn{background:#4a1d1d;border:1px solid #a33;padding:10px 14px;margin:12px 0}"
          ".ok{background:#1d3a1d;border:1px solid #3a3;padding:10px 14px}code{color:#9cf}"
          ".score{font-size:28px;font-weight:bold}ul{margin:4px 0 10px}</style>",
-         "<h1>MAXS LUT LIBRARY v1 — validation sur rush Apple Log réel</h1>"]
+         f"<h1>MAXS COLOR SYSTEM v{system_version()} — validation sur rush Apple Log réel</h1>"]
     if official:
         P.append("<div class='ok'>Conversion technique : <b>LUT officielle Apple</b> "
                  "(<code>00_TECHNICAL/APPLE_OFFICIAL/</code>, provenance et SHA-256 dans le fichier .provenance.txt).</div>")
@@ -236,7 +250,18 @@ def write_report(results, clips, ref_name, official, look_names):
                  f"<td>{e(p['codec'])} {e(p['profile'])}</td><td>{p['width']}x{p['height']} {e(p['pix_fmt'])} "
                  f"{p['fps']} fps</td><td>{e(str(p['color_space']))}/{e(str(p['color_primaries']))}/"
                  f"{e(str(p['color_trc']))}, {e(str(p['color_range']))}</td><td>{p['duration']:.1f}s</td></tr>")
-    P.append("</table><p>Frames décodées en 16 bits avec la matrice et la plage déclarées par le fichier, "
+    P.append("</table><h3>Identification Apple Log</h3>")
+    for c in clips:
+        m = json.loads((c / "manifest.json").read_text(encoding="utf-8"))
+        idt = m.get("identification")
+        if not idt:
+            continue
+        P.append(f"<p><b>{e(m['source'])}</b> : {e(idt['verdict'])}<br>Plage du signal : "
+                 f"<b>{e(str(m['decodage']['plage']))}</b> — {e(str(m['decodage'].get('justification_plage') or idt['plage_justification']))}</p><table>"
+                 "<tr><th>indice</th><th>résultat</th><th>valeur</th></tr>" +
+                 "".join(f"<tr><td>{e(i['indice'])}</td><td>{ {True: 'OK', False: 'NON', None: 'non concluant'}[i['ok']] }</td>"
+                         f"<td>{e(str(i['valeur']))}</td></tr>" for i in idt["indices"]) + "</table>")
+    P.append("<p>Frames décodées en 16 bits avec la matrice et la plage déclarées par le fichier, "
              f"réduites à {e(str(json.loads((clips[0] / 'manifest.json').read_text())['decodage']['largeur']))} px "
              "de large pour l'analyse. Sélection automatique (ciel, végétation, architecture, blancs, peau, "
              "sombres, représentatives) : voir <code>manifest.json</code>.</p>")
@@ -285,9 +310,9 @@ def write_report(results, clips, ref_name, official, look_names):
 
     crops = sorted((REPORTS_DIR / "real_crops").glob("*.jpg")) if (REPORTS_DIR / "real_crops").exists() else []
     if crops:
-        P.append("<h2>Recadrages à 100 % (base ACES 2.0 NON-APPLE + 5 looks)</h2>")
+        P.append("<h2>Recadrages à 100 % (référence technique + 5 looks, 65³ MASTER)</h2>")
         for c in crops:
-            P.append(f"<h3>{e(c.stem.replace('crop2_', ''))}</h3><img src='real_crops/{e(c.name)}'>")
+            P.append(f"<h3>{e(c.stem)}</h3><img src='real_crops/{e(c.name)}'>")
     P.append("<h2>Planches comparatives</h2>")
     for r in results:
         P.append(f"<h3>{e(r['clip'])} — t={r['t']:.2f}s — {e(r['label'])}</h3>"
@@ -299,6 +324,38 @@ def write_report(results, clips, ref_name, official, look_names):
                 f"<td>{mm[k]:.3f}</td>" if k in mm else "<td>–</td>" for k in keys) + "</tr>")
         P.append("</table>")
     (REPORTS_DIR / "real_footage_report.html").write_text("\n".join(P), encoding="utf-8")
+
+
+def cmd_crops(args) -> int:
+    """100 % crops defined in REAL_FOOTAGE/crops.toml, reference technical + 5 looks (MASTER)."""
+    ref_name, ref, official, _ = technical_chain()
+    tag = "" if official else " (NON-APPLE)"
+    looks = [(l.name, read_cube(look_path(l.name, MASTER_SIZE))) for l in load_looks()]
+    spec = tomllib.loads((RF_DIR / "crops.toml").read_text(encoding="utf-8"))["crop"]
+    out_dir = REPORTS_DIR / "real_crops"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for old in out_dir.glob("*.jpg"):
+        old.unlink()
+    for c in spec:
+        f = sorted((RF_DIR / c["clip"] / "frames").glob(f"{c['frame']}*.npz"))
+        if not f:
+            print(f"  (frame absente : {c['clip']}/{c['frame']} - extraire d'abord)")
+            continue
+        y0, y1, x0, x1 = c["box"]
+        z = int(c.get("zoom", 1))
+        log = np.load(f[0])["applelog"][y0:y1, x0:x1].astype(np.float64) / 65535.0
+        base = apply_lut(ref.table, log)
+        tiles = [(ref_name.replace("_Rec709", "").replace("B_", "").replace("A_", ""), base)] + [(n, apply_lut(t.table, base)) for n, t in looks]
+        w, h = (x1 - x0) * z, (y1 - y0) * z
+        im = Image.new("RGB", (w * 3, (h + 24) * 2), (16, 16, 16))
+        d = ImageDraw.Draw(im)
+        for i, (lab, t) in enumerate(tiles):
+            r, k = divmod(i, 3)
+            im.paste(to8(t).resize((w, h), Image.NEAREST), (k * w, r * (h + 24) + 24))
+            d.text((k * w + 6, r * (h + 24) + 4), footage_ascii(lab), fill=(230, 230, 230), font=font(15))
+        im.save(out_dir / f"{c['name']}.jpg", quality=92)
+        print(f"  real_crops/{c['name']}.jpg")
+    return 0
 
 
 def main(argv=None) -> int:
@@ -315,12 +372,15 @@ def main(argv=None) -> int:
         s.add_argument("--assume-range", choices=["tv", "pc"])
         s.add_argument("--range-note", default=None, help="justification de --assume-range (manifest)")
     sub.add_parser("analyze")
+    sub.add_parser("crops", help="recadrages 100 %% définis dans REAL_FOOTAGE/crops.toml")
     sub.add_parser("report", help="régénère le HTML depuis real_footage_metrics.json et diagnostic.toml")
     args = ap.parse_args(argv)
     if args.cmd == "extract":
         return cmd_extract(args)
     if args.cmd == "analyze":
         return cmd_analyze(args)
+    if args.cmd == "crops":
+        return cmd_crops(args)
     if args.cmd == "report":
         data = json.loads((REPORTS_DIR / "real_footage_metrics.json").read_text(encoding="utf-8"))
         clips = sorted(d for d in RF_DIR.iterdir() if (d / "manifest.json").exists())

@@ -97,6 +97,19 @@ def skin_references():
     return cs.linear_to_display(lin)
 
 
+def skin_envelope():
+    """Carnation envelope DERIVED (not measured) from the two measured skin
+    patches above (OkLCh h 38-42 deg, C 0.054-0.070): lightness 0.35-0.85
+    (very dark to very light complexions), chroma 0.035-0.10, hue 30-55 deg
+    (redder to more yellow complexions). Display-encoded Rec.709, in gamut only."""
+    L, C, h = np.meshgrid(np.linspace(0.35, 0.85, 6), np.linspace(0.035, 0.10, 4),
+                          np.linspace(30, 55, 6), indexing="ij")
+    lch = np.stack([L.ravel(), C.ravel(), h.ravel()], -1)
+    lin = cs.oklab_to_linear_rgb(cs.lch_to_lab(lch))
+    ok = np.all((lin >= 0) & (lin <= 1), axis=1)
+    return cs.linear_to_display(lin[ok])
+
+
 def img_peau():
     tones = cs.display_to_linear(skin_references())[1::3]  # 6 base tones
     yy, xx = np.mgrid[0:H, 0:W]
@@ -224,6 +237,46 @@ def img_colorchecker():
     return _encode(img)
 
 
+def img_couleurs_saturees():
+    """Top: gradients from mid grey to pure red, yellow, green, cyan, blue,
+    magenta (Rec.709 primaries / secondaries at full saturation).
+    Bottom: neon lights (pink, cyan, green, orange, violet) with saturated
+    glows on a near-black background."""
+    img = np.zeros((H, W, 3))
+    t = np.linspace(0, 1, W)[:, None]
+    targets = [(1, 0, 0), (1, 1, 0), (0, 1, 0), (0, 1, 1), (0, 0, 1), (1, 0, 1)]
+    band = (H // 2) // len(targets)
+    for i, c in enumerate(targets):
+        row = 0.5 * (1 - t) + np.array(c, float) * t                 # display values
+        img[i * band:(i + 1) * band] = cs.display_to_linear(row)[None, :, :]
+    yy, xx = np.mgrid[0:H, 0:W]
+    bottom = yy >= H // 2
+    img[bottom] = _col(0.03, 0.03, 0.04)
+    neons = [(1, 0.1, 0.6), (0.1, 1, 0.95), (0.4, 1, 0.1), (1, 0.45, 0.0), (0.55, 0.0, 1.0)]
+    for i, c in enumerate(neons):
+        cx, cy = 100 + i * 190, int(H * 0.75)
+        d = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2)
+        col = cs.display_to_linear(np.array(c, float))
+        glow = (np.exp(-d / 38.0) * bottom)[..., None]
+        img = img + col * glow
+        core = (np.abs(xx - cx) < 50) & (np.abs(yy - cy) < 6)
+        img[core] = col
+    return _encode(img)
+
+
+def img_carnations():
+    """Measured ColorChecker skins (first row) then the derived carnation
+    envelope (see skin_envelope), as flat patches on mid grey."""
+    patches = np.vstack([skin_references(), skin_envelope()])
+    img = np.tile(_col(0.45, 0.45, 0.45), (H, W, 1))
+    cols = 18
+    pw, ph = W // cols, H // int(np.ceil(len(patches) / cols))
+    for i, c in enumerate(patches):
+        r, k = divmod(i, cols)
+        img[r * ph + 2:(r + 1) * ph - 2, k * pw + 2:(k + 1) * pw - 2] = cs.display_to_linear(c)
+    return _encode(img)
+
+
 IMAGES = {
     "01_ciel": img_ciel,
     "02_peau": img_peau,
@@ -235,6 +288,8 @@ IMAGES = {
     "08_faible_lumiere": img_faible_lumiere,
     "09_forte_lumiere": img_forte_lumiere,
     "10_colorchecker": img_colorchecker,
+    "11_couleurs_saturees": img_couleurs_saturees,
+    "12_carnations": img_carnations,
 }
 
 

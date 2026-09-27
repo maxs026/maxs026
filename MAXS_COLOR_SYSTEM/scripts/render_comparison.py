@@ -34,9 +34,9 @@ import numpy as np  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
 from lutlib import colorspace as cs  # noqa: E402
-from lutlib import technical, testimages  # noqa: E402
+from lutlib import scopes, technical, testimages  # noqa: E402
 from lutlib.config import (ACES_DIR, APPLE_DIR, IMAGES_DIR, LOOKS_DIR, RENDERS_DIR, REPORTS_DIR, ROOT, TECH_DIR,  # noqa: E402
-                           MASTER_SIZE, load_looks, look_path)
+                           MASTER_SIZE, load_looks, look_dir, look_path, system_version)
 from lutlib.cube import read_cube  # noqa: E402
 from lutlib.interp import apply_lut  # noqa: E402
 
@@ -115,6 +115,7 @@ def main(argv=None) -> int:
     chart = testimages.applelog_chart()
     to8(chart).save(IMAGES_DIR / "applelog_chart.png")
 
+    version = system_version()
     looks = [l.name for l in load_looks()]
     luts = {}
     for name in looks:
@@ -138,13 +139,26 @@ def main(argv=None) -> int:
                 (RENDERS_DIR / name).mkdir(parents=True, exist_ok=True)
                 to8(out).save(RENDERS_DIR / name / f"{k}.png")
         rows = [(k, [images[k], renders[name][k]]) for k in images]
-        sheet(rows, ["AVANT (Rec.709)", f"APRÈS {name}"],
-              f"{name} - avant / après (images synthétiques)").save(
-            REPORTS_DIR / f"{name}_avant_apres.jpg", quality=92, subsampling=0)
+        sheet(rows, ["BEFORE / AVANT (Rec.709)", f"AFTER / APRES {name} v{version}"],
+              f"{name} v{version} - before / after (images synthetiques)").save(
+            REPORTS_DIR / f"{name}_before_after.jpg", quality=92, subsampling=0)
+        # scopes: waveform of the grey ramp (= tone curve + neutrality), RGB
+        # histogram of every synthetic image together
+        scopes_dir = REPORTS_DIR / "scopes"
+        scopes_dir.mkdir(exist_ok=True)
+        grey = images["07_gris_neutre"]
+        scopes.side_by_side(scopes.waveform(grey, "BEFORE  waveform Y' - rampe de gris"),
+                            scopes.waveform(renders[name]["07_gris_neutre"], f"AFTER  {name}")).save(
+            scopes_dir / f"{name}_waveform.png")
+        allb = np.concatenate([images[k] for k in images], axis=0)
+        alla = np.concatenate([renders[name][k] for k in images], axis=0)
+        scopes.side_by_side(scopes.histogram(allb, "BEFORE  toutes les images"),
+                            scopes.histogram(alla, f"AFTER  {name}")).save(
+            scopes_dir / f"{name}_histogram.png")
 
     if renders:
         rows = [(k, [images[k]] + [renders[n][k] for n in renders]) for k in images]
-        sheet(rows, ["Original"] + list(renders), "MAXS LUT LIBRARY v1 - vue d'ensemble").save(
+        sheet(rows, ["Original"] + list(renders), f"MAXS COLOR SYSTEM v{version} - vue d'ensemble").save(
             REPORTS_DIR / "overview.jpg", quality=90, subsampling=0)
 
     # technical LUT(s): official and/or documented alternatives
@@ -166,26 +180,26 @@ def main(argv=None) -> int:
 
     (REPORTS_DIR / "metrics.json").write_text(json.dumps(all_metrics, indent=2, ensure_ascii=False),
                                                encoding="utf-8")
-    write_html(looks, all_metrics, tech_rows)
+    write_html(looks, all_metrics, tech_rows, version)
     print(f"Rapport : {(REPORTS_DIR / 'index.html').relative_to(ROOT)}")
     return 0
 
 
-def write_html(looks, all_metrics, tech_rows):
+def write_html(looks, all_metrics, tech_rows, version):
     tests_path = REPORTS_DIR / "test_results.json"
     tests = json.loads(tests_path.read_text(encoding="utf-8")) if tests_path.exists() else []
     e = html.escape
-    parts = ["<!doctype html><meta charset='utf-8'><title>MAXS LUT LIBRARY v1 — rapport</title>",
+    parts = [f"<!doctype html><meta charset='utf-8'><title>MAXS COLOR SYSTEM v{version} — rapport</title>",
              "<style>body{font-family:system-ui,sans-serif;background:#111;color:#ddd;margin:24px;max-width:1200px}"
              "img{max-width:100%;border:1px solid #333}table{border-collapse:collapse;font-size:13px;margin:8px 0 24px}"
              "td,th{border:1px solid #333;padding:4px 8px;text-align:left}th{background:#222}"
-             ".PASS{color:#7c7}.FAIL{color:#f66}.WARN{color:#fc6}code{color:#9cf}</style>",
-             "<h1>MAXS LUT LIBRARY v1 — rapport avant / après</h1>",
+             ".PASS{color:#7c7}pre{background:#1a1a1a;padding:8px;font-size:12px;overflow:auto}.FAIL{color:#f66}.WARN{color:#fc6}code{color:#9cf}</style>",
+             f"<h1>MAXS COLOR SYSTEM v{version} — rapport avant / après</h1>",
              "<p>Images <b>synthétiques</b> générées par <code>scripts/lutlib/testimages.py</code> "
              "(pas des photographies). Looks : entrée et sortie Rec.709.</p>"]
-    if not tech_rows:
-        parts.append("<p class='FAIL'><b>LUT technique officielle absente</b> : la chaîne "
-                     "Apple Log → Rec.709 n'a pas été rendue. Voir <code>00_TECHNICAL/README.md</code>.</p>")
+    if not any("APPLE_OFFICIAL" in t for t in tech_rows):
+        parts.append("<p class='WARN'><b>LUT officielle Apple absente</b> : couche technique rendue avec la "
+                     "référence ACES 2.0 <b>NON-APPLE</b>. Voir <code>00_TECHNICAL/README.md</code>.</p>")
     for t in tech_rows:
         stem = Path(t).stem
         parts.append(f"<h2>Chaîne technique : {e(t)}</h2><img src='technical_{e(stem)}.jpg'>")
@@ -193,7 +207,25 @@ def write_html(looks, all_metrics, tech_rows):
     for name in looks:
         if name not in all_metrics:
             continue
-        parts.append(f"<h2>{e(name)}</h2><img src='{e(name)}_avant_apres.jpg'>")
+        vinfo = json.loads((look_dir(name) / "VERSION.json").read_text(encoding="utf-8")) \
+            if (look_dir(name) / "VERSION.json").exists() else {}
+        parts.append(f"<h2>{e(name)} — v{e(str(vinfo.get('version', '?')))}</h2>"
+                     f"<p>{e(str(vinfo.get('params', {}).get('description', '')))}</p>"
+                     f"<img src='{e(name)}_before_after.jpg'>"
+                     "<h3>Waveform (rampe de gris : courbe de ton et neutralité)</h3>"
+                     f"<img src='scopes/{e(name)}_waveform.png'>"
+                     "<h3>Histogramme RGB (toutes les images synthétiques)</h3>"
+                     f"<img src='scopes/{e(name)}_histogram.png'>"
+                     "<h3>Informations techniques</h3><table><tr><th>fichier</th><th>rôle</th>"
+                     "<th>SHA-256</th><th>min</th><th>max</th></tr>")
+        for f in vinfo.get("files", {}).values():
+            parts.append(f"<tr><td><code>{e(f['file'])}</code></td><td>{e(f['role'])}</td>"
+                         f"<td><code>{e(f['sha256'][:16])}…</code></td><td>{f['min']}</td><td>{f['max']}</td></tr>")
+        parts.append("</table><p>Couche CREATIVE Rec.709 BT.1886 → Rec.709 BT.1886, domaine 0–1, "
+                     f"moteur : {e(json.dumps(vinfo.get('engine', {}), ensure_ascii=False))}</p>"
+                     "<h3>Paramètres utilisés</h3><pre>"
+                     + e(json.dumps(vinfo.get("params", {}), indent=2, ensure_ascii=False)) + "</pre>"
+                     "<h3>Mesures par image</h3>")
         keys = list(next(iter(all_metrics[name].values())).keys())
         parts.append("<table><tr><th>image</th>" + "".join(f"<th>{e(k)}</th>" for k in keys) + "</tr>")
         for img, m in all_metrics[name].items():

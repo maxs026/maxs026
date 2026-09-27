@@ -1,23 +1,90 @@
-<!doctype html><meta charset='utf-8'><title>MAXS LUT LIBRARY v1 — rapport</title>
-<style>body{font-family:system-ui,sans-serif;background:#111;color:#ddd;margin:24px;max-width:1200px}img{max-width:100%;border:1px solid #333}table{border-collapse:collapse;font-size:13px;margin:8px 0 24px}td,th{border:1px solid #333;padding:4px 8px;text-align:left}th{background:#222}.PASS{color:#7c7}.FAIL{color:#f66}.WARN{color:#fc6}code{color:#9cf}</style>
-<h1>MAXS LUT LIBRARY v1 — rapport avant / après</h1>
+<!doctype html><meta charset='utf-8'><title>MAXS COLOR SYSTEM v1.1 — rapport</title>
+<style>body{font-family:system-ui,sans-serif;background:#111;color:#ddd;margin:24px;max-width:1200px}img{max-width:100%;border:1px solid #333}table{border-collapse:collapse;font-size:13px;margin:8px 0 24px}td,th{border:1px solid #333;padding:4px 8px;text-align:left}th{background:#222}.PASS{color:#7c7}pre{background:#1a1a1a;padding:8px;font-size:12px;overflow:auto}.FAIL{color:#f66}.WARN{color:#fc6}code{color:#9cf}</style>
+<h1>MAXS COLOR SYSTEM v1.1 — rapport avant / après</h1>
 <p>Images <b>synthétiques</b> générées par <code>scripts/lutlib/testimages.py</code> (pas des photographies). Looks : entrée et sortie Rec.709.</p>
-<h2>Chaîne technique : AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE.cube</h2><img src='technical_AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE.jpg'>
+<p class='WARN'><b>LUT officielle Apple absente</b> : couche technique rendue avec la référence ACES 2.0 <b>NON-APPLE</b>. Voir <code>00_TECHNICAL/README.md</code>.</p>
+<h2>Chaîne technique : AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_65.cube</h2><img src='technical_AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_65.jpg'>
 <h2>Vue d'ensemble</h2><img src='overview.jpg'>
-<h2>MAXS_Natural</h2><img src='MAXS_Natural_avant_apres.jpg'>
+<h2>MAXS_Natural — v1.1</h2><p>Rendu naturel, contraste modéré, peau naturelle, hautes lumières douces.</p><img src='MAXS_Natural_before_after.jpg'><h3>Waveform (rampe de gris : courbe de ton et neutralité)</h3><img src='scopes/MAXS_Natural_waveform.png'><h3>Histogramme RGB (toutes les images synthétiques)</h3><img src='scopes/MAXS_Natural_histogram.png'><h3>Informations techniques</h3><table><tr><th>fichier</th><th>rôle</th><th>SHA-256</th><th>min</th><th>max</th></tr>
+<tr><td><code>MAXS_Natural_65.cube</code></td><td>MASTER</td><td><code>32d37a643246897b…</code></td><td>0.0</td><td>0.997891</td></tr>
+<tr><td><code>MAXS_Natural_33.cube</code></td><td>compat</td><td><code>a79333a3168f1cec…</code></td><td>0.0</td><td>0.99788</td></tr>
+</table><p>Couche CREATIVE Rec.709 BT.1886 → Rec.709 BT.1886, domaine 0–1, moteur : {&quot;max_hue_shift_deg&quot;: 6.0, &quot;hue_guard_chroma&quot;: [0.02, 0.04], &quot;gamut_knee&quot;: 0.85}</p><h3>Paramètres utilisés</h3><pre>{
+  &quot;description&quot;: &quot;Rendu naturel, contraste modéré, peau naturelle, hautes lumières douces.&quot;,
+  &quot;tone&quot;: {
+    &quot;contrast&quot;: 1.05,
+    &quot;black_lift&quot;: 0.0,
+    &quot;white_out&quot;: 0.99
+  },
+  &quot;saturation&quot;: {
+    &quot;global&quot;: 1.02,
+    &quot;shadows&quot;: 0.95,
+    &quot;highlights&quot;: 0.9
+  }
+}</pre><h3>Mesures par image</h3>
 <table><tr><th>image</th><th>L_moyen_avant</th><th>L_moyen_apres</th><th>ratio_chroma_moyen</th><th>decalage_teinte_moyen_deg</th><th>pixels_clippes_avant_pct</th><th>pixels_clippes_apres_pct</th><th>pixels_noirs_avant_pct</th><th>pixels_noirs_apres_pct</th></tr>
 <tr><td>01_ciel</td><td>0.7703</td><td>0.7817</td><td>0.9943</td><td>0.001</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>02_peau</td><td>0.409</td><td>0.398</td><td>0.9817</td><td>0.003</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>03_vegetation</td><td>0.4335</td><td>0.4244</td><td>0.9851</td><td>0.001</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>03_vegetation</td><td>0.4335</td><td>0.4244</td><td>0.9849</td><td>0.001</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>04_architecture</td><td>0.6369</td><td>0.6425</td><td>0.9847</td><td>0.003</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>05_eau</td><td>0.4883</td><td>0.4821</td><td>0.9965</td><td>0.005</td><td>1.588</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>06_blanc_neutre</td><td>0.95</td><td>0.9479</td><td>None</td><td>None</td><td>54.583</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>07_gris_neutre</td><td>0.5526</td><td>0.55</td><td>None</td><td>None</td><td>2.135</td><td>0.0</td><td>2.448</td><td>2.5</td></tr>
-<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2368</td><td>0.9605</td><td>0.006</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.579</td></tr>
+<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2368</td><td>0.9604</td><td>0.008</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.579</td></tr>
 <tr><td>09_forte_lumiere</td><td>0.8958</td><td>0.9011</td><td>0.9588</td><td>0.003</td><td>7.5</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5372</td><td>0.9962</td><td>0.001</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5372</td><td>0.9946</td><td>0.046</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>11_couleurs_saturees</td><td>0.5073</td><td>0.5027</td><td>0.9695</td><td>0.069</td><td>1.155</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>12_carnations</td><td>0.5797</td><td>0.5797</td><td>0.9912</td><td>0.017</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 </table>
-<h2>MAXS_Paris</h2><img src='MAXS_Paris_avant_apres.jpg'>
+<h2>MAXS_Paris — v1.1</h2><p>Paris contemporain : ombres légèrement froides, tons moyens légèrement chauds, verts désaturés, bleus contrôlés, blancs propres.</p><img src='MAXS_Paris_before_after.jpg'><h3>Waveform (rampe de gris : courbe de ton et neutralité)</h3><img src='scopes/MAXS_Paris_waveform.png'><h3>Histogramme RGB (toutes les images synthétiques)</h3><img src='scopes/MAXS_Paris_histogram.png'><h3>Informations techniques</h3><table><tr><th>fichier</th><th>rôle</th><th>SHA-256</th><th>min</th><th>max</th></tr>
+<tr><td><code>MAXS_Paris_65.cube</code></td><td>MASTER</td><td><code>7a7f2c29e470a189…</code></td><td>0.002046</td><td>0.998361</td></tr>
+<tr><td><code>MAXS_Paris_33.cube</code></td><td>compat</td><td><code>897d9838990462db…</code></td><td>0.00231</td><td>0.998349</td></tr>
+</table><p>Couche CREATIVE Rec.709 BT.1886 → Rec.709 BT.1886, domaine 0–1, moteur : {&quot;max_hue_shift_deg&quot;: 6.0, &quot;hue_guard_chroma&quot;: [0.02, 0.04], &quot;gamut_knee&quot;: 0.85}</p><h3>Paramètres utilisés</h3><pre>{
+  &quot;description&quot;: &quot;Paris contemporain : ombres légèrement froides, tons moyens légèrement chauds, verts désaturés, bleus contrôlés, blancs propres.&quot;,
+  &quot;tone&quot;: {
+    &quot;contrast&quot;: 1.08,
+    &quot;black_lift&quot;: 0.012,
+    &quot;white_out&quot;: 0.975
+  },
+  &quot;saturation&quot;: {
+    &quot;global&quot;: 0.96,
+    &quot;shadows&quot;: 0.9,
+    &quot;highlights&quot;: 0.85
+  },
+  &quot;split_tone&quot;: {
+    &quot;shadows&quot;: {
+      &quot;hue&quot;: 250.0,
+      &quot;strength&quot;: 0.01
+    },
+    &quot;midtones&quot;: {
+      &quot;hue&quot;: 70.0,
+      &quot;strength&quot;: 0.006
+    },
+    &quot;highlights&quot;: {
+      &quot;hue&quot;: 0.0,
+      &quot;strength&quot;: 0.0
+    }
+  },
+  &quot;hue_bands&quot;: [
+    {
+      &quot;name&quot;: &quot;greens&quot;,
+      &quot;center&quot;: 135.0,
+      &quot;width&quot;: 45.0,
+      &quot;chroma&quot;: 0.8
+    },
+    {
+      &quot;name&quot;: &quot;blues&quot;,
+      &quot;center&quot;: 258.0,
+      &quot;width&quot;: 40.0,
+      &quot;chroma&quot;: 0.88
+    },
+    {
+      &quot;name&quot;: &quot;cyans&quot;,
+      &quot;center&quot;: 205.0,
+      &quot;width&quot;: 30.0,
+      &quot;chroma&quot;: 0.9
+    }
+  ]
+}</pre><h3>Mesures par image</h3>
 <table><tr><th>image</th><th>L_moyen_avant</th><th>L_moyen_apres</th><th>ratio_chroma_moyen</th><th>decalage_teinte_moyen_deg</th><th>pixels_clippes_avant_pct</th><th>pixels_clippes_apres_pct</th><th>pixels_noirs_avant_pct</th><th>pixels_noirs_apres_pct</th></tr>
 <tr><td>01_ciel</td><td>0.7703</td><td>0.7892</td><td>0.7778</td><td>0.375</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>02_peau</td><td>0.409</td><td>0.3932</td><td>0.9347</td><td>1.14</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
@@ -26,11 +93,60 @@
 <tr><td>05_eau</td><td>0.4883</td><td>0.4791</td><td>0.7701</td><td>5.382</td><td>1.588</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>06_blanc_neutre</td><td>0.95</td><td>0.9405</td><td>None</td><td>None</td><td>54.583</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>07_gris_neutre</td><td>0.5526</td><td>0.5498</td><td>None</td><td>None</td><td>2.135</td><td>0.0</td><td>2.448</td><td>0.0</td></tr>
-<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2334</td><td>0.8258</td><td>2.497</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.0</td></tr>
+<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2334</td><td>0.8258</td><td>2.499</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.0</td></tr>
 <tr><td>09_forte_lumiere</td><td>0.8958</td><td>0.9008</td><td>0.8586</td><td>0.033</td><td>7.5</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5366</td><td>0.8877</td><td>1.363</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5366</td><td>0.8875</td><td>1.363</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>11_couleurs_saturees</td><td>0.5073</td><td>0.5013</td><td>0.8483</td><td>2.602</td><td>1.155</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>12_carnations</td><td>0.5797</td><td>0.5805</td><td>0.9601</td><td>0.626</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 </table>
-<h2>MAXS_Film</h2><img src='MAXS_Film_avant_apres.jpg'>
+<h2>MAXS_Film — v1.1</h2><p>Inspiration pellicule : contraste organique, noirs légèrement relevés, saturation contrôlée, légère séparation des couleurs.</p><img src='MAXS_Film_before_after.jpg'><h3>Waveform (rampe de gris : courbe de ton et neutralité)</h3><img src='scopes/MAXS_Film_waveform.png'><h3>Histogramme RGB (toutes les images synthétiques)</h3><img src='scopes/MAXS_Film_histogram.png'><h3>Informations techniques</h3><table><tr><th>fichier</th><th>rôle</th><th>SHA-256</th><th>min</th><th>max</th></tr>
+<tr><td><code>MAXS_Film_65.cube</code></td><td>MASTER</td><td><code>bcd4e66162a9e24a…</code></td><td>0.003821</td><td>0.999524</td></tr>
+<tr><td><code>MAXS_Film_33.cube</code></td><td>compat</td><td><code>60febb2afd302e92…</code></td><td>0.003876</td><td>0.99952</td></tr>
+</table><p>Couche CREATIVE Rec.709 BT.1886 → Rec.709 BT.1886, domaine 0–1, moteur : {&quot;max_hue_shift_deg&quot;: 6.0, &quot;hue_guard_chroma&quot;: [0.02, 0.04], &quot;gamut_knee&quot;: 0.85}</p><h3>Paramètres utilisés</h3><pre>{
+  &quot;description&quot;: &quot;Inspiration pellicule : contraste organique, noirs légèrement relevés, saturation contrôlée, légère séparation des couleurs.&quot;,
+  &quot;tone&quot;: {
+    &quot;contrast&quot;: 1.12,
+    &quot;black_lift&quot;: 0.06,
+    &quot;white_out&quot;: 0.965
+  },
+  &quot;saturation&quot;: {
+    &quot;global&quot;: 0.95,
+    &quot;shadows&quot;: 0.85,
+    &quot;highlights&quot;: 0.8
+  },
+  &quot;split_tone&quot;: {
+    &quot;shadows&quot;: {
+      &quot;hue&quot;: 215.0,
+      &quot;strength&quot;: 0.006
+    },
+    &quot;highlights&quot;: {
+      &quot;hue&quot;: 80.0,
+      &quot;strength&quot;: 0.006
+    }
+  },
+  &quot;hue_bands&quot;: [
+    {
+      &quot;name&quot;: &quot;greens&quot;,
+      &quot;center&quot;: 135.0,
+      &quot;width&quot;: 40.0,
+      &quot;chroma&quot;: 0.9,
+      &quot;hue_shift&quot;: 3.0
+    },
+    {
+      &quot;name&quot;: &quot;blues&quot;,
+      &quot;center&quot;: 262.0,
+      &quot;width&quot;: 35.0,
+      &quot;chroma&quot;: 0.92,
+      &quot;hue_shift&quot;: -3.0
+    },
+    {
+      &quot;name&quot;: &quot;reds&quot;,
+      &quot;center&quot;: 25.0,
+      &quot;width&quot;: 25.0,
+      &quot;chroma&quot;: 1.04
+    }
+  ]
+}</pre><h3>Mesures par image</h3>
 <table><tr><th>image</th><th>L_moyen_avant</th><th>L_moyen_apres</th><th>ratio_chroma_moyen</th><th>decalage_teinte_moyen_deg</th><th>pixels_clippes_avant_pct</th><th>pixels_clippes_apres_pct</th><th>pixels_noirs_avant_pct</th><th>pixels_noirs_apres_pct</th></tr>
 <tr><td>01_ciel</td><td>0.7703</td><td>0.799</td><td>0.7725</td><td>3.575</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>02_peau</td><td>0.409</td><td>0.3922</td><td>0.9166</td><td>0.118</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
@@ -39,24 +155,119 @@
 <tr><td>05_eau</td><td>0.4883</td><td>0.4782</td><td>0.9322</td><td>0.041</td><td>1.588</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>06_blanc_neutre</td><td>0.95</td><td>0.9373</td><td>None</td><td>None</td><td>54.583</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>07_gris_neutre</td><td>0.5526</td><td>0.5562</td><td>None</td><td>None</td><td>2.135</td><td>0.0</td><td>2.448</td><td>0.0</td></tr>
-<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.244</td><td>0.8144</td><td>3.106</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.0</td></tr>
+<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.244</td><td>0.8143</td><td>3.106</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.0</td></tr>
 <tr><td>09_forte_lumiere</td><td>0.8958</td><td>0.9039</td><td>0.8533</td><td>2.035</td><td>7.5</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5396</td><td>0.9029</td><td>1.198</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5397</td><td>0.9027</td><td>1.206</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>11_couleurs_saturees</td><td>0.5073</td><td>0.5039</td><td>0.8568</td><td>1.75</td><td>1.155</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>12_carnations</td><td>0.5797</td><td>0.5836</td><td>0.9417</td><td>0.426</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 </table>
-<h2>MAXS_Golden</h2><img src='MAXS_Golden_avant_apres.jpg'>
+<h2>MAXS_Golden — v1.1</h2><p>Golden hour : chaleur subtile dans les tons moyens, oranges/jaunes saturés légèrement enrichis, peau naturelle, blancs préservés.</p><img src='MAXS_Golden_before_after.jpg'><h3>Waveform (rampe de gris : courbe de ton et neutralité)</h3><img src='scopes/MAXS_Golden_waveform.png'><h3>Histogramme RGB (toutes les images synthétiques)</h3><img src='scopes/MAXS_Golden_histogram.png'><h3>Informations techniques</h3><table><tr><th>fichier</th><th>rôle</th><th>SHA-256</th><th>min</th><th>max</th></tr>
+<tr><td><code>MAXS_Golden_65.cube</code></td><td>MASTER</td><td><code>75459397b0d8b254…</code></td><td>0.00133</td><td>0.999884</td></tr>
+<tr><td><code>MAXS_Golden_33.cube</code></td><td>compat</td><td><code>64d25c6d28e488b6…</code></td><td>0.00133</td><td>0.999884</td></tr>
+</table><p>Couche CREATIVE Rec.709 BT.1886 → Rec.709 BT.1886, domaine 0–1, moteur : {&quot;max_hue_shift_deg&quot;: 6.0, &quot;hue_guard_chroma&quot;: [0.02, 0.04], &quot;gamut_knee&quot;: 0.85}</p><h3>Paramètres utilisés</h3><pre>{
+  &quot;description&quot;: &quot;Golden hour : chaleur subtile dans les tons moyens, oranges/jaunes saturés légèrement enrichis, peau naturelle, blancs préservés.&quot;,
+  &quot;tone&quot;: {
+    &quot;contrast&quot;: 1.05,
+    &quot;black_lift&quot;: 0.005,
+    &quot;white_out&quot;: 0.985
+  },
+  &quot;saturation&quot;: {
+    &quot;global&quot;: 1.01,
+    &quot;shadows&quot;: 0.95,
+    &quot;highlights&quot;: 0.9
+  },
+  &quot;split_tone&quot;: {
+    &quot;shadows&quot;: {
+      &quot;hue&quot;: 60.0,
+      &quot;strength&quot;: 0.003
+    },
+    &quot;midtones&quot;: {
+      &quot;hue&quot;: 75.0,
+      &quot;strength&quot;: 0.008
+    },
+    &quot;highlights&quot;: {
+      &quot;hue&quot;: 80.0,
+      &quot;strength&quot;: 0.005
+    }
+  },
+  &quot;hue_bands&quot;: [
+    {
+      &quot;name&quot;: &quot;oranges&quot;,
+      &quot;center&quot;: 62.0,
+      &quot;width&quot;: 32.0,
+      &quot;chroma&quot;: 1.12,
+      &quot;min_chroma&quot;: [
+        0.08,
+        0.13
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;yellows&quot;,
+      &quot;center&quot;: 95.0,
+      &quot;width&quot;: 28.0,
+      &quot;chroma&quot;: 1.1,
+      &quot;hue_shift&quot;: -2.0,
+      &quot;min_chroma&quot;: [
+        0.06,
+        0.11
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;blues&quot;,
+      &quot;center&quot;: 258.0,
+      &quot;width&quot;: 40.0,
+      &quot;chroma&quot;: 0.92
+    }
+  ],
+  &quot;skin_protect&quot;: {
+    &quot;amount&quot;: 0.85
+  }
+}</pre><h3>Mesures par image</h3>
 <table><tr><th>image</th><th>L_moyen_avant</th><th>L_moyen_apres</th><th>ratio_chroma_moyen</th><th>decalage_teinte_moyen_deg</th><th>pixels_clippes_avant_pct</th><th>pixels_clippes_apres_pct</th><th>pixels_noirs_avant_pct</th><th>pixels_noirs_apres_pct</th></tr>
 <tr><td>01_ciel</td><td>0.7703</td><td>0.782</td><td>0.8059</td><td>0.636</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>02_peau</td><td>0.409</td><td>0.3988</td><td>1.0004</td><td>0.772</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>03_vegetation</td><td>0.4335</td><td>0.425</td><td>1.0105</td><td>3.293</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>03_vegetation</td><td>0.4335</td><td>0.425</td><td>1.0066</td><td>3.28</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>04_architecture</td><td>0.6369</td><td>0.6433</td><td>1.0557</td><td>1.163</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>05_eau</td><td>0.4883</td><td>0.4824</td><td>0.8133</td><td>10.36</td><td>1.588</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>06_blanc_neutre</td><td>0.95</td><td>0.9446</td><td>None</td><td>None</td><td>54.583</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>07_gris_neutre</td><td>0.5526</td><td>0.5504</td><td>None</td><td>None</td><td>2.135</td><td>0.0</td><td>2.448</td><td>0.0</td></tr>
-<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2389</td><td>1.0426</td><td>0.73</td><td>0.096</td><td>0.048</td><td>0.579</td><td>0.0</td></tr>
+<tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2389</td><td>1.0422</td><td>0.734</td><td>0.096</td><td>0.048</td><td>0.579</td><td>0.0</td></tr>
 <tr><td>09_forte_lumiere</td><td>0.8958</td><td>0.8993</td><td>0.9582</td><td>0.779</td><td>7.5</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5377</td><td>0.9893</td><td>2.216</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>10_colorchecker</td><td>0.5403</td><td>0.5377</td><td>0.9864</td><td>2.269</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>11_couleurs_saturees</td><td>0.5073</td><td>0.5033</td><td>0.9572</td><td>2.728</td><td>1.155</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>12_carnations</td><td>0.5797</td><td>0.5801</td><td>1.0167</td><td>1.107</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 </table>
-<h2>MAXS_Night</h2><img src='MAXS_Night_avant_apres.jpg'>
+<h2>MAXS_Night — v1.1</h2><p>Nuit : ombres légèrement froides, hautes lumières neutres, contraste contrôlé, détails des basses lumières conservés.</p><img src='MAXS_Night_before_after.jpg'><h3>Waveform (rampe de gris : courbe de ton et neutralité)</h3><img src='scopes/MAXS_Night_waveform.png'><h3>Histogramme RGB (toutes les images synthétiques)</h3><img src='scopes/MAXS_Night_histogram.png'><h3>Informations techniques</h3><table><tr><th>fichier</th><th>rôle</th><th>SHA-256</th><th>min</th><th>max</th></tr>
+<tr><td><code>MAXS_Night_65.cube</code></td><td>MASTER</td><td><code>cf4cf930c9b44971…</code></td><td>0.003818</td><td>0.994961</td></tr>
+<tr><td><code>MAXS_Night_33.cube</code></td><td>compat</td><td><code>4157064956b6dcdf…</code></td><td>0.004624</td><td>0.99491</td></tr>
+</table><p>Couche CREATIVE Rec.709 BT.1886 → Rec.709 BT.1886, domaine 0–1, moteur : {&quot;max_hue_shift_deg&quot;: 6.0, &quot;hue_guard_chroma&quot;: [0.02, 0.04], &quot;gamut_knee&quot;: 0.85}</p><h3>Paramètres utilisés</h3><pre>{
+  &quot;description&quot;: &quot;Nuit : ombres légèrement froides, hautes lumières neutres, contraste contrôlé, détails des basses lumières conservés.&quot;,
+  &quot;tone&quot;: {
+    &quot;contrast&quot;: 1.04,
+    &quot;black_lift&quot;: 0.02,
+    &quot;white_out&quot;: 0.98,
+    &quot;shadow_x&quot;: 0.22
+  },
+  &quot;saturation&quot;: {
+    &quot;global&quot;: 0.94,
+    &quot;shadows&quot;: 0.8,
+    &quot;highlights&quot;: 0.9
+  },
+  &quot;split_tone&quot;: {
+    &quot;shadows&quot;: {
+      &quot;hue&quot;: 255.0,
+      &quot;strength&quot;: 0.011
+    }
+  },
+  &quot;hue_bands&quot;: [
+    {
+      &quot;name&quot;: &quot;blues&quot;,
+      &quot;center&quot;: 262.0,
+      &quot;width&quot;: 40.0,
+      &quot;chroma&quot;: 0.88
+    }
+  ]
+}</pre><h3>Mesures par image</h3>
 <table><tr><th>image</th><th>L_moyen_avant</th><th>L_moyen_apres</th><th>ratio_chroma_moyen</th><th>decalage_teinte_moyen_deg</th><th>pixels_clippes_avant_pct</th><th>pixels_clippes_apres_pct</th><th>pixels_noirs_avant_pct</th><th>pixels_noirs_apres_pct</th></tr>
 <tr><td>01_ciel</td><td>0.7703</td><td>0.7801</td><td>0.8116</td><td>0.018</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 <tr><td>02_peau</td><td>0.409</td><td>0.4036</td><td>0.9177</td><td>1.307</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
@@ -67,11 +278,17 @@
 <tr><td>07_gris_neutre</td><td>0.5526</td><td>0.5531</td><td>None</td><td>None</td><td>2.135</td><td>0.0</td><td>2.448</td><td>0.0</td></tr>
 <tr><td>08_faible_lumiere</td><td>0.251</td><td>0.2485</td><td>0.777</td><td>4.179</td><td>0.096</td><td>0.0</td><td>0.579</td><td>0.0</td></tr>
 <tr><td>09_forte_lumiere</td><td>0.8958</td><td>0.8958</td><td>0.8682</td><td>0.027</td><td>7.5</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
-<tr><td>10_colorchecker</td><td>0.5403</td><td>0.54</td><td>0.9044</td><td>0.22</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>10_colorchecker</td><td>0.5403</td><td>0.54</td><td>0.9041</td><td>0.227</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>11_couleurs_saturees</td><td>0.5073</td><td>0.5062</td><td>0.884</td><td>1.693</td><td>1.155</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>12_carnations</td><td>0.5797</td><td>0.5811</td><td>0.9353</td><td>0.323</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
 </table>
 <h2>Résultats de scripts/test_luts.py</h2>
-<h3><code>00_TECHNICAL/alternatives/33_compat/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>00_TECHNICAL/ACES2_NON-APPLE/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>33 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
@@ -85,8 +302,12 @@
 <tr><td>monotonie (-8 à +6 IL)</td><td class='PASS'>PASS</td><td>min dY=9.30e-08 </td></tr>
 <tr><td>gris 18 % (info)</td><td class='PASS'>PASS</td><td>V=0.383 </td></tr>
 </table>
-<h3><code>00_TECHNICAL/alternatives/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>00_TECHNICAL/ACES2_NON-APPLE/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_65.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 65 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>65 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>65^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>274625 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
@@ -100,13 +321,17 @@
 <tr><td>monotonie (-8 à +6 IL)</td><td class='PASS'>PASS</td><td>min dY=1.70e-07 </td></tr>
 <tr><td>gris 18 % (info)</td><td class='PASS'>PASS</td><td>V=0.383 </td></tr>
 </table>
-<h3><code>01_LOOKS/33_compat/MAXS_Film_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>01_LOOKS/MAXS_Film/MAXS_Film_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>33 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
 <tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000758 max=0.999414 </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.003876 max=0.999520 </td></tr>
 <tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
 <tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=6.135e-04 </td></tr>
 <tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0239 </td></tr>
@@ -121,132 +346,33 @@
 <tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=5.16e-04 </td></tr>
 <tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
 <tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.655 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.68° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.876..0.984 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.034 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 4.87° (≤ 6.5°), moyen 1.43° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.68° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.876..0.984 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.034 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 3.94° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='FAIL'>FAIL</td><td>0.785..1.005 min à L=0.35 C=0.035 h=55°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.033 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.22 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.57° (≤ 7°), moyen 1.44° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0083 (≤ 0.015), angle max 22.7° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.29 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>3.9 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.45 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.18° (≤ 7°) </td></tr>
 <tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.902 </td></tr>
 <tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
 </table>
-<h3><code>01_LOOKS/33_compat/MAXS_Golden_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
-<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
-<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
-<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
-<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
-<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.001330 max=0.999800 </td></tr>
-<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
-<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=1.986e-04 </td></tr>
-<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0315 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.589 (seuil 4) </td></tr>
-<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0083 (≤ 0.02) </td></tr>
-<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0050 </td></tr>
-<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9813, 0.9813, 0.9813] </td></tr>
-<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=2.86e-07 </td></tr>
-<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
-<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.45e-04 </td></tr>
-<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
-<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.861 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 1.28° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.989..1.036 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.014 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 6.09° (≤ 6.5°), moyen 3.44° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.981 </td></tr>
-<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
-</table>
-<h3><code>01_LOOKS/33_compat/MAXS_Natural_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
-<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
-<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
-<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
-<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
-<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000000 max=0.997719 </td></tr>
-<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
-<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=1.614e-04 </td></tr>
-<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0000 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.759 (seuil 4) </td></tr>
-<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0000 (≤ 0.02) </td></tr>
-<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0000 </td></tr>
-<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9875, 0.9875, 0.9875] </td></tr>
-<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=3.94e-08 </td></tr>
-<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
-<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.71e-04 </td></tr>
-<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
-<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.861 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.03° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.967..1.010 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.013 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 0.03° (≤ 6.5°), moyen 0.00° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.997 </td></tr>
-<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
-</table>
-<h3><code>01_LOOKS/33_compat/MAXS_Night_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
-<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
-<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
-<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
-<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
-<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.002480 max=0.994547 </td></tr>
-<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
-<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=3.742e-04 </td></tr>
-<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0312 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.149 (seuil 4) </td></tr>
-<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0110 (≤ 0.02) </td></tr>
-<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0200 </td></tr>
-<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9751, 0.9751, 0.9751] </td></tr>
-<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=2.60e-06 </td></tr>
-<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
-<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.26e-04 </td></tr>
-<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
-<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.941 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.99° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.888..0.969 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.012 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 2.34° (≤ 6.5°), moyen 0.36° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.904 </td></tr>
-<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
-</table>
-<h3><code>01_LOOKS/33_compat/MAXS_Paris_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
-<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
-<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
-<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
-<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
-<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000642 max=0.998097 </td></tr>
-<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
-<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=2.098e-04 </td></tr>
-<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0286 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.117 (seuil 4) </td></tr>
-<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0100 (≤ 0.02) </td></tr>
-<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
-<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0120 </td></tr>
-<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9688, 0.9688, 0.9688] </td></tr>
-<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=9.44e-07 </td></tr>
-<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
-<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=7.02e-04 </td></tr>
-<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
-<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.817 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.92° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.904..1.002 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.022 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 5.95° (≤ 6.5°), moyen 2.10° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.885 </td></tr>
-<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
-</table>
-<h3><code>01_LOOKS/MAXS_Film.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>01_LOOKS/MAXS_Film/MAXS_Film_65.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 65 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>65 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>65^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>274625 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
 <tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000748 max=0.999420 </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.003821 max=0.999524 </td></tr>
 <tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
 <tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=2.744e-04 </td></tr>
 <tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0240 </td></tr>
@@ -261,24 +387,78 @@
 <tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=5.03e-04 </td></tr>
 <tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
 <tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.636 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.65° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.883..0.984 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.034 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 4.88° (≤ 6.5°), moyen 1.44° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.65° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.883..0.984 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.034 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 3.54° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='FAIL'>FAIL</td><td>0.788..1.004 min à L=0.35 C=0.035 h=55°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.033 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.22 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.27° (≤ 6.5°), moyen 1.44° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0081 (≤ 0.015), angle max 22.1° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.38 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>3.9 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.45 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.03° (≤ 6.5°) </td></tr>
 <tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.903 </td></tr>
 <tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
 </table>
-<h3><code>01_LOOKS/MAXS_Golden.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>01_LOOKS/MAXS_Golden/MAXS_Golden_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>33 </td></tr>
+<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
+<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
+<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
+<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.001330 max=0.999884 </td></tr>
+<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
+<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=1.986e-04 </td></tr>
+<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0315 </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>2.220 (seuil 4) </td></tr>
+<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0083 (≤ 0.02) </td></tr>
+<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0050 </td></tr>
+<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9813, 0.9813, 0.9813] </td></tr>
+<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=2.86e-07 </td></tr>
+<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
+<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.45e-04 </td></tr>
+<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
+<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.861 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 1.28° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.989..1.036 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.014 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='FAIL'>FAIL</td><td>max 4.09° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.926..1.145 min à L=0.35 C=0.100 h=45°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.014 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.30 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.10° (≤ 7°), moyen 2.37° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0083 (≤ 0.015), angle max 24.3° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.33 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>4.2 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.63 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.07° (≤ 7°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.979 </td></tr>
+<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
+</table>
+<h3><code>01_LOOKS/MAXS_Golden/MAXS_Golden_65.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 65 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>65 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>65^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>274625 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
 <tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000854 max=0.999800 </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.001330 max=0.999884 </td></tr>
 <tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
 <tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=4.434e-05 </td></tr>
 <tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0315 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.153 (seuil 4) </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.771 (seuil 4) </td></tr>
 <tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0083 (≤ 0.02) </td></tr>
 <tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
 <tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
@@ -289,24 +469,78 @@
 <tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.50e-04 </td></tr>
 <tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
 <tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.853 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.90° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.982..1.025 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.014 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 6.02° (≤ 6.5°), moyen 3.44° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.981 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.90° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.982..1.025 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.014 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 3.76° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.926..1.140 min à L=0.35 C=0.100 h=45°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.014 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.31 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.02° (≤ 6.5°), moyen 2.37° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0083 (≤ 0.015), angle max 24.4° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.64 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>4.2 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.63 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.01° (≤ 6.5°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.979 </td></tr>
 <tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
 </table>
-<h3><code>01_LOOKS/MAXS_Natural.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>01_LOOKS/MAXS_Natural/MAXS_Natural_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>33 </td></tr>
+<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
+<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
+<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
+<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000000 max=0.997880 </td></tr>
+<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
+<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=1.614e-04 </td></tr>
+<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0000 </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.076 (seuil 4) </td></tr>
+<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0000 (≤ 0.02) </td></tr>
+<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0000 </td></tr>
+<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9875, 0.9875, 0.9875] </td></tr>
+<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=3.94e-08 </td></tr>
+<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
+<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.71e-04 </td></tr>
+<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
+<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.861 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.03° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.967..1.010 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.013 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.92° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.921..1.012 min à L=0.35 C=0.100 h=45°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.015 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.08 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 1.46° (≤ 7°), moyen 0.03° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0013 (≤ 0.015), angle max 2.5° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.08 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>3.9 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.59 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 1.56° (≤ 7°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.996 </td></tr>
+<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
+</table>
+<h3><code>01_LOOKS/MAXS_Natural/MAXS_Natural_65.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 65 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>65 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>65^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>274625 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
 <tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000000 max=0.997741 </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000000 max=0.997891 </td></tr>
 <tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
 <tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=2.995e-05 </td></tr>
 <tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0000 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.605 (seuil 4) </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>0.896 (seuil 4) </td></tr>
 <tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0000 (≤ 0.02) </td></tr>
 <tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
 <tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
@@ -315,26 +549,80 @@
 <tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=3.86e-08 </td></tr>
 <tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
 <tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.77e-04 </td></tr>
-<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.02 % </td></tr>
+<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
 <tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.863 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.00° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.967..1.010 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.013 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 0.01° (≤ 6.5°), moyen 0.00° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.997 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.00° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.967..1.010 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.013 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.87° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.920..1.012 min à L=0.35 C=0.100 h=45°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.015 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.08 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 1.40° (≤ 6.5°), moyen 0.03° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0008 (≤ 0.015), angle max 1.2° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.63 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>4.8 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.59 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 1.56° (≤ 6.5°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.996 </td></tr>
 <tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
 </table>
-<h3><code>01_LOOKS/MAXS_Night.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>01_LOOKS/MAXS_Night/MAXS_Night_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>33 </td></tr>
+<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
+<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
+<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
+<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.004624 max=0.994910 </td></tr>
+<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
+<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=3.742e-04 </td></tr>
+<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0312 </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.149 (seuil 4) </td></tr>
+<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0110 (≤ 0.02) </td></tr>
+<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0200 </td></tr>
+<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9751, 0.9751, 0.9751] </td></tr>
+<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=2.60e-06 </td></tr>
+<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
+<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.26e-04 </td></tr>
+<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
+<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.941 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.99° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.888..0.969 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.012 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='FAIL'>FAIL</td><td>max 5.16° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='FAIL'>FAIL</td><td>0.756..0.968 min à L=0.35 C=0.035 h=55°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.012 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.08 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.37° (≤ 7°), moyen 0.57° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0124 (≤ 0.015), angle max 44.2° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.19 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>0.0 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.67 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.17° (≤ 7°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.904 </td></tr>
+<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
+</table>
+<h3><code>01_LOOKS/MAXS_Night/MAXS_Night_65.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 65 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>65 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>65^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>274625 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
 <tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.002480 max=0.994618 </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.003818 max=0.994961 </td></tr>
 <tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
 <tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=1.167e-04 </td></tr>
 <tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0312 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.101 (seuil 4) </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.098 (seuil 4) </td></tr>
 <tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0110 (≤ 0.02) </td></tr>
 <tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
 <tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
@@ -345,24 +633,78 @@
 <tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=8.30e-04 </td></tr>
 <tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
 <tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.925 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.77° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.900..0.970 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.012 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 2.34° (≤ 6.5°), moyen 0.35° </td></tr>
-<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.905 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.77° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.900..0.970 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.012 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 3.89° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='FAIL'>FAIL</td><td>0.762..0.969 min à L=0.35 C=0.035 h=55°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.012 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.08 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.10° (≤ 6.5°), moyen 0.57° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0124 (≤ 0.015), angle max 43.0° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.32 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>0.1 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.67 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.07° (≤ 6.5°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.904 </td></tr>
 <tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
 </table>
-<h3><code>01_LOOKS/MAXS_Paris.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<h3><code>01_LOOKS/MAXS_Paris/MAXS_Paris_33.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
+<tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 33 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>33 </td></tr>
+<tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>33^3 </td></tr>
+<tr><td>nombre de points</td><td class='PASS'>PASS</td><td>35937 </td></tr>
+<tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
+<tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.002310 max=0.998349 </td></tr>
+<tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
+<tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=2.098e-04 </td></tr>
+<tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0286 </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>1.117 (seuil 4) </td></tr>
+<tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0100 (≤ 0.02) </td></tr>
+<tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
+<tr><td>noir pas trop relevé</td><td class='PASS'>PASS</td><td>L=0.0120 </td></tr>
+<tr><td>blanc pas terne</td><td class='PASS'>PASS</td><td>V=[0.9688, 0.9688, 0.9688] </td></tr>
+<tr><td>monotonie luminance (gris)</td><td class='PASS'>PASS</td><td>min dY=9.44e-07 </td></tr>
+<tr><td>monotonie approx. luminance (couleurs)</td><td class='PASS'>PASS</td><td>min dY=0.00e+00 </td></tr>
+<tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=7.02e-04 </td></tr>
+<tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
+<tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.817 </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.92° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.904..1.002 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.022 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 3.16° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='FAIL'>FAIL</td><td>0.803..1.074 min à L=0.35 C=0.035 h=55°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.022 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.15 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.29° (≤ 7°), moyen 1.50° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0126 (≤ 0.015), angle max 42.6° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.15 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>2.2 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.56 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.16° (≤ 7°) </td></tr>
+<tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.885 </td></tr>
+<tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
+</table>
+<h3><code>01_LOOKS/MAXS_Paris/MAXS_Paris_65.cube</code></h3><table><tr><th>test</th><th>statut</th><th>valeur</th></tr>
 <tr><td>format .cube</td><td class='PASS'>PASS</td><td>LUT_3D_SIZE 65 </td></tr>
+<tr><td>compatibilité lecteurs : sans BOM, fins de ligne LF</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>en-têtes ASCII</td><td class='PASS'>PASS</td><td> </td></tr>
+<tr><td>mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)</td><td class='PASS'>PASS</td><td>DOMAIN_MAX DOMAIN_MIN LUT_3D_SIZE TITLE </td></tr>
+<tr><td>taille MASTER 65 ou compat 33 (info)</td><td class='PASS'>PASS</td><td>65 </td></tr>
 <tr><td>dimensions &gt;= 33</td><td class='PASS'>PASS</td><td>65^3 </td></tr>
 <tr><td>nombre de points</td><td class='PASS'>PASS</td><td>274625 </td></tr>
 <tr><td>absence de NaN</td><td class='PASS'>PASS</td><td>0 NaN </td></tr>
 <tr><td>absence de Inf</td><td class='PASS'>PASS</td><td>0 Inf </td></tr>
-<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.000000 max=0.998134 </td></tr>
+<tr><td>valeurs min/max dans [0,1]</td><td class='PASS'>PASS</td><td>min=0.002046 max=0.998361 </td></tr>
 <tr><td>domaine d&#x27;entrée</td><td class='PASS'>PASS</td><td>[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] </td></tr>
 <tr><td>axe des gris : luminance croissante</td><td class='PASS'>PASS</td><td>min dY=5.730e-05 </td></tr>
 <tr><td>axe des gris : écart RGB (info)</td><td class='PASS'>PASS</td><td>0.0286 </td></tr>
-<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>0.913 (seuil 4) </td></tr>
+<tr><td>continuité (gain local OkLab max entre noeuds)</td><td class='PASS'>PASS</td><td>0.939 (seuil 4) </td></tr>
 <tr><td>gris : chroma max</td><td class='PASS'>PASS</td><td>0.0100 (≤ 0.02) </td></tr>
 <tr><td>blanc pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
 <tr><td>noir pur neutre</td><td class='PASS'>PASS</td><td>C=0.0000 </td></tr>
@@ -373,10 +715,19 @@
 <tr><td>hautes lumières non clippées (gradient 0.85→1)</td><td class='PASS'>PASS</td><td>min dY=7.01e-04 </td></tr>
 <tr><td>clipping anormal (noeuds intérieurs à 0 ou 1)</td><td class='PASS'>PASS</td><td>0.00 % </td></tr>
 <tr><td>détail des basses lumières (0.02 vs 0.06)</td><td class='PASS'>PASS</td><td>ratio=0.808 </td></tr>
-<tr><td>peau : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.69° </td></tr>
-<tr><td>peau : ratio de chroma</td><td class='PASS'>PASS</td><td>0.908..1.000 </td></tr>
-<tr><td>peau : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.023 </td></tr>
-<tr><td>teinte : décalage max (couleurs moyennes)</td><td class='PASS'>PASS</td><td>max 6.01° (≤ 6.5°), moyen 2.10° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 0.69° </td></tr>
+<tr><td>peau mesurée (ColorChecker) : ratio de chroma</td><td class='PASS'>PASS</td><td>0.908..1.000 min à L=0.38 C=0.054 h=42°</td></tr>
+<tr><td>peau mesurée (ColorChecker) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.023 </td></tr>
+<tr><td>carnations (enveloppe dérivée) : décalage de teinte</td><td class='PASS'>PASS</td><td>max 2.74° </td></tr>
+<tr><td>carnations (enveloppe dérivée) : ratio de chroma</td><td class='FAIL'>FAIL</td><td>0.808..1.070 min à L=0.35 C=0.035 h=55°</td></tr>
+<tr><td>carnations (enveloppe dérivée) : variation de luminosité</td><td class='PASS'>PASS</td><td>max dL=0.022 </td></tr>
+<tr><td>peau : continuité autour de la zone protégée</td><td class='PASS'>PASS</td><td>gain local max = 1.15 (seuil 4.0) </td></tr>
+<tr><td>teinte : rotation max (fichier, C ≥ 0.065)</td><td class='PASS'>PASS</td><td>max 6.06° (≤ 6.5°), moyen 1.50° 63074 couleurs</td></tr>
+<tr><td>teinte : écart perceptuel ΔH (0.02 ≤ C &lt; seuil)</td><td class='PASS'>PASS</td><td>max ΔH=0.0124 (≤ 0.015), angle max 41.4° angle peu significatif à faible chroma</td></tr>
+<tr><td>gamut : continuité rampes primaires/néons</td><td class='PASS'>PASS</td><td>gain local max = 1.28 (seuil 4.0) </td></tr>
+<tr><td>gamut : retournement de chroma en fin de rampe</td><td class='PASS'>PASS</td><td>2.5 % (≤ 8 %) roll-off des hautes lumières sur les primaires lumineuses</td></tr>
+<tr><td>gamut : pas de plateau en fin de rampe (compression douce)</td><td class='PASS'>PASS</td><td>pas final / médian = 0.56 </td></tr>
+<tr><td>gamut : teinte des primaires/néons</td><td class='PASS'>PASS</td><td>max 6.03° (≤ 6.5°) </td></tr>
 <tr><td>saturation : ratio moyen ColorChecker</td><td class='PASS'>PASS</td><td>0.885 </td></tr>
 <tr><td>images : augmentation de pixels clippés</td><td class='PASS'>PASS</td><td>0.000 % (-) </td></tr>
 </table>

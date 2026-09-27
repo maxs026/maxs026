@@ -62,7 +62,7 @@ def main(argv=None) -> int:
         reports.append(rep)
 
     total_fail = 0
-    md = ["# MAXS LUT LIBRARY v1 — résultats des tests", "",
+    md = [f"# MAXS COLOR SYSTEM v{cfg['global']['version']} — résultats des tests", "",
           "Généré par `scripts/test_luts.py`. Seuils : `config/looks.toml` [tests].", ""]
     tech_present = any("APPLE_OFFICIAL" in r.path for r in reports)
     if not tech_present:

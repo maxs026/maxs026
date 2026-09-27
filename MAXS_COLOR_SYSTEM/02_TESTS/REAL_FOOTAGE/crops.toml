@@ -1,0 +1,40 @@
+# Recadrages à 100 % utilisés par le diagnostic visuel (python scripts/real_footage.py crops).
+# frame = préfixe du nom de frame dans 02_TESTS/REAL_FOOTAGE/<clip>/frames/ ; box = [y0, y1, x0, x1]
+# (pixels des frames 1920 px de large, orientation portrait) ; zoom = agrandissement.
+
+[[crop]]
+name = "ciel_7073"
+clip = "IMG_7073"
+frame = "01_ciel"
+box = [250, 650, 560, 1200]
+
+[[crop]]
+name = "arbre_7073"
+clip = "IMG_7073"
+frame = "02_representative"
+box = [1100, 1500, 860, 1500]
+
+[[crop]]
+name = "facade_7073"
+clip = "IMG_7073"
+frame = "02_representative"
+box = [550, 1050, 0, 640]
+
+[[crop]]
+name = "quai_pierre_7073"
+clip = "IMG_7073"
+frame = "02_representative"
+box = [2950, 3350, 1100, 1740]
+
+[[crop]]
+name = "coque_blanche_7068"
+clip = "IMG_7068"
+frame = "02_representative"
+box = [2450, 2800, 350, 990]
+
+[[crop]]
+name = "ombres_eau_7068_x2"
+clip = "IMG_7068"
+frame = "04_sombres"
+box = [3000, 3180, 0, 320]
+zoom = 2

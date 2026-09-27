@@ -1,4 +1,4 @@
-# MAXS_Film — v1.0
+# MAXS_Film — v1.1
 
 Inspiration pellicule : contraste organique, noirs légèrement relevés, saturation contrôlée, légère séparation des couleurs.
 
@@ -41,3 +41,4 @@ Voir `02_TESTS/reports/real_footage_report.html` (section MAXS_Film).
 | Version | Date | Note |
 |---|---|---|
 | v1.0 | 2026-09-27 | Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1) |
+| v1.1 | 2026-09-27 | Moteur : compression de gamut en RGB lineaire (continue) + garde de teinte apres gamut. Parametres des looks inchanges. |

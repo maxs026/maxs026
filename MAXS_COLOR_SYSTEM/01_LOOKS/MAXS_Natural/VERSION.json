@@ -1,23 +1,23 @@
 {
   "system": "MAXS COLOR SYSTEM",
   "look": "MAXS_Natural",
-  "version": "1.0",
+  "version": "1.1",
   "date": "2026-09-27",
   "layer": "CREATIVE Rec.709 -> Rec.709",
   "files": {
     "65": {
       "file": "MAXS_Natural_65.cube",
-      "sha256": "9a492454481a75496ffd54370ccbcfaa10098dc7645deaf570325d43a324936d",
+      "sha256": "32d37a643246897b392993a18243a5efa202b114aab641ae7d9013fcff91873e",
       "role": "MASTER",
       "min": 0.0,
-      "max": 0.997741
+      "max": 0.997891
     },
     "33": {
       "file": "MAXS_Natural_33.cube",
-      "sha256": "fca051b1bd469995ca91e7f6f8038d0a7074a94d127f5595365992a45fc3e96d",
+      "sha256": "a79333a3168f1cecaf3fba1b8a525d49c12c228846603f9f2161d96264c5e0d1",
       "role": "compat",
       "min": 0.0,
-      "max": 0.997719
+      "max": 0.99788
     }
   },
   "params": {
@@ -46,6 +46,11 @@
       "version": "1.0",
       "date": "2026-09-27",
       "note": "Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1)"
+    },
+    {
+      "version": "1.1",
+      "date": "2026-09-27",
+      "note": "Moteur : compression de gamut en RGB lineaire (continue) + garde de teinte apres gamut. Parametres des looks inchanges."
     }
   ]
 }

@@ -3,7 +3,9 @@
 # 02_TESTS/reports/real_footage_metrics.json. Aucune note n'est calculée automatiquement.
 # Aucune correction n'a été appliquée : la liste "corrections_proposees" attend un accord.
 
-contexte = """Base technique : ACES 2.0 SDR Rec.709 (NON-APPLE) — la LUT officielle Apple n'est pas fournie.
+contexte = """Diagnostic rédigé sur v1.0 ; vérifié en v1.1 : mesures identiques à 0,001 près (la correction moteur v1.1 ne touche que les couleurs extrêmes, absentes de ces plans).
+Identification : les deux rushes sont compatibles Apple Log (ProRes 422 HQ, iPhone 15 Pro Max, BT.2020, transfert non standard). Plage vidéo déduite des données pour IMG_7068 (noir mesuré ≈ noir Apple Log) ; supposée pour IMG_7073 (pas de noir dans l'image, même appareil et réglages).
+Base technique : ACES 2.0 SDR Rec.709 (NON-APPLE) — la LUT officielle Apple n'est pas fournie.
 Les looks ont été conçus pour se placer après la LUT Apple : ce diagnostic est à confirmer avec elle.
 Rushes : Paris, 26/09/2026, iPhone 15 Pro Max, ProRes 422 HQ Apple Log, plans verticaux.
 IMG_7068 (15h23) : ciel couvert, Seine, pont, bateau-mouche à coque blanche.

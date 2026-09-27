@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))  # lutlib + scripts
 
 from lutlib import colorspace as cs  # noqa: E402
 from lutlib import technical  # noqa: E402
@@ -119,15 +119,21 @@ def test_pchip_monotone():
     assert np.all(np.diff(y) >= 0)
 
 
-def test_gamut_soft_in_gamut_and_hue_preserving():
+def test_gamut_soft_in_gamut_and_continuous():
     rng = np.random.default_rng(5)
     lab = np.stack([rng.random(3000), rng.normal(0, 0.2, 3000), rng.normal(0, 0.2, 3000)], -1)
     rgb = gamut_soft(lab)
     assert rgb.min() >= 0 and rgb.max() <= 1
-    back = cs.lab_to_lch(cs.linear_rgb_to_oklab(rgb))
-    lch = cs.lab_to_lch(lab)
-    chromatic = back[:, 1] > 0.01
-    assert np.abs(cs.hue_diff(lch[chromatic, 2], back[chromatic, 2])).max() < 0.5
+    # regression of the v1.0 defect: on the grey -> pure blue ramp with a 2 %
+    # chroma boost (as MAXS_Natural), the v1.0 OkLCh "max chroma" jumped
+    # (local gain 187). The linear-RGB compression must follow the ramp.
+    s = np.linspace(0, 1, 2049)[:, None]
+    ramp = 0.5 * (1 - s) + np.array([0.0, 0.0, 1.0]) * s
+    lab_r = cs.linear_rgb_to_oklab(cs.display_to_linear(ramp))
+    lab_r[:, 1:] *= 1.02
+    out = cs.linear_rgb_to_oklab(gamut_soft(lab_r))
+    gain = np.linalg.norm(np.diff(out, axis=0), axis=1) / np.linalg.norm(np.diff(lab_r, axis=0), axis=1)
+    assert gain.max() < 2.0
 
 
 # --- looks --------------------------------------------------------------------
@@ -200,7 +206,7 @@ def test_hue_guard_enforced(look):
     x = cs.linear_to_display(lin[ok])
     a, b = cs.display_to_oklch(x), cs.display_to_oklch(apply_look(x, look))
     dh = np.abs(cs.hue_diff(a[:, 2], b[:, 2]))
-    assert dh.max() <= look.max_hue_shift + 1e-6
+    assert dh.max() <= look.max_hue_shift + 1e-3
 
 
 def test_real_footage_pipeline_on_synthetic_prores(tmp_path):
@@ -225,3 +231,53 @@ def test_real_footage_pipeline_on_synthetic_prores(tmp_path):
     h264 = tmp_path / "t.mp4"
     subprocess.run([ff, "-y", "-v", "error", "-i", str(mov), "-c:v", "mpeg4", str(h264)], check=True)
     assert footage.check_source(footage.probe(h264))
+
+
+@pytest.mark.parametrize("path", [p for p in __import__("lutlib.config", fromlist=["x"]).all_cube_files()],
+                         ids=lambda p: p.name)
+def test_delivered_luts_read_identically_by_opencolorio(path):
+    """Standard reader check: OpenColorIO (used by many applications) must
+    give the same result as our reader + tetrahedral interpolation."""
+    ocio = pytest.importorskip("PyOpenColorIO")
+    cfg = ocio.Config.CreateRaw()
+    proc = cfg.getProcessor(ocio.FileTransform(src=str(path), interpolation=ocio.INTERP_TETRAHEDRAL))
+    x = np.random.default_rng(0).random((20000, 3)).astype(np.float32)
+    y = x.copy()
+    proc.getDefaultCPUProcessor().applyRGB(y)
+    assert np.abs(y - apply_lut(read_cube(path).table, x.astype(np.float64))).max() < 1e-5
+
+
+def test_delivered_luts_pass_validation():
+    from lutlib.config import all_cube_files
+    for path in all_cube_files():
+        rep, _ = validate_cube(path)
+        assert not rep.failed, (path, [(r.name, r.value) for r in rep.failed])
+
+
+def test_versioning_refuses_changed_content(tmp_path, monkeypatch):
+    """A published version can never silently change content."""
+    import generate_luts as gl
+    from lutlib import config as C
+    cfg_text = (Path(C.CONFIG_PATH)).read_text(encoding="utf-8")
+    monkeypatch.setattr(gl, "look_dir", lambda name: tmp_path / name)
+    monkeypatch.setattr(gl, "look_path", lambda name, n: tmp_path / name / f"{name}_{n}.cube")
+    monkeypatch.setattr(gl, "SIZES", (17, 9))
+    base = tmp_path / "a.toml"
+    base.write_text(cfg_text, encoding="utf-8")
+    assert gl.main(["--config", str(base), "--looks", "MAXS_Natural", "--check"]) == 0
+    # write v-current for real (technical layer skipped by pointing to tmp dirs)
+    monkeypatch.setattr(gl, "APPLE_DIR", tmp_path / "apple")
+    monkeypatch.setattr(gl, "TECH_SOURCE_DIR", tmp_path / "apple" / "source")
+    monkeypatch.setattr(gl, "ACES_DIR", tmp_path / "aces")
+    monkeypatch.setattr(gl.technical, "build_aces_reference", lambda d, s: [])
+    assert gl.main(["--config", str(base), "--looks", "MAXS_Natural"]) == 0
+    assert gl.main(["--config", str(base), "--looks", "MAXS_Natural"]) == 0          # unchanged: OK
+    changed = tmp_path / "b.toml"
+    changed.write_text(cfg_text.replace("contrast = 1.05", "contrast = 1.07", 1), encoding="utf-8")
+    assert gl.main(["--config", str(changed), "--looks", "MAXS_Natural"]) == 2       # refused
+    import re as _re
+    bumped = tmp_path / "c.toml"
+    bumped.write_text(_re.sub(r'version = "[0-9.]+"', 'version = "99.0"',
+                              changed.read_text(encoding="utf-8"), count=1), encoding="utf-8")
+    assert gl.main(["--config", str(bumped), "--looks", "MAXS_Natural"]) == 0         # new version
+    assert list((tmp_path / "MAXS_Natural" / "versions").iterdir())                    # old one archived

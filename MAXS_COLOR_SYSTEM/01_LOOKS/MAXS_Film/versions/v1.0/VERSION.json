@@ -1,0 +1,83 @@
+{
+  "system": "MAXS COLOR SYSTEM",
+  "look": "MAXS_Film",
+  "version": "1.0",
+  "date": "2026-09-27",
+  "layer": "CREATIVE Rec.709 -> Rec.709",
+  "files": {
+    "65": {
+      "file": "MAXS_Film_65.cube",
+      "sha256": "d476260cab948b5f3625cc44d4b2ff15487fe029126cb5ab5f01ecebc12be389",
+      "role": "MASTER",
+      "min": 0.000748,
+      "max": 0.99942
+    },
+    "33": {
+      "file": "MAXS_Film_33.cube",
+      "sha256": "ee0ed336132cb68f1869326f59096b052a6040e7b9a69e2576c87ed505ef212b",
+      "role": "compat",
+      "min": 0.000758,
+      "max": 0.999414
+    }
+  },
+  "params": {
+    "description": "Inspiration pellicule : contraste organique, noirs légèrement relevés, saturation contrôlée, légère séparation des couleurs.",
+    "tone": {
+      "contrast": 1.12,
+      "black_lift": 0.06,
+      "white_out": 0.965
+    },
+    "saturation": {
+      "global": 0.95,
+      "shadows": 0.85,
+      "highlights": 0.8
+    },
+    "split_tone": {
+      "shadows": {
+        "hue": 215.0,
+        "strength": 0.006
+      },
+      "highlights": {
+        "hue": 80.0,
+        "strength": 0.006
+      }
+    },
+    "hue_bands": [
+      {
+        "name": "greens",
+        "center": 135.0,
+        "width": 40.0,
+        "chroma": 0.9,
+        "hue_shift": 3.0
+      },
+      {
+        "name": "blues",
+        "center": 262.0,
+        "width": 35.0,
+        "chroma": 0.92,
+        "hue_shift": -3.0
+      },
+      {
+        "name": "reds",
+        "center": 25.0,
+        "width": 25.0,
+        "chroma": 1.04
+      }
+    ]
+  },
+  "engine": {
+    "max_hue_shift_deg": 6.0,
+    "hue_guard_chroma": [
+      0.02,
+      0.04
+    ],
+    "gamut_knee": 0.85
+  },
+  "history": [
+    {
+      "version": "1.0",
+      "date": "2026-09-27",
+      "note": "Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1)"
+    }
+  ]
+}

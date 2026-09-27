@@ -1,23 +1,23 @@
 {
   "system": "MAXS COLOR SYSTEM",
   "look": "MAXS_Paris",
-  "version": "1.0",
+  "version": "1.1",
   "date": "2026-09-27",
   "layer": "CREATIVE Rec.709 -> Rec.709",
   "files": {
     "65": {
       "file": "MAXS_Paris_65.cube",
-      "sha256": "6f9dafbf1d0d3673d848d08993c58c606e3b93f99f4bfcf395fc5b258bf30280",
+      "sha256": "7a7f2c29e470a189315b045dde7b6cab5f55c9b0fd8fa760fcae19c5c16aec1f",
       "role": "MASTER",
-      "min": 0.0,
-      "max": 0.998134
+      "min": 0.002046,
+      "max": 0.998361
     },
     "33": {
       "file": "MAXS_Paris_33.cube",
-      "sha256": "2e4111700413ef8ccbeb8252d0b42cfeeacb72c7097aa3b562b5d21dc5e60067",
+      "sha256": "897d9838990462db5d67e8077995129d21bd1cc0d00b6329d667094df8c3d450",
       "role": "compat",
-      "min": 0.000642,
-      "max": 0.998097
+      "min": 0.00231,
+      "max": 0.998349
     }
   },
   "params": {
@@ -80,6 +80,11 @@
       "version": "1.0",
       "date": "2026-09-27",
       "note": "Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1)"
+    },
+    {
+      "version": "1.1",
+      "date": "2026-09-27",
+      "note": "Moteur : compression de gamut en RGB lineaire (continue) + garde de teinte apres gamut. Parametres des looks inchanges."
     }
   ]
 }

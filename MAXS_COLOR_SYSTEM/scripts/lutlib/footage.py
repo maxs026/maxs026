@@ -90,6 +90,69 @@ def probe(path: Path) -> Probe:
         raw_stream_line=line.strip())
 
 
+def raw_luma_stats(path: Path, times) -> dict:
+    """10-bit Y' code values straight from the ProRes decoder (no conversion)."""
+    mins, p001, p999, maxs = [], [], [], []
+    for t in times:
+        cmd = [ffmpeg_exe(), "-v", "error", "-ss", f"{t:.3f}", "-i", str(path), "-frames:v", "1",
+               "-f", "rawvideo", "-pix_fmt", "yuv422p10le", "-"]
+        raw = subprocess.run(cmd, capture_output=True, check=True).stdout
+        a = np.frombuffer(raw, dtype="<u2")
+        y = a[: a.size // 2]                       # 4:2:2 -> Y plane is half the samples
+        mins.append(int(y.min()))
+        p001.append(float(np.percentile(y, 0.01)))
+        p999.append(float(np.percentile(y, 99.99)))
+        maxs.append(int(y.max()))
+    return {"times": [round(float(t), 3) for t in times], "y10_min": mins,
+            "y10_p0.01": p001, "y10_p99.99": p999, "y10_max": maxs}
+
+
+APPLE_LOG_BLACK = 0.15047645230091253   # log_encoding_AppleLogProfile(0), Apple white paper curve
+BLACK_TV = 64 + APPLE_LOG_BLACK * 876    # 195.8
+BLACK_PC = APPLE_LOG_BLACK * 1023        # 153.9
+
+
+def identify_apple_log(path: Path, p: Probe, stats: dict) -> dict:
+    """Evidence that a clip is Apple Log, and the signal range it uses.
+
+    The QuickTime tags readable here do not name "Apple Log" explicitly, so the
+    verdict is a set of converging clues, never a certainty."""
+    meta = subprocess.run([ffmpeg_exe(), "-hide_banner", "-i", str(path)],
+                          capture_output=True, text=True).stderr
+    tags = dict(re.findall(r"com\.apple\.quicktime\.(make|model|software)\s*:\s*(.+)", meta))
+    ymin = min(stats["y10_min"])
+    floor = float(np.median(stats["y10_p0.01"]))       # robust dark floor
+    ev = []
+    ev.append(("codec ProRes", p.codec == "prores", f"{p.codec} {p.profile}"))
+    ev.append(("fabricant Apple / iPhone", tags.get("make", "").strip() == "Apple"
+               and "iPhone" in tags.get("model", ""), f"{tags.get('make', '?').strip()} {tags.get('model', '?').strip()} "
+               f"iOS {tags.get('software', '?').strip()}"))
+    ev.append(("primaires BT.2020 (Apple Log)", p.color_primaries == "bt2020", str(p.color_primaries)))
+    ev.append(("transfert non SDR/HLG/PQ (Apple Log n'a pas de code standard)",
+               p.color_trc in (None, "unknown"), str(p.color_trc)))
+    # black floor: sensor noise spreads values ~10-15 codes around the true black
+    near_tv = ymin >= BLACK_TV - 15 and floor <= BLACK_TV + 15
+    near_pc = ymin >= BLACK_PC - 15 and floor <= BLACK_PC + 15
+    detail = f"Y10 min {ymin}, plancher p0.01 {floor:.0f} (noir Apple Log : vidéo {BLACK_TV:.1f} / complète {BLACK_PC:.1f})"
+    if near_tv or near_pc:
+        ev.append(("niveau de noir = noir Apple Log", True, detail))
+    else:
+        ev.append(("niveau de noir = noir Apple Log", None, detail + " - pas de noir profond dans l'image, non concluant"))
+    if p.color_range:
+        rng, why = p.color_range, "déclarée dans le fichier"
+    elif near_tv and not near_pc:
+        rng, why = "tv", f"déduite des données : plancher {floor:.0f} / min {ymin} ≈ noir Apple Log en plage vidéo ({BLACK_TV:.1f})"
+    elif near_pc and not near_tv:
+        rng, why = "pc", f"déduite des données : plancher {floor:.0f} / min {ymin} ≈ noir Apple Log en plage complète ({BLACK_PC:.1f})"
+    else:
+        rng, why = None, "non déclarée et non déductible (pas de noir profond dans l'image)"
+    failed = [n for n, v, _ in ev if v is False]
+    verdict = ("NON confirmé : " + ", ".join(failed)) if failed else \
+        "compatible Apple Log (indices convergents ; aucun tag explicite 'Apple Log' lisible)"
+    return {"verdict": verdict, "indices": [{"indice": n, "ok": v, "valeur": val} for n, v, val in ev],
+            "plage": rng, "plage_justification": why, "luma_brute": stats}
+
+
 def check_source(p: Probe) -> list[str]:
     """Hard requirements. Returns a list of blocking problems (empty = OK)."""
     problems = []

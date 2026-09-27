@@ -1,4 +1,4 @@
-# MAXS_Night — v1.0
+# MAXS_Night — v1.1
 
 Nuit : ombres légèrement froides, hautes lumières neutres, contraste contrôlé, détails des basses lumières conservés.
 
@@ -39,3 +39,4 @@ Voir `02_TESTS/reports/real_footage_report.html` (section MAXS_Night).
 | Version | Date | Note |
 |---|---|---|
 | v1.0 | 2026-09-27 | Premiere version MAXS COLOR SYSTEM (parametres identiques a MAXS LUT LIBRARY v1) |
+| v1.1 | 2026-09-27 | Moteur : compression de gamut en RGB lineaire (continue) + garde de teinte apres gamut. Parametres des looks inchanges. |

@@ -16,11 +16,11 @@ Processing chain (float64 everywhere, all steps documented in README.md)
               attenuated on skin (skin_protect)
 6. split tone small (a, b) offsets in shadows / mids / highlights; the weights
               fall to 0 at L=0 and L=1 so pure black and pure white stay neutral
-6b. hue guard final hue of chromatic inputs kept within +/- max_hue_shift_deg
-              of the input hue (covers bands AND split toning)
-7. gamut      soft chroma compression relative to the largest in-gamut chroma
-              at constant L and hue (knee + tanh) -> no hue skew, no hard clip
-8. encode     display light -> V ** (1/2.4)
+7. gamut      soft compression along the straight linear-RGB line toward the
+              grey of equal lightness (knee + tanh): convex cube -> continuous
+8. hue guard  final hue of chromatic inputs kept within +/- max_hue_shift_deg
+              of the input hue (bands, split toning AND gamut drift)
+9. encode     display light -> V ** (1/2.4)
 """
 
 from __future__ import annotations
@@ -176,56 +176,81 @@ def apply_look(rgb: np.ndarray, p: LookParams) -> np.ndarray:
         lab[:, 1] += w * np.cos(np.radians(hue))
         lab[:, 2] += w * np.sin(np.radians(hue))
 
-    # 6b. global hue guard: the FINAL hue of every chromatic input colour stays
-    #     within +/- max_hue_shift of its input hue, whatever step moved it
-    #     (bands or split toning). Near-neutral inputs (hue undefined) are
-    #     exempt: tinting them is the purpose of split toning. The allowance
-    #     widens smoothly from max_hue_shift (C >= c1) to 180 deg (C <= c0).
-    c0, c1 = p.hue_guard_chroma
-    lch_out = cs.lab_to_lch(lab)
-    allowed = p.max_hue_shift + (180.0 - p.max_hue_shift) * (1.0 - cs.smoothstep(c0, c1, lch[:, 1]))
-    dh = np.clip(cs.hue_diff(lch[:, 2], lch_out[:, 2]), -allowed, allowed)
-    lch_out[:, 2] = lch[:, 2] + dh
-    lab = cs.lch_to_lab(lch_out)
-
-    # 7. soft gamut mapping: keep L and hue, compress chroma relative to the
-    #    largest in-gamut chroma so nothing is hard-clipped (see gamut_soft)
+    # 7. soft gamut compression in LINEAR RGB (see gamut_soft), then
+    # 8. hue guard on the FINAL colour: the hue of every chromatic input colour
+    #    ends within +/- max_hue_shift of its input hue, whatever moved it
+    #    (bands, split toning, gamut compression). Near-neutral inputs (hue
+    #    undefined) are exempt: tinting them is the purpose of split toning.
+    #    The allowance widens smoothly from max_hue_shift (C >= c1) to 180 deg
+    #    (C <= c0). A colour rotated back is projected into the gamut if needed
+    #    (projection only, continuous, no second compression).
     lab[:, 0] = np.clip(lab[:, 0], 0.0, 1.0)
+    c0, c1 = p.hue_guard_chroma
+    allowed = p.max_hue_shift + (180.0 - p.max_hue_shift) * (1.0 - cs.smoothstep(c0, c1, lch[:, 1]))
+    lab = hue_guard(lab, lch[:, 2], allowed)
     out = gamut_soft(lab, knee=p.gamut_knee)
+    for _ in range(4):
+        lch_out = cs.lab_to_lch(cs.linear_rgb_to_oklab(out))
+        dh = cs.hue_diff(lch[:, 2], lch_out[:, 2])
+        bad = np.abs(dh) > allowed + 1e-4
+        if not np.any(bad):
+            break
+        fixed = hue_guard(cs.lch_to_lab(lch_out[bad]), lch[bad, 2], allowed[bad])
+        out[bad] = gamut_project(fixed)
 
     return cs.linear_to_display(out).reshape(shape)
 
 
-def max_chroma(L: np.ndarray, h: np.ndarray, iters: int = 32) -> np.ndarray:
-    """Largest OkLCh chroma inside the Rec.709 [0,1] cube at (L, h), by bisection."""
-    lo = np.zeros_like(L)
-    hi = np.full_like(L, 0.5)
-    for _ in range(iters):
-        mid = 0.5 * (lo + hi)
-        rgb = cs.oklab_to_linear_rgb(cs.lch_to_lab(np.stack([L, mid, h], axis=-1)))
-        ok = np.all((rgb >= 0.0) & (rgb <= 1.0), axis=-1)
-        lo = np.where(ok, mid, lo)
-        hi = np.where(ok, hi, mid)
-    return lo
+def hue_guard(lab: np.ndarray, h_in: np.ndarray, allowed: np.ndarray) -> np.ndarray:
+    """Clamp the hue of ``lab`` to h_in +/- allowed (constant L and C)."""
+    lch = cs.lab_to_lch(lab)
+    lch[:, 2] = h_in + np.clip(cs.hue_diff(h_in, lch[:, 2]), -allowed, allowed)
+    return cs.lch_to_lab(lch)
+
+
+def _ray_to_grey(lab: np.ndarray):
+    """Linear RGB colour, its grey of equal OkLab lightness (Y = L^3) and the
+    ratio r = |c - g| / |exit - g| along the straight segment grey -> colour
+    (r = 1 on the cube surface, r < 1 inside). The Rec.709 cube is convex, so
+    the exit point is unique and r is a continuous function of the colour."""
+    rgb = cs.oklab_to_linear_rgb(lab)
+    g = np.clip(lab[:, 0], 0.0, 1.0) ** 3
+    d = rgb - g[:, None]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        t = np.where(d < 0, g[:, None] / -d, np.where(d > 0, (1.0 - g)[:, None] / d, np.inf))
+    t_exit = t.min(axis=1)
+    r = np.where(t_exit > 0, 1.0 / np.where(t_exit > 0, t_exit, 1.0), np.inf)
+    return rgb, g, d, r
 
 
 def gamut_soft(lab: np.ndarray, knee: float = 0.85) -> np.ndarray:
-    """Soft chroma compression toward the Rec.709 gamut boundary.
+    """Soft gamut compression toward the Rec.709 [0,1]^3 cube.
 
-    s = C / Cmax(L, h).  Below ``knee`` nothing changes; above it
-    s' = knee + (1 - knee) * tanh((s - knee) / (1 - knee)), which is C1 at the
-    knee, strictly increasing and < 1: the result is always in gamut, hue and
-    lightness are untouched and no plateau (clipping) is created.
+    Each colour moves on the straight line (in linear RGB) toward the grey of
+    the same OkLab lightness. With r its relative distance to the cube surface
+    along that line: r <= knee is untouched, above the knee
+    r' = knee + (1 - knee) * tanh((r - knee) / (1 - knee)) (C1 at the knee,
+    strictly increasing, < 1): no hard clip, no plateau, no discontinuity.
+
+    Why linear RGB and not OkLCh: near the blue primary the constant-L,
+    constant-hue chroma line leaves the cube and re-enters it, so "maximum
+    chroma at (L, h)" is not continuous there (measured: in gamut for
+    C in [0, 0.271] and [0.287, 0.302]). The linear-RGB line has a single exit.
+    The slight hue drift it causes is bounded afterwards by the hue guard.
     """
-    lch = cs.lab_to_lch(lab)
-    L, C, h = lch[:, 0], lch[:, 1], lch[:, 2]
-    cmax = max_chroma(L, h)
-    s = np.where(cmax > 1e-9, C / np.maximum(cmax, 1e-9), 0.0)
-    over = s > knee
-    s2 = np.where(over, knee + (1.0 - knee) * np.tanh((s - knee) / (1.0 - knee)), s)
-    C2 = s2 * cmax
-    rgb = cs.oklab_to_linear_rgb(cs.lch_to_lab(np.stack([L, C2, h], axis=-1)))
-    return np.clip(rgb, 0.0, 1.0)   # numerical safety only (|err| < 1e-9)
+    rgb, g, d, r = _ray_to_grey(lab)
+    r2 = np.where(r > knee, knee + (1.0 - knee) * np.tanh((r - knee) / (1.0 - knee)), r)
+    scale = np.where(np.isfinite(r) & (r > 0), r2 / np.where(r > 0, r, 1.0), 0.0)
+    return np.clip(g[:, None] + d * scale[:, None], 0.0, 1.0)
+
+
+def gamut_project(lab: np.ndarray) -> np.ndarray:
+    """Project out-of-gamut colours onto the cube surface along the same
+    grey line (identity inside the cube; continuous)."""
+    rgb, g, d, r = _ray_to_grey(lab)
+    scale = np.where(r > 1.0, 1.0 / np.where(np.isfinite(r), r, 1.0), 1.0)
+    scale = np.where(np.isfinite(r), scale, 0.0)
+    return np.clip(g[:, None] + d * scale[:, None], 0.0, 1.0)
 
 
 def params_from_config(name: str, cfg: dict, global_cfg: dict) -> LookParams:

@@ -58,6 +58,20 @@ def validate_cube(path: Path, log_input: bool | None = None) -> tuple[Report, ob
         rep.add("format .cube", False, detail=str(exc))
         return rep, None
     rep.add("format .cube", True, "LUT_3D_SIZE %d" % cube.size)
+    raw = Path(path).read_bytes()
+    head = raw[:4096]
+    rep.add("compatibilité lecteurs : sans BOM, fins de ligne LF",
+            not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in head, "")
+    try:
+        text_head = [l for l in head.decode("ascii").splitlines() if l and not l[0].isdigit() and l[0] not in "-."]
+        ascii_ok = True
+    except UnicodeDecodeError:
+        text_head, ascii_ok = [], False
+    rep.add("en-têtes ASCII", ascii_ok, "")
+    kws = {l.split()[0] for l in text_head if not l.startswith("#")}
+    rep.add("mots-clés standard uniquement (TITLE, LUT_3D_SIZE, DOMAIN_MIN/MAX)",
+            kws <= {"TITLE", "LUT_3D_SIZE", "DOMAIN_MIN", "DOMAIN_MAX"}, " ".join(sorted(kws)))
+    rep.add("taille MASTER 65 ou compat 33 (info)", True, str(cube.size))
     t = cube.table
     rep.add("dimensions >= 33", cube.size >= MIN_REQUIRED_SIZE, f"{cube.size}^3")
     rep.add("nombre de points", t.shape == (cube.size,) * 3 + (3,), f"{cube.size ** 3}")
@@ -122,6 +136,38 @@ def mid_chroma_colours(n_h=24):
     return cs.linear_to_display(lin[ok])
 
 
+GAMUT_TARGETS = {
+    "rouge": [1, 0, 0], "vert": [0, 1, 0], "bleu": [0, 0, 1],
+    "cyan": [0, 1, 1], "magenta": [1, 0, 1], "jaune": [1, 1, 0],
+    "neon_rose": [1, 0.1, 0.6], "neon_cyan": [0.1, 1, 0.95], "neon_vert": [0.4, 1, 0.1],
+    "neon_orange": [1, 0.45, 0.0], "neon_violet": [0.55, 0.0, 1.0],
+}
+
+
+def local_gain(v_in: np.ndarray, v_out: np.ndarray, floor: float = 1e-4) -> float:
+    """Largest ratio between consecutive OkLab steps of the output and of the
+    input along an ordered ramp. ~1 = the LUT follows the input smoothly; a
+    discontinuity or fold gives a large value. (A plain step/median ratio is
+    misleading near black, where OkLab's cube root makes the first step large
+    for the input as well.)"""
+    li = cs.linear_rgb_to_oklab(cs.display_to_linear(np.clip(v_in, 0, 1)))
+    lo = cs.linear_rgb_to_oklab(cs.display_to_linear(np.clip(v_out, 0, 1)))
+    di = np.linalg.norm(np.diff(li, axis=0), axis=1)
+    do = np.linalg.norm(np.diff(lo, axis=0), axis=1)
+    keep = di > floor
+    return float((do[keep] / di[keep]).max())
+
+
+def dense_chromatic_samples(n=300000, seed=11):
+    """Random in-gamut colours, all hues, OkLab L 0.1-0.97, C 0.02-0.32 (display-encoded)."""
+    rng = np.random.default_rng(seed)
+    lch = np.stack([rng.uniform(0.1, 0.97, n), rng.uniform(0.02, 0.32, n), rng.uniform(0, 360, n)], -1)
+    lin = cs.oklab_to_linear_rgb(cs.lch_to_lab(lch))
+    ok = np.all((lin >= 0) & (lin <= 1), axis=1)
+    x = cs.linear_to_display(lin[ok])
+    return x, _oklch(x)
+
+
 def colorchecker_display():
     import colour
     cc = colour.CCS_COLOURCHECKERS["ColorChecker24 - After November 2014"]
@@ -176,26 +222,77 @@ def test_look(cube, th: dict, rep: Report, images: dict | None = None):
     rep.add("détail des basses lumières (0.02 vs 0.06)", ratio >= th["shadow_detail_min_ratio"],
             f"ratio={ratio:.3f}")
 
-    # --- skin tones ---
-    from .testimages import skin_references
-    skin = skin_references()
-    s_in, s_out = _oklch(skin), _oklch(f(skin))
-    dh = np.abs(cs.hue_diff(s_in[:, 2], s_out[:, 2]))
-    cr = s_out[:, 1] / s_in[:, 1]
-    dL = np.abs(s_out[:, 0] - s_in[:, 0])
-    rep.add("peau : décalage de teinte", dh.max() <= th["skin_max_hue_shift"], f"max {dh.max():.2f}°")
-    lo, hi_ = th["skin_chroma_ratio"]
-    rep.add("peau : ratio de chroma", lo <= cr.min() and cr.max() <= hi_,
-            f"{cr.min():.3f}..{cr.max():.3f}")
-    rep.add("peau : variation de luminosité", dL.max() <= th["skin_max_dL"], f"max dL={dL.max():.3f}")
+    # --- skin tones: measured patches, then derived carnation envelope ---
+    from .testimages import skin_envelope, skin_references
+    for label, skin in (("peau mesurée (ColorChecker)", skin_references()),
+                        ("carnations (enveloppe dérivée)", skin_envelope())):
+        s_in, s_out = _oklch(skin), _oklch(f(skin))
+        dh = np.abs(cs.hue_diff(s_in[:, 2], s_out[:, 2]))
+        cr = s_out[:, 1] / s_in[:, 1]
+        dL = np.abs(s_out[:, 0] - s_in[:, 0])
+        worst = s_in[np.argmin(cr)]
+        rep.add(f"{label} : décalage de teinte", dh.max() <= th["skin_max_hue_shift"], f"max {dh.max():.2f}°")
+        lo, hi_ = th["skin_chroma_ratio"]
+        rep.add(f"{label} : ratio de chroma", lo <= cr.min() and cr.max() <= hi_,
+                f"{cr.min():.3f}..{cr.max():.3f}",
+                detail=f"min à L={worst[0]:.2f} C={worst[1]:.3f} h={worst[2]:.0f}°")
+        rep.add(f"{label} : variation de luminosité", dL.max() <= th["skin_max_dL"], f"max dL={dL.max():.3f}")
+    # protection boundary must not create artefacts: sweeps through the skin region
+    sweeps = [np.stack([np.full(721, 0.62), np.full(721, 0.07), np.linspace(-20, 120, 721)], -1),
+              np.stack([np.full(721, 0.62), np.linspace(0.0, 0.25, 721), np.full(721, 40.0)], -1),
+              np.stack([np.linspace(0.2, 0.95, 721), np.full(721, 0.06), np.full(721, 40.0)], -1)]
+    jump = 0.0
+    for sw in sweeps:
+        lin = cs.oklab_to_linear_rgb(cs.lch_to_lab(sw))
+        lin = lin[np.all((lin >= 0) & (lin <= 1), axis=1)]
+        v = cs.linear_to_display(lin)
+        jump = max(jump, local_gain(v, f(v)))
+    rep.add("peau : continuité autour de la zone protégée", jump < th["sweep_max_local_gain"],
+            f"gain local max = {jump:.2f} (seuil {th['sweep_max_local_gain']})")
 
-    # --- hue / saturation ---
-    mc = mid_chroma_colours()
-    m_in, m_out = _oklch(mc), _oklch(f(mc))
-    dh = np.abs(cs.hue_diff(m_in[:, 2], m_out[:, 2]))
-    lim = th["max_hue_shift_deg"] + th["hue_interp_tolerance"]
-    rep.add("teinte : décalage max (couleurs moyennes)", dh.max() <= lim,
-            f"max {dh.max():.2f}° (≤ {lim:g}°), moyen {dh.mean():.2f}°")
+    # --- hue: engine limit checked on the FILE (dense sampling) ---
+    x, a = dense_chromatic_samples()
+    b = _oklch(f(x))
+    dh = np.abs(cs.hue_diff(a[:, 2], b[:, 2]))
+    tol = th.get(f"hue_interp_tolerance_{cube.size}", th["hue_interp_tolerance_33"])
+    lim = th["max_hue_shift_deg"] + tol
+    cmin = th["hue_file_min_chroma"]
+    m = a[:, 1] >= cmin
+    rep.add(f"teinte : rotation max (fichier, C ≥ {cmin})", dh[m].max() <= lim,
+            f"max {dh[m].max():.2f}° (≤ {lim:g}°), moyen {dh[m].mean():.2f}°",
+            detail=f"{int(m.sum())} couleurs")
+    dH = 2 * np.sqrt(a[:, 1] * b[:, 1]) * np.sin(np.radians(dh) / 2)
+    low = (a[:, 1] >= 0.02) & ~m
+    rep.add("teinte : écart perceptuel ΔH (0.02 ≤ C < seuil)", dH[low].max() <= th["max_delta_H"],
+            f"max ΔH={dH[low].max():.4f} (≤ {th['max_delta_H']}), angle max {dh[low].max():.1f}°",
+            detail="angle peu significatif à faible chroma")
+
+    # --- gamut: pure primaries / secondaries / neons ---
+    worst_jump, worst_dc, worst_h, worst_end = 0.0, 0.0, 0.0, 1.0
+    for c in GAMUT_TARGETS.values():
+        s_ = np.linspace(0, 1, 513)[:, None]
+        for start in (0.5, 0.15, 0.0):                 # from mid grey, near black, black
+            ramp = start * (1 - s_) + np.asarray(c, float) * s_
+            o = f(ramp)
+            lab = cs.linear_rgb_to_oklab(cs.display_to_linear(o))
+            d = np.linalg.norm(np.diff(lab, axis=0), axis=1)
+            worst_jump = max(worst_jump, local_gain(ramp, o))
+            ch = np.hypot(lab[:, 1], lab[:, 2])
+            worst_dc = max(worst_dc, float((ch.max() - ch[-1]) / max(ch.max(), 1e-9)))
+            worst_end = min(worst_end, float(d[-40:].mean() / max(np.median(d), 1e-9)))
+            ai, bo = _oklch(ramp), _oklch(o)
+            mm = ai[:, 1] >= cmin
+            worst_h = max(worst_h, float(np.abs(cs.hue_diff(ai[mm, 2], bo[mm, 2])).max()))
+    rep.add("gamut : continuité rampes primaires/néons", worst_jump < th["sweep_max_local_gain"],
+            f"gain local max = {worst_jump:.2f} (seuil {th['sweep_max_local_gain']})")
+    rep.add("gamut : retournement de chroma en fin de rampe", worst_dc <= th["gamut_max_chroma_reversal"],
+            f"{worst_dc * 100:.1f} % (≤ {th['gamut_max_chroma_reversal'] * 100:.0f} %)",
+            detail="roll-off des hautes lumières sur les primaires lumineuses")
+    rep.add("gamut : pas de plateau en fin de rampe (compression douce)", worst_end > 0.1,
+            f"pas final / médian = {worst_end:.2f}")
+    rep.add("gamut : teinte des primaires/néons", worst_h <= lim, f"max {worst_h:.2f}° (≤ {lim:g}°)")
+
+    # --- saturation ---
     cc = colorchecker_display()
     c_in, c_out = _oklch(cc), _oklch(f(cc))
     chrom = c_in[:, 1] > 0.03

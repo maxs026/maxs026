@@ -1,42 +1,54 @@
-# 00_TECHNICAL — Apple Log → Rec.709
+# 00_TECHNICAL — couche TECHNIQUE Apple Log → Rec.709
 
-## Règle
+Cette couche convertit le signal Apple Log (BT.2020) en Rec.709 BT.1886. Elle ne contient **aucun look**
+et aucun look ne contient de conversion Apple Log.
 
-`AppleLog_to_Rec709.cube` n'est produite **qu'à partir de la LUT officielle Apple**.
-Aucune fonction Apple Log → Linear ou Apple Log → Rec.709 n'est inventée ici.
+## Ordre de priorité
 
-## Ce qui est disponible, et d'où
+| # | Transformation | Statut | Dossier |
+|---|---|---|---|
+| 1 | **LUT officielle Apple** Apple Log → Rec.709 | ❌ **non fournie** (téléchargement Apple ID requis, inaccessible depuis l'environnement de construction) | `APPLE_OFFICIAL/` |
+| 2 | **IDT Apple Log / ACES + ACES 2.0 SDR Rec.709** | ✅ générée, marquée **NON-APPLE** | `ACES2_NON-APPLE/` |
+| 3 | **DaVinci Color Space Transform** (Rec.2020 / Apple Log → Rec.709 / Gamma 2.4) | référence dans Resolve, non générable ici | voir `03_DAVINCI/README.md` §6 |
 
-| Élément | Statut | Source |
-|---|---|---|
-| Primaires Apple Log | BT.2020, D65 | Apple Log Profile White Paper (2023) |
-| Courbe Apple Log ↔ linéaire | ✅ disponible localement | White paper Apple ; implémentée dans `colour-science` (`log_encoding_AppleLogProfile`) et OpenColorIO (`CURVE - APPLE_LOG_to_LINEAR`), IDT ACES fournie par Apple (`IDT.Apple.AppleLog_BT2020.ctl`). Les deux implémentations sont comparées dans `tests/test_core.py`. |
-| **Rendu Apple Log → Rec.709 d'Apple** | ❌ **absent** | LUT officielle sur https://developer.apple.com/download/all/?q=Apple%20log — connexion Apple ID requise, non accessible depuis l'environnement de génération. |
+Aucune approximation « maison » : aucune de ces transformations n'est écrite à la main.
 
-La courbe seule ne suffit pas : passer d'un signal scène (log, BT.2020) à un affichage Rec.709
-exige un tone mapping et une conversion de gamut, qu'Apple ne publie que sous forme de LUT.
-
-## Fournir la LUT officielle
+## 1. APPLE_OFFICIAL/ — la LUT Apple, telle quelle
 
 1. Se connecter sur https://developer.apple.com/download/all/?q=Apple%20log
-2. Télécharger le paquet *Apple Log* (LUT Apple Log → Rec.709, ex. `AppleLogToRec709-v1.0.cube`).
-3. Copier **un seul** fichier `.cube` dans `00_TECHNICAL/source/`.
-4. `python scripts/generate_luts.py && python scripts/validate_luts.py --source && python scripts/test_luts.py`
+2. Télécharger le paquet Apple Log (LUT Apple Log → Rec.709).
+3. Copier **un seul** `.cube` dans `APPLE_OFFICIAL/source/` (ce fichier n'est jamais modifié).
+4. `python scripts/generate_luts.py`
 
-Le script :
-* copie le fichier **à l'identique** (octet par octet) si sa taille correspond (33 ou 65) ;
-* sinon le ré-échantillonne en interpolation tétraédrique (aucune information ajoutée, noté dans l'en-tête) ;
-* écrit un fichier `*.provenance.txt` avec le SHA-256 de la source.
+Le générateur :
+* valide le fichier (NaN/Inf refusés) sans le réécrire ;
+* le copie **octet par octet** en `AppleLog_to_Rec709_APPLE_OFFICIAL.cube`, vérifie le SHA-256 de la copie
+  **et** de la source ;
+* écrit `AppleLog_to_Rec709_APPLE_OFFICIAL.provenance.txt` (nom, SHA-256, taille de grille, domaine) ;
+* ne la ré-échantillonne jamais (même si elle n'est pas en 65³).
 
-Sans source : message explicite, pas de LUT technique ; `--strict` renvoie un code d'erreur.
+Le nom « APPLE_OFFICIAL » n'est donné qu'à ce fichier-là.
 
-## Alternative documentée, NON Apple (`--aces-reference`)
+## 2. ACES2_NON-APPLE/ — référence documentée (utilisée tant que la LUT Apple manque)
 
-`python scripts/generate_luts.py --aces-reference` écrit
-`alternatives/AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_{33,65}.cube` :
+`AppleLog_to_Rec709_ACES2-SDR100_NON-APPLE_65.cube` (MASTER) et `_33.cube`, construits avec
+OpenColorIO (config intégrée *studio-config*, version dans `provenance.txt`) :
 
-Apple Log (décodage Apple, built-in OCIO) → ACES2065-1 → **ACES 2.0 Output Transform SDR 100 nits
-(Rec.709)** → affichage Rec.1886, via la *studio config* intégrée à OpenColorIO ≥ 2.4.
-C'est un rendu standard (AMPAS), **pas** le rendu Apple : contraste et saturation différents.
-Les valeurs hors [0,1] en sortie sont ramenées dans [0,1] (compte noté dans l'en-tête).
-Elle n'est pas générée par défaut.
+| Étape | Source |
+|---|---|
+| Apple Log → linéaire scène BT.2020 → ACES2065-1 | courbe publiée par Apple (*Apple Log Profile White Paper*, 2023), built-in OCIO `APPLE_LOG_to_ACES2065-1` = IDT fournie par Apple à l'AMPAS (`IDT.Apple.AppleLog_BT2020.ctl`) |
+| ACES → affichage | ACES 2.0 Output Transform « SDR 100 nits (Rec.709) » (AMPAS) |
+| Encodage | Rec.1886 Rec.709 (gamma 2.4) |
+
+Vérifications (tests) : la courbe Apple Log d'OCIO est comparée à celle de colour-science
+(`tests/test_core.py`) ; les gris Apple Log de −8 à +6 IL ressortent neutres et monotones.
+
+**Ce n'est pas le rendu Apple.** Mesuré sur rushes réels : tons moyens bas (L médian ≈ 0,41 OkLab)
+et blancs peu lumineux (coque blanche ≈ 0,8). Les valeurs hors [0,1] de la sortie ACES sont ramenées
+dans [0,1] (compte indiqué dans l'en-tête du fichier).
+
+## Identification des rushes
+
+`scripts/real_footage.py extract` documente pour chaque rush : codec, fabricant, primaires, transfert,
+niveau de noir mesuré, et en déduit la plage du signal quand c'est possible. Voir
+`02_TESTS/reports/real_footage_report.html`.
