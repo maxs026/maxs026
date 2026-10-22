@@ -4,7 +4,8 @@ Page d'accueil légère pour Samsung Crystal UHD : heure, météo, grille de rac
 Le même dossier fonctionne dans un navigateur (`index.html`) et comme appli Tizen (`config.xml`).
 
 ## Réglages
-En haut de `index.html`, l'objet `CONFIG` : ville et coordonnées météo, liste des raccourcis.
+En haut de `index.html`, l'objet `CONFIG` : ville et coordonnées météo, liste des raccourcis,
+`visible` = nombre d'applis visibles de chaque côté de la sélection.
 `id` = identifiant de l'appli Samsung (ouvre l'appli native, sinon repli sur l'adresse web).
 Les `id` fournis (YouTube, Netflix, Prime, Disney+) sont à vérifier sur ta TV : touche **bleue**
 de la télécommande dans l'appli = liste des applis installées avec leurs vrais `id`.
@@ -24,7 +25,7 @@ de la télécommande dans l'appli = liste des applis installées avec leurs vrai
    *Lancer automatiquement la dernière appli* (libellé variable selon le modèle).
 
 ## Télécommande
-Flèches : naviguer. OK : ouvrir. Retour : quitter. Bleu : liste des applis et de leurs `id`.
+Haut / Bas : défiler la liste (en boucle, sans fin). OK : ouvrir. Retour : quitter. Bleu : liste des applis et de leurs `id`.
 Jaune : active ou coupe le **mode éco** (sans lueurs d'ambiance, transitions plus courtes). Il s'active
 aussi tout seul si la TV rame, et le choix est mémorisé.
 
@@ -34,6 +35,6 @@ aussi tout seul si la TV rame, et le choix est mémorisé.
 - Smart Hub n'est pas remplaçable sur Tizen.
 
 ## Fluidité
-Seuls `transform` et `opacity` sont animés (GPU) : cadre de focus unique qui glisse, entrée en cascade,
-effet d'appui sur OK, lueurs d'ambiance qui dérivent. Aucun flou, aucune ombre animée.
+Seuls `transform` et `opacity` sont animés (GPU) : échelle verticale infinie (la sélection reste au centre et la liste défile
+autour, avec rebouclage), lueurs d'ambiance qui dérivent. Aucun flou, aucune ombre animée.
 La répétition des flèches est limitée pour éviter les saccades quand on maintient la touche.

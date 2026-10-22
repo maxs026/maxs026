@@ -14,57 +14,52 @@ body{
   background-color:var(--bg);
   background-image:radial-gradient(ellipse at 20% 0%,#10222b 0%,transparent 55%),
                    radial-gradient(ellipse at 90% 100%,#1a1230 0%,transparent 50%);
-  color:var(--fg);font:400 24px/1.2 Helvetica,Arial,sans-serif;padding:5vh 6vw;
-  display:flex;flex-direction:column;position:relative}
-/* Lueurs d'ambiance qui dérivent lentement (désactivées en mode éco) */
+  color:var(--fg);font:400 24px/1.2 Helvetica,Arial,sans-serif;position:relative;display:flex}
 .blob{position:fixed;width:55vw;height:55vw;border-radius:50%;pointer-events:none;
   will-change:transform;animation:drift 26s ease-in-out infinite alternate}
 .b1{left:-12vw;top:-18vw;background:radial-gradient(circle,rgba(40,160,170,.22) 0%,transparent 65%)}
 .b2{right:-14vw;bottom:-22vw;background:radial-gradient(circle,rgba(110,70,200,.20) 0%,transparent 65%);animation-duration:34s;animation-direction:alternate-reverse}
 @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(9vw,7vh,0)}}
-header,#name,#grid{position:relative}
-header{display:flex;justify-content:space-between;align-items:flex-end}
-#time{font-size:72px;font-weight:200;letter-spacing:-1px}
+
+/* Échelle verticale à gauche */
+#ladder{position:relative;width:46vw;height:100%;padding-left:6vw;animation:in .6s var(--ease) both}
+@keyframes in{from{opacity:0;transform:translate3d(-40px,0,0)}to{opacity:1;transform:none}}
+.item{position:absolute;left:6vw;top:50%;width:520px;height:120px;margin-top:-60px;border-radius:26px;
+  display:flex;align-items:center;padding-left:40px;font-size:40px;font-weight:600;color:#fff;
+  will-change:transform,opacity;transition:transform .26s var(--ease),opacity .26s var(--ease)}
+.item.jump{transition:none}
+/* Cadre fixe au centre : c'est la liste qui défile sous lui */
+#ring{position:absolute;left:calc(6vw - 38px);top:50%;width:596px;height:148px;margin-top:-74px;
+  border:4px solid var(--accent);border-radius:34px;pointer-events:none}
+
+/* Infos à droite */
+#info{flex:1;position:relative;padding:5vh 6vw 5vh 2vw;display:flex;flex-direction:column;justify-content:space-between}
+#time{font-size:96px;font-weight:200;letter-spacing:-2px}
 #time i{font-style:normal;animation:blink 2s steps(1) infinite}
 @keyframes blink{50%{opacity:.25}}
-#date{font-size:24px;color:var(--dim);margin-top:6px;text-transform:capitalize}
-#wx{font-size:32px;font-weight:300;text-align:right;opacity:0;transition:opacity .6s}
+#date{font-size:26px;color:var(--dim);margin-top:6px;text-transform:capitalize}
+#wx{font-size:34px;font-weight:300;margin-top:28px;opacity:0;transition:opacity .6s}
 #wx.in{opacity:1}
 #wx small{display:block;font-size:20px;color:var(--dim);margin-top:6px}
-#name{margin:8vh 0 3vh;font-size:40px;font-weight:300;height:48px}
+#name{font-size:64px;font-weight:300;min-height:76px}
 #name.swap{animation:swap .28s var(--ease)}
-@keyframes swap{from{opacity:0;transform:translate3d(-14px,0,0)}to{opacity:1;transform:none}}
-#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2.2vw}
-.tile{
-  position:relative;height:0;padding-top:62.5%;border-radius:20px;
-  font-size:34px;font-weight:600;color:#fff;transform:scale(1);opacity:.72;
-  transition:transform .22s var(--ease),opacity .22s var(--ease)}
-.tile.on{transform:scale(1.08);opacity:1}
-.tile.press{transform:scale(.97);transition-duration:.08s}
-.tile span{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center}
-/* Entrée en cascade, puis l'animation est retirée pour libérer la mémoire */
-.tile.enter{animation:enter .5s var(--ease) both;will-change:transform,opacity}
-@keyframes enter{from{opacity:0;transform:translate3d(0,34px,0) scale(.94)}to{opacity:.72;transform:none}}
-/* Cadre de focus unique qui glisse d'une tuile à l'autre */
-#ring{position:absolute;left:0;top:0;border:4px solid var(--accent);border-radius:22px;pointer-events:none;
-  opacity:0;will-change:transform;transition:transform .26s var(--ease),opacity .3s,border-color .3s}
-#ring.show{opacity:1}
+@keyframes swap{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
+#hint{font-size:20px;color:var(--dim);margin-top:10px}
 #dbg{display:none;position:fixed;top:4vh;left:4vw;right:4vw;bottom:4vh;background:#000;border:2px solid var(--accent);padding:24px;font-size:20px;line-height:1.5;overflow:hidden;word-break:break-all}
-/* Mode éco : sans lueurs, transitions plus courtes (touche JAUNE ou détection auto) */
 .eco .blob{display:none}
-.eco .tile,.eco #ring{transition-duration:.12s}
+.eco .item{transition-duration:.12s}
 .eco #time i{animation:none}
+.eco #ladder{animation:none}
 @media (prefers-reduced-motion:reduce){.blob{display:none}}
 </style>
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div>
-<header>
-  <div><div id="time">--<i>:</i>--</div><div id="date"></div></div>
-  <div id="wx"></div>
-</header>
-<div id="name"></div>
-<main id="grid"><div id="ring"></div></main>
+<main id="ladder"><div id="ring"></div></main>
+<section id="info">
+  <div><div id="time">--<i>:</i>--</div><div id="date"></div><div id="wx"></div></div>
+  <div><div id="name"></div><div id="hint">▲ ▼ pour défiler · OK pour ouvrir</div></div>
+</section>
 <div id="dbg"></div>
 <script>
 /* ===== Réglages ===== */
@@ -85,36 +80,52 @@ var CONFIG = {
     {n: "Actus",   u: "https://www.francetvinfo.fr", c: "#9a3412"},
     {n: "Foot",    u: "https://www.lequipe.fr", c: "#15803d"}
   ],
-  cols: 5
+  visible: 3   // nombre d'applis visibles au-dessus et en dessous de la sélection
 };
 
-/* ===== Grille ===== */
+/* ===== Échelle verticale infinie ===== */
 var root = document.documentElement;
-var grid = document.getElementById("grid"), label = document.getElementById("name"), ring = document.getElementById("ring");
-var tiles = [], cur = 0, started = false;
-CONFIG.apps.forEach(function (a, i) {
-  var t = document.createElement("div");
-  t.className = "tile enter"; t.innerHTML = "<span></span>"; t.firstChild.textContent = a.n; t.style.background = a.c;
-  t.style.animationDelay = (i * 45) + "ms";
-  t.addEventListener("animationend", function () { t.classList.remove("enter"); t.style.animationDelay = ""; });
-  grid.appendChild(t); tiles.push(t);
-});
-grid.style.gridTemplateColumns = "repeat(" + CONFIG.cols + ",1fr)";
+var ladder = document.getElementById("ladder"), label = document.getElementById("name");
+var items = [], prevD = [], cur = 0, n = CONFIG.apps.length;
+var STEP = 132, GAP = 14;
+var half = Math.floor(n / 2), vis = Math.min(CONFIG.visible, Math.max(1, half - 1));
 
-function placeRing() {
-  var t = tiles[cur];
-  ring.style.width = (t.offsetWidth + 14) + "px"; ring.style.height = (t.offsetHeight + 14) + "px";
-    ring.style.transform = "translate3d(" + (t.offsetLeft - 7) + "px," + (t.offsetTop - 7) + "px,0) scale(1.08)";
+CONFIG.apps.forEach(function (a) {
+  var el = document.createElement("div");
+  el.className = "item"; el.textContent = a.n; el.style.background = a.c;
+  ladder.appendChild(el); items.push(el); prevD.push(0);
+});
+
+/* Position de chaque appli par rapport à la sélection, avec rebouclage (-half .. n-half-1) */
+function layout() {
+  var jumped = [];
+  for (var i = 0; i < n; i++) {
+    var d = (((i - cur + half) % n) + n) % n - half, ad = Math.abs(d);
+    var y = d * STEP + (d === 0 ? 0 : (d > 0 ? GAP : -GAP));
+    var x = -ad * 22, sc = d === 0 ? 1.12 : Math.max(.6, 1 - ad * .08);
+    var op = ad > vis ? 0 : d === 0 ? 1 : Math.max(.12, .6 - (ad - 1) * .2);
+    var el = items[i];
+    if (Math.abs(d - prevD[i]) > 1) { el.classList.add("jump"); jumped.push(el); }
+    el.style.transform = "translate3d(" + x + "px," + y + "px,0) scale(" + sc + ")";
+    el.style.opacity = op;
+    prevD[i] = d;
+  }
+  if (jumped.length) {
+    void ladder.offsetWidth;
+    for (var j = 0; j < jumped.length; j++) jumped[j].classList.remove("jump");
+  }
 }
 function focus(i) {
-  tiles[cur].classList.remove("on");
-  cur = i; tiles[cur].classList.add("on");
+  cur = ((i % n) + n) % n;
   label.textContent = CONFIG.apps[cur].n;
   label.classList.remove("swap"); void label.offsetWidth; label.classList.add("swap");
-  placeRing();
+  layout();
 }
-setTimeout(function () { started = true; focus(0); ring.classList.add("show"); }, tiles.length * 45 + 350);
-window.addEventListener("resize", function () { if (started) placeRing(); });
+/* Premier placement sans animation */
+for (var q = 0; q < n; q++) items[q].classList.add("jump");
+focus(0);
+void ladder.offsetWidth;
+for (var r = 0; r < n; r++) items[r].classList.remove("jump");
 
 /* ===== Mode éco : manuel (touche jaune) ou automatique si la TV rame ===== */
 function eco(on) {
@@ -134,7 +145,7 @@ else if (saved === null) {
       if ((t - t0) / n > 28) eco(true);
     })(0);
     raf(function (t) { t0 = t; });
-  }, tiles.length * 45 + 1200);
+  }, 1500);
 }
 
 /* ===== Tizen (absent dans un navigateur de PC : tout reste utilisable) ===== */
@@ -161,10 +172,10 @@ function showApps() {
   }, function (e) { dbg.textContent = "Erreur : " + e.message; });
 }
 
-/* Flèches, OK, Retour (10009), bleu (406) = applis installées, jaune (405) = mode éco */
+/* Haut/Bas : défiler (en boucle), OK : ouvrir, Retour (10009), bleu (406) = applis, jaune (405) = éco */
 var lastMove = 0;
 document.addEventListener("keydown", function (e) {
-  var n = tiles.length, c = CONFIG.cols, k = e.keyCode, i = cur;
+  var k = e.keyCode;
   if (k === 406) { showApps(); return; }
   if (k === 405) { eco(root.className !== "eco"); return; }
   if (k === 10009) {
@@ -172,21 +183,13 @@ document.addEventListener("keydown", function (e) {
     else if (TZ) tizen.application.getCurrentApplication().exit();
     return;
   }
-  if (k === 39) i = Math.min(cur + 1, n - 1);
-  else if (k === 37) i = Math.max(cur - 1, 0);
-  else if (k === 40) i = cur + c < n ? cur + c : cur;
-  else if (k === 38) i = cur - c >= 0 ? cur - c : cur;
-  else if (k === 13) {
-    var a = CONFIG.apps[cur], t = tiles[cur];
-    t.classList.add("press");
-    setTimeout(function () { t.classList.remove("press"); openApp(a); }, 110);
-    return;
-  }
-  else return;
+  if (k === 13) { openApp(CONFIG.apps[cur]); return; }
+  if (k !== 38 && k !== 40) return;
   e.preventDefault();
   var now = Date.now();
   if (e.repeat && now - lastMove < 85) return;
-  if (i !== cur) { lastMove = now; focus(i); }
+  lastMove = now;
+  focus(cur + (k === 40 ? 1 : -1));
 });
 
 /* ===== Heure : une mise à jour par minute, pas par seconde ===== */
