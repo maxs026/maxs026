@@ -78,7 +78,8 @@ var CONFIG = {
     {n: "Google",  u: "https://www.google.com", c: "#2b6cb0"},
     {n: "Météo",   u: "https://www.meteofrance.com", c: "#0e7490"},
     {n: "Actus",   u: "https://www.francetvinfo.fr", c: "#9a3412"},
-    {n: "Foot",    u: "https://www.lequipe.fr", c: "#15803d"}
+    {n: "Foot",    u: "https://www.lequipe.fr", c: "#15803d"},
+    {n: "HDMI",    c: "#475569", id: "org.tizen.hdmicec"}   // appli HDMI-CEC de la TV, sans adresse web
   ],
   visible: 3   // nombre d'applis visibles au-dessus et en dessous de la sélection
 };
@@ -156,9 +157,9 @@ if (TZ) {
 }
 function openApp(a) {
   if (TZ && a.id) {
-    try { tizen.application.launch(a.id, null, function () { location.href = a.u; }); return; } catch (e) {}
+    try { tizen.application.launch(a.id, null, function () { if (a.u) location.href = a.u; }); return; } catch (e) {}
   }
-  location.href = a.u;
+  if (a.u) location.href = a.u;
 }
 function showApps() {
   if (dbg.style.display === "block") { dbg.style.display = "none"; return; }
