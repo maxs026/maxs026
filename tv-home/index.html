@@ -14,7 +14,7 @@ body{
   background-color:var(--bg);
   background-image:radial-gradient(ellipse at 20% 0%,#10222b 0%,transparent 55%),
                    radial-gradient(ellipse at 90% 100%,#1a1230 0%,transparent 50%);
-  color:var(--fg);font:400 24px/1.2 system-ui,sans-serif;padding:5vh 6vw;
+  color:var(--fg);font:400 24px/1.2 Helvetica,Arial,sans-serif;padding:5vh 6vw;
   display:flex;flex-direction:column}
 header{display:flex;justify-content:space-between;align-items:flex-end}
 #time{font-size:72px;font-weight:200;letter-spacing:-1px}
@@ -24,11 +24,13 @@ header{display:flex;justify-content:space-between;align-items:flex-end}
 #name{margin:8vh 0 3vh;font-size:40px;font-weight:300;height:48px}
 #grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2.2vw}
 .tile{
-  aspect-ratio:16/10;border-radius:20px;display:flex;align-items:center;justify-content:center;
+  position:relative;height:0;padding-top:62.5%;border-radius:20px;
   font-size:34px;font-weight:600;color:#fff;transform:scale(1);opacity:.78;
   transition:transform .12s ease-out,opacity .12s ease-out;will-change:transform}
+.tile span{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center}
 .tile.on{transform:scale(1.08);opacity:1;outline:4px solid var(--accent);outline-offset:3px}
 @media (prefers-reduced-motion:reduce){.tile{transition:none}}
+#dbg{display:none;position:fixed;top:4vh;left:4vw;right:4vw;bottom:4vh;background:#000;border:2px solid var(--accent);padding:24px;font-size:20px;line-height:1.5;overflow:hidden;word-break:break-all}
 </style>
 </head>
 <body>
@@ -38,18 +40,20 @@ header{display:flex;justify-content:space-between;align-items:flex-end}
 </header>
 <div id="name"></div>
 <main id="grid"></main>
+<div id="dbg"></div>
 <script>
 /* ===== Réglages ===== */
 var CONFIG = {
   // Météo : Open-Meteo, sans clé. Remplace par les coordonnées de ta ville.
   city: "Bordeaux", lat: 44.84, lon: -0.58,
-  // Raccourcis : nom, adresse, couleur de la tuile.
+  // Raccourcis : nom, adresse (repli), couleur, et id = identifiant de l'appli Samsung (optionnel).
+  // Touche BLEUE de la télécommande : liste des applis installées avec leurs id réels.
   apps: [
-    {n: "YouTube", u: "https://www.youtube.com/tv", c: "#c4302b"},
-    {n: "Netflix", u: "https://www.netflix.com", c: "#b81d24"},
+    {n: "YouTube", u: "https://www.youtube.com/tv", c: "#c4302b", id: "111299001912"},
+    {n: "Netflix", u: "https://www.netflix.com", c: "#b81d24", id: "11101200001"},
     {n: "Twitch",  u: "https://www.twitch.tv", c: "#6441a5"},
-    {n: "Prime Video", u: "https://www.primevideo.com", c: "#146eb4"},
-    {n: "Disney+", u: "https://www.disneyplus.com", c: "#1a3a8a"},
+    {n: "Prime Video", u: "https://www.primevideo.com", c: "#146eb4", id: "3201512006785"},
+    {n: "Disney+", u: "https://www.disneyplus.com", c: "#1a3a8a", id: "3201901017640"},
     {n: "Canal+",  u: "https://www.canalplus.com", c: "#222"},
     {n: "Google",  u: "https://www.google.com", c: "#2b6cb0"},
     {n: "Météo",   u: "https://www.meteofrance.com", c: "#0e7490"},
@@ -63,7 +67,7 @@ var CONFIG = {
 var grid = document.getElementById("grid"), label = document.getElementById("name"), tiles = [], cur = 0;
 CONFIG.apps.forEach(function (a) {
   var t = document.createElement("div");
-  t.className = "tile"; t.textContent = a.n; t.style.background = a.c;
+  t.className = "tile"; t.innerHTML = "<span></span>"; t.firstChild.textContent = a.n; t.style.background = a.c;
   grid.appendChild(t); tiles.push(t);
 });
 grid.style.gridTemplateColumns = "repeat(" + CONFIG.cols + ",1fr)";
@@ -74,14 +78,44 @@ function focus(i) {
 }
 focus(0);
 
-/* Flèches de la télécommande (Tizen et navigateurs standards) + OK */
+/* ===== Tizen (absent dans un navigateur de PC : tout reste utilisable) ===== */
+var TZ = typeof tizen !== "undefined";
+var dbg = document.getElementById("dbg");
+if (TZ) {
+  try { tizen.tvinputdevice.registerKey("ColorF3Blue"); } catch (e) {}
+}
+function openApp(a) {
+  if (TZ && a.id) {
+    try { tizen.application.launch(a.id, null, function () { location.href = a.u; }); return; } catch (e) {}
+  }
+  location.href = a.u;
+}
+function showApps() {
+  if (dbg.style.display === "block") { dbg.style.display = "none"; return; }
+  dbg.style.display = "block";
+  if (!TZ) { dbg.textContent = "Disponible uniquement sur la TV."; return; }
+  dbg.textContent = "Chargement...";
+  tizen.application.getAppsInfo(function (l) {
+    var out = [];
+    for (var i = 0; i < l.length; i++) out.push(l[i].name + " = " + l[i].id);
+    dbg.textContent = out.join("  |  ");
+  }, function (e) { dbg.textContent = "Erreur : " + e.message; });
+}
+
+/* Flèches, OK, Retour (10009) et touche bleue (406) de la télécommande */
 document.addEventListener("keydown", function (e) {
   var n = tiles.length, c = CONFIG.cols, k = e.keyCode, i = cur;
+  if (k === 406) { showApps(); return; }
+  if (k === 10009) {
+    if (dbg.style.display === "block") dbg.style.display = "none";
+    else if (TZ) tizen.application.getCurrentApplication().exit();
+    return;
+  }
   if (k === 39) i = Math.min(cur + 1, n - 1);
   else if (k === 37) i = Math.max(cur - 1, 0);
   else if (k === 40) i = cur + c < n ? cur + c : cur;
   else if (k === 38) i = cur - c >= 0 ? cur - c : cur;
-  else if (k === 13) { location.href = CONFIG.apps[cur].u; return; }
+  else if (k === 13) { openApp(CONFIG.apps[cur]); return; }
   else return;
   e.preventDefault();
   if (i !== cur) focus(i);
