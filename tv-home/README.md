@@ -18,7 +18,7 @@ de la télécommande dans l'appli = liste des applis installées avec leurs vrai
    ```
    tizen package -t wgt -s <profil_certificat> -- tv-home
    tizen install -n TvHome.wgt -t <nom_de_la_tv>
-   tizen run -p TvHomeApp0.TvHome -t <nom_de_la_tv>
+   tizen run -p TvHomeApp0.Accueil -t <nom_de_la_tv>
    ```
 5. **Démarrage auto** : ouvrir l'appli une fois, puis Paramètres > Général > Fonctions Smart >
    *Lancer automatiquement la dernière appli* (libellé variable selon le modèle).
