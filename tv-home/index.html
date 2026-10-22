@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Accueil TV</title>
 <style>
-/* Léger par conception : pas d'image, pas de blur, pas d'ombre animée.
-   Seuls transform et opacity sont animés (composités par le GPU). */
-:root{--bg:#05070b;--fg:#f2f4f8;--dim:#8b93a3;--accent:#6ee7d8}
+/* Règle d'or : on n'anime que transform et opacity (composités par le GPU).
+   Pas de flou, pas d'ombre animée, pas de layout animé. */
+:root{--bg:#05070b;--fg:#f2f4f8;--dim:#8b93a3;--accent:#6ee7d8;--ease:cubic-bezier(.2,.8,.2,1)}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;overflow:hidden}
 body{
@@ -15,31 +15,56 @@ body{
   background-image:radial-gradient(ellipse at 20% 0%,#10222b 0%,transparent 55%),
                    radial-gradient(ellipse at 90% 100%,#1a1230 0%,transparent 50%);
   color:var(--fg);font:400 24px/1.2 Helvetica,Arial,sans-serif;padding:5vh 6vw;
-  display:flex;flex-direction:column}
+  display:flex;flex-direction:column;position:relative}
+/* Lueurs d'ambiance qui dérivent lentement (désactivées en mode éco) */
+.blob{position:fixed;width:55vw;height:55vw;border-radius:50%;pointer-events:none;
+  will-change:transform;animation:drift 26s ease-in-out infinite alternate}
+.b1{left:-12vw;top:-18vw;background:radial-gradient(circle,rgba(40,160,170,.22) 0%,transparent 65%)}
+.b2{right:-14vw;bottom:-22vw;background:radial-gradient(circle,rgba(110,70,200,.20) 0%,transparent 65%);animation-duration:34s;animation-direction:alternate-reverse}
+@keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(9vw,7vh,0)}}
+header,#name,#grid{position:relative}
 header{display:flex;justify-content:space-between;align-items:flex-end}
 #time{font-size:72px;font-weight:200;letter-spacing:-1px}
+#time i{font-style:normal;animation:blink 2s steps(1) infinite}
+@keyframes blink{50%{opacity:.25}}
 #date{font-size:24px;color:var(--dim);margin-top:6px;text-transform:capitalize}
-#wx{font-size:32px;font-weight:300;text-align:right}
+#wx{font-size:32px;font-weight:300;text-align:right;opacity:0;transition:opacity .6s}
+#wx.in{opacity:1}
 #wx small{display:block;font-size:20px;color:var(--dim);margin-top:6px}
 #name{margin:8vh 0 3vh;font-size:40px;font-weight:300;height:48px}
+#name.swap{animation:swap .28s var(--ease)}
+@keyframes swap{from{opacity:0;transform:translate3d(-14px,0,0)}to{opacity:1;transform:none}}
 #grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2.2vw}
 .tile{
   position:relative;height:0;padding-top:62.5%;border-radius:20px;
-  font-size:34px;font-weight:600;color:#fff;transform:scale(1);opacity:.78;
-  transition:transform .12s ease-out,opacity .12s ease-out;will-change:transform}
+  font-size:34px;font-weight:600;color:#fff;transform:scale(1);opacity:.72;
+  transition:transform .22s var(--ease),opacity .22s var(--ease)}
+.tile.on{transform:scale(1.08);opacity:1}
+.tile.press{transform:scale(.97);transition-duration:.08s}
 .tile span{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center}
-.tile.on{transform:scale(1.08);opacity:1;outline:4px solid var(--accent);outline-offset:3px}
-@media (prefers-reduced-motion:reduce){.tile{transition:none}}
+/* Entrée en cascade, puis l'animation est retirée pour libérer la mémoire */
+.tile.enter{animation:enter .5s var(--ease) both;will-change:transform,opacity}
+@keyframes enter{from{opacity:0;transform:translate3d(0,34px,0) scale(.94)}to{opacity:.72;transform:none}}
+/* Cadre de focus unique qui glisse d'une tuile à l'autre */
+#ring{position:absolute;left:0;top:0;border:4px solid var(--accent);border-radius:22px;pointer-events:none;
+  opacity:0;will-change:transform;transition:transform .26s var(--ease),opacity .3s,border-color .3s}
+#ring.show{opacity:1}
 #dbg{display:none;position:fixed;top:4vh;left:4vw;right:4vw;bottom:4vh;background:#000;border:2px solid var(--accent);padding:24px;font-size:20px;line-height:1.5;overflow:hidden;word-break:break-all}
+/* Mode éco : sans lueurs, transitions plus courtes (touche JAUNE ou détection auto) */
+.eco .blob{display:none}
+.eco .tile,.eco #ring{transition-duration:.12s}
+.eco #time i{animation:none}
+@media (prefers-reduced-motion:reduce){.blob{display:none}}
 </style>
 </head>
 <body>
+<div class="blob b1"></div><div class="blob b2"></div>
 <header>
-  <div><div id="time">--:--</div><div id="date"></div></div>
+  <div><div id="time">--<i>:</i>--</div><div id="date"></div></div>
   <div id="wx"></div>
 </header>
 <div id="name"></div>
-<main id="grid"></main>
+<main id="grid"><div id="ring"></div></main>
 <div id="dbg"></div>
 <script>
 /* ===== Réglages ===== */
@@ -64,25 +89,59 @@ var CONFIG = {
 };
 
 /* ===== Grille ===== */
-var grid = document.getElementById("grid"), label = document.getElementById("name"), tiles = [], cur = 0;
-CONFIG.apps.forEach(function (a) {
+var root = document.documentElement;
+var grid = document.getElementById("grid"), label = document.getElementById("name"), ring = document.getElementById("ring");
+var tiles = [], cur = 0, started = false;
+CONFIG.apps.forEach(function (a, i) {
   var t = document.createElement("div");
-  t.className = "tile"; t.innerHTML = "<span></span>"; t.firstChild.textContent = a.n; t.style.background = a.c;
+  t.className = "tile enter"; t.innerHTML = "<span></span>"; t.firstChild.textContent = a.n; t.style.background = a.c;
+  t.style.animationDelay = (i * 45) + "ms";
+  t.addEventListener("animationend", function () { t.classList.remove("enter"); t.style.animationDelay = ""; });
   grid.appendChild(t); tiles.push(t);
 });
 grid.style.gridTemplateColumns = "repeat(" + CONFIG.cols + ",1fr)";
+
+function placeRing() {
+  var t = tiles[cur];
+  ring.style.width = (t.offsetWidth + 14) + "px"; ring.style.height = (t.offsetHeight + 14) + "px";
+    ring.style.transform = "translate3d(" + (t.offsetLeft - 7) + "px," + (t.offsetTop - 7) + "px,0) scale(1.08)";
+}
 function focus(i) {
   tiles[cur].classList.remove("on");
   cur = i; tiles[cur].classList.add("on");
   label.textContent = CONFIG.apps[cur].n;
+  label.classList.remove("swap"); void label.offsetWidth; label.classList.add("swap");
+  placeRing();
 }
-focus(0);
+setTimeout(function () { started = true; focus(0); ring.classList.add("show"); }, tiles.length * 45 + 350);
+window.addEventListener("resize", function () { if (started) placeRing(); });
+
+/* ===== Mode éco : manuel (touche jaune) ou automatique si la TV rame ===== */
+function eco(on) {
+  root.className = on ? "eco" : "";
+  try { localStorage.setItem("eco", on ? "1" : "0"); } catch (e) {}
+}
+var saved = null;
+try { saved = localStorage.getItem("eco"); } catch (e) {}
+if (saved === "1") eco(true);
+else if (saved === null) {
+  /* Mesure 45 images après l'animation d'entrée ; trop lent => mode éco */
+  setTimeout(function () {
+    var n = 0, t0 = 0, raf = window.requestAnimationFrame;
+    (function f(t) {
+      if (!t0) t0 = t;
+      if (++n < 45) { raf(f); return; }
+      if ((t - t0) / n > 28) eco(true);
+    })(0);
+    raf(function (t) { t0 = t; });
+  }, tiles.length * 45 + 1200);
+}
 
 /* ===== Tizen (absent dans un navigateur de PC : tout reste utilisable) ===== */
 var TZ = typeof tizen !== "undefined";
 var dbg = document.getElementById("dbg");
 if (TZ) {
-  try { tizen.tvinputdevice.registerKey("ColorF3Blue"); } catch (e) {}
+  try { tizen.tvinputdevice.registerKey("ColorF3Blue"); tizen.tvinputdevice.registerKey("ColorF2Yellow"); } catch (e) {}
 }
 function openApp(a) {
   if (TZ && a.id) {
@@ -102,10 +161,12 @@ function showApps() {
   }, function (e) { dbg.textContent = "Erreur : " + e.message; });
 }
 
-/* Flèches, OK, Retour (10009) et touche bleue (406) de la télécommande */
+/* Flèches, OK, Retour (10009), bleu (406) = applis installées, jaune (405) = mode éco */
+var lastMove = 0;
 document.addEventListener("keydown", function (e) {
   var n = tiles.length, c = CONFIG.cols, k = e.keyCode, i = cur;
   if (k === 406) { showApps(); return; }
+  if (k === 405) { eco(root.className !== "eco"); return; }
   if (k === 10009) {
     if (dbg.style.display === "block") dbg.style.display = "none";
     else if (TZ) tizen.application.getCurrentApplication().exit();
@@ -115,10 +176,17 @@ document.addEventListener("keydown", function (e) {
   else if (k === 37) i = Math.max(cur - 1, 0);
   else if (k === 40) i = cur + c < n ? cur + c : cur;
   else if (k === 38) i = cur - c >= 0 ? cur - c : cur;
-  else if (k === 13) { openApp(CONFIG.apps[cur]); return; }
+  else if (k === 13) {
+    var a = CONFIG.apps[cur], t = tiles[cur];
+    t.classList.add("press");
+    setTimeout(function () { t.classList.remove("press"); openApp(a); }, 110);
+    return;
+  }
   else return;
   e.preventDefault();
-  if (i !== cur) focus(i);
+  var now = Date.now();
+  if (e.repeat && now - lastMove < 85) return;
+  if (i !== cur) { lastMove = now; focus(i); }
 });
 
 /* ===== Heure : une mise à jour par minute, pas par seconde ===== */
@@ -127,7 +195,7 @@ function tick() {
   var d = new Date(), m = d.getMinutes();
   if (m !== lastMin) {
     lastMin = m;
-    elT.textContent = ("0" + d.getHours()).slice(-2) + ":" + ("0" + m).slice(-2);
+    elT.innerHTML = ("0" + d.getHours()).slice(-2) + "<i>:</i>" + ("0" + m).slice(-2);
     elD.textContent = d.toLocaleDateString("fr-FR", {weekday: "long", day: "numeric", month: "long"});
   }
 }
@@ -145,6 +213,7 @@ function weather() {
       var txt = w === 0 ? "Dégagé" : w < 4 ? "Nuageux" : w < 50 ? "Brouillard" : w < 70 ? "Pluie" :
                 w < 80 ? "Neige" : w < 95 ? "Averses" : "Orage";
       elW.innerHTML = Math.round(c.temperature_2m) + "°C<small>" + txt + " · " + CONFIG.city + "</small>";
+      elW.className = "in";
     } catch (e) {}
   };
   x.send();

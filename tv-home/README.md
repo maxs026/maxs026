@@ -25,8 +25,15 @@ de la télécommande dans l'appli = liste des applis installées avec leurs vrai
 
 ## Télécommande
 Flèches : naviguer. OK : ouvrir. Retour : quitter. Bleu : liste des applis et de leurs `id`.
+Jaune : active ou coupe le **mode éco** (sans lueurs d'ambiance, transitions plus courtes). Il s'active
+aussi tout seul si la TV rame, et le choix est mémorisé.
 
 ## Limites
 - Appli de développeur : le certificat expire (~1 an), à réinstaller ensuite.
 - Une mise à jour du firmware peut désactiver le mode développeur.
 - Smart Hub n'est pas remplaçable sur Tizen.
+
+## Fluidité
+Seuls `transform` et `opacity` sont animés (GPU) : cadre de focus unique qui glisse, entrée en cascade,
+effet d'appui sur OK, lueurs d'ambiance qui dérivent. Aucun flou, aucune ombre animée.
+La répétition des flèches est limitée pour éviter les saccades quand on maintient la touche.
