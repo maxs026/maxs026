@@ -185,6 +185,8 @@ describe('AUDIT — chaque sous-commande de /config, avec de vrais objets discor
     ['rang-message', [opt.string('rang', 'gold'), opt.string('message', 'GG {membre} !')], {}],
     ['rang-role', [opt.string('rang', 'gold'), opt.role('role', IDS.modRole)], roleResolved(IDS.modRole)],
     ['roles-actifs', [opt.bool('actif', false)], {}],
+    ['mode-potes', [opt.bool('actif', true)], {}],
+    ['gif-chute', [opt.string('url', 'https://media.example.com/chute.gif')], {}],
   ];
 
   it('toutes les sous-commandes déclarées sont gérées (aucune n’est « inconnue »)', async () => {
@@ -215,7 +217,7 @@ describe('AUDIT — chaque sous-commande de /config, avec de vrais objets discor
     }
     expect(ctx.repo.getRankSettings(IDS.guild, 'gold')).toMatchObject({ gif_url: 'https://media.example.com/gold.gif', message_template: 'GG {membre} !', role_id: IDS.modRole, notify: true });
     expect(ctx.repo.getRankSettings(IDS.guild, 'platinum').notify).toBe(true);
-    expect(ctx.repo.getGuildSettings(IDS.guild)).toMatchObject({ moderator_role_id: IDS.modRole, roles_enabled: 0 });
+    expect(ctx.repo.getGuildSettings(IDS.guild)).toMatchObject({ moderator_role_id: IDS.modRole, roles_enabled: 0, fun_mode: 1, demotion_gif_url: 'https://media.example.com/chute.gif' });
   });
 
   it('un lien de GIF invalide produit un message explicite et ne change rien', async () => {

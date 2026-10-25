@@ -1,4 +1,5 @@
 import { classifyChange, highestRank, isPlaylist, isRank } from '../domain/ranks.js';
+import { applyReward } from '../domain/rewards.js';
 
 export class RankError extends Error {
   constructor(code, message) {
@@ -98,11 +99,20 @@ export class RankService {
     const { guild_id: guildId, user_id: userId, playlist, rank, id } = request;
     const previous = this.repo.getValidatedRank(guildId, userId, playlist)?.rank ?? null;
     const changeType = classifyChange(previous, rank);
-    const notifyRank = this.repo.getRankSettings(guildId, rank).notify;
-    // Seules les nouveautés et promotions sont annoncées, jamais les rétrogradations.
-    const shouldNotify = notifyRank && (changeType === 'first' || changeType === 'promotion');
+    const funMode = Boolean(this.repo.getGuildSettings(guildId).fun_mode);
+    const rankSettings = this.repo.getRankSettings(guildId, rank);
+    // Mode potes : tous les rangs sont annoncés, sauf ceux désactivés explicitement.
+    const notifyRank = funMode && !rankSettings.notify_configured ? true : rankSettings.notify;
+    // Les rétrogradations ne sont annoncées (pour chambrer) qu'en mode potes.
+    const announced = changeType === 'first' || changeType === 'promotion' || (funMode && changeType === 'demotion');
+    const shouldNotify = notifyRank && announced;
 
-    if (changeType !== 'same') this.repo.upsertValidatedRank(guildId, userId, playlist, rank, id, this.now());
+    if (changeType !== 'same') {
+      this.repo.upsertValidatedRank(guildId, userId, playlist, rank, id, this.now());
+      const stats = applyReward(changeType, previous, rank, this.repo.getMemberStats(guildId, userId));
+      this.repo.saveMemberStats(guildId, userId, stats);
+      this.repo.setRewardInfo(id, stats.delta, stats.points, stats.streak);
+    }
     this.repo.setChangeInfo(id, changeType, previous, shouldNotify ? 'pending' : 'none');
     return { request: this.repo.getRequest(id), changeType, previousRank: previous, shouldNotify };
   }
@@ -114,5 +124,9 @@ export class RankService {
 
   getValidatedRanks(guildId, userId) {
     return this.repo.listValidatedRanks(guildId, userId);
+  }
+
+  getLeaderboard(guildId, limit = 10) {
+    return this.repo.listLeaderboard(guildId, limit);
   }
 }

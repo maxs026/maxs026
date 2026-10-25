@@ -19,12 +19,14 @@ export class Repository {
         review_channel_id: null,
         moderator_role_id: null,
         roles_enabled: 0,
+        fun_mode: 0,
+        demotion_gif_url: null,
       }
     );
   }
 
   setGuildSetting(guildId, column, value) {
-    const allowed = ['announce_channel_id', 'review_channel_id', 'moderator_role_id', 'roles_enabled'];
+    const allowed = ['announce_channel_id', 'review_channel_id', 'moderator_role_id', 'roles_enabled', 'fun_mode', 'demotion_gif_url'];
     if (!allowed.includes(column)) throw new Error(`Colonne non autorisée : ${column}`);
     this.db.prepare('INSERT OR IGNORE INTO guild_settings (guild_id) VALUES (?)').run(guildId);
     this.db.prepare(`UPDATE guild_settings SET ${column} = ? WHERE guild_id = ?`).run(value, guildId);
@@ -38,6 +40,7 @@ export class Repository {
     return {
       rank,
       notify: notify === null ? DEFAULT_NOTIFY_RANKS.includes(rank) : Boolean(notify),
+      notify_configured: notify !== null,
       gif_url: row?.gif_url ?? null,
       message_template: row?.message_template ?? null,
       role_id: row?.role_id ?? null,
@@ -124,6 +127,42 @@ export class Repository {
     this.db
       .prepare('UPDATE rank_requests SET change_type=?, previous_rank=?, notify_state=? WHERE id=?')
       .run(changeType, previousRank, notifyState, id);
+  }
+
+  setRewardInfo(id, delta, total, streak) {
+    this.db
+      .prepare('UPDATE rank_requests SET points_delta=?, points_total=?, streak=? WHERE id=?')
+      .run(delta, total, streak, id);
+  }
+
+  // --- Points et séries ----------------------------------------------------
+  getMemberStats(guildId, userId) {
+    return (
+      this.db.prepare('SELECT * FROM member_stats WHERE guild_id=? AND user_id=?').get(guildId, userId) ?? {
+        guild_id: guildId,
+        user_id: userId,
+        points: 0,
+        promotions: 0,
+        demotions: 0,
+        streak: 0,
+      }
+    );
+  }
+
+  saveMemberStats(guildId, userId, { points, promotions, demotions, streak }) {
+    this.db
+      .prepare(
+        `INSERT INTO member_stats (guild_id, user_id, points, promotions, demotions, streak) VALUES (?,?,?,?,?,?)
+         ON CONFLICT (guild_id, user_id) DO UPDATE SET points=excluded.points, promotions=excluded.promotions,
+           demotions=excluded.demotions, streak=excluded.streak`,
+      )
+      .run(guildId, userId, points, promotions, demotions, streak);
+  }
+
+  listLeaderboard(guildId, limit = 10) {
+    return this.db
+      .prepare('SELECT * FROM member_stats WHERE guild_id=? ORDER BY points DESC, promotions DESC LIMIT ?')
+      .all(guildId, limit);
   }
 
   // --- Rangs validés -------------------------------------------------------

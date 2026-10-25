@@ -60,7 +60,26 @@ CREATE TABLE IF NOT EXISTS validated_ranks (
   updated_at INTEGER NOT NULL,
   PRIMARY KEY (guild_id, user_id, playlist)
 );
+-- Points et séries (streak > 0 : montées d'affilée, < 0 : chutes d'affilée).
+CREATE TABLE IF NOT EXISTS member_stats (
+  guild_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  points INTEGER NOT NULL DEFAULT 0,
+  promotions INTEGER NOT NULL DEFAULT 0,
+  demotions INTEGER NOT NULL DEFAULT 0,
+  streak INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (guild_id, user_id)
+);
 `;
+
+/** Colonnes ajoutées après la première version : ajoutées aux bases existantes au démarrage. */
+const ADDED_COLUMNS = [
+  ['guild_settings', 'fun_mode', 'INTEGER NOT NULL DEFAULT 0'], // mode potes
+  ['guild_settings', 'demotion_gif_url', 'TEXT'],
+  ['rank_requests', 'points_delta', 'INTEGER'],
+  ['rank_requests', 'points_total', 'INTEGER'],
+  ['rank_requests', 'streak', 'INTEGER'],
+];
 
 export function openDatabase(path) {
   if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
@@ -68,5 +87,9 @@ export function openDatabase(path) {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.exec(SCHEMA);
+  for (const [table, column, type] of ADDED_COLUMNS) {
+    const exists = db.prepare(`PRAGMA table_info(${table})`).all().some((c) => c.name === column);
+    if (!exists) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
+  }
   return db;
 }

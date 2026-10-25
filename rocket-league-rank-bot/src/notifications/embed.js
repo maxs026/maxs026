@@ -1,6 +1,16 @@
 import { EmbedBuilder } from 'discord.js';
 import { CHANGE_LABELS, buildMessage } from '../domain/messages.js';
 import { playlistLabel, rankLabel } from '../domain/ranks.js';
+import { rewardLine } from '../domain/rewards.js';
+
+/** GIF par défaut des rétrogradations (Giphy, lien direct vérifié) : une voiture qui regarde l'adversaire marquer. */
+export const DEFAULT_DEMOTION_GIF = 'https://media.giphy.com/media/xT0xeksCiseQVcSQtW/giphy.gif';
+
+const TITLES = {
+  first: '🚀 Nouveau rang Rocket League',
+  promotion: '🏆 Promotion Rocket League',
+  demotion: '📉 Chute libre Rocket League',
+};
 
 const COLORS = {
   bronze: 0xcd7f32,
@@ -19,8 +29,10 @@ export const footerMarker = (requestId) => `Demande #${requestId}`;
  * Construit le message d'annonce (charge utile Discord brute).
  * @param {object} request  ligne rank_requests approuvée
  * @param {{gif_url:string|null, message_template:string|null}} rankSettings
+ * @param {{fun_mode?:number, demotion_gif_url?:string|null}} [guildSettings]
  */
-export function buildAnnouncement(request, rankSettings) {
+export function buildAnnouncement(request, rankSettings, guildSettings = {}) {
+  const demotion = request.change_type === 'demotion';
   const description = buildMessage({
     template: rankSettings.message_template,
     changeType: request.change_type,
@@ -28,11 +40,12 @@ export function buildAnnouncement(request, rankSettings) {
     rank: request.rank,
     previousRank: request.previous_rank,
     playlist: request.playlist,
+    variant: guildSettings.fun_mode ? request.id : null,
   });
 
   const embed = new EmbedBuilder()
-    .setColor(COLORS[request.rank] ?? 0x5865f2)
-    .setTitle(request.change_type === 'promotion' ? '🏆 Promotion Rocket League' : '🚀 Nouveau rang Rocket League')
+    .setColor(demotion ? 0x992d22 : (COLORS[request.rank] ?? 0x5865f2))
+    .setTitle(TITLES[request.change_type] ?? TITLES.first)
     .setDescription(description)
     .addFields(
       { name: 'Playlist', value: playlistLabel(request.playlist), inline: true },
@@ -45,7 +58,11 @@ export function buildAnnouncement(request, rankSettings) {
   if (request.previous_rank) {
     embed.addFields({ name: 'Ancien rang', value: rankLabel(request.previous_rank), inline: true });
   }
-  if (rankSettings.gif_url) embed.setImage(rankSettings.gif_url);
+  const reward = rewardLine(request);
+  if (reward) embed.addFields({ name: demotion ? 'Sanction' : 'Récompense', value: reward });
+  // Le GIF du rang célèbre une montée : une chute a son propre GIF.
+  const gif = demotion ? (guildSettings.demotion_gif_url ?? DEFAULT_DEMOTION_GIF) : rankSettings.gif_url;
+  if (gif) embed.setImage(gif);
 
   return {
     content: `<@${request.user_id}>`,

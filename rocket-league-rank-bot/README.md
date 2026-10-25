@@ -17,6 +17,19 @@ Bot Discord (Node.js, discord.js v14, SQLite) qui annonce dans un salon quand un
 4. Si c'est une première déclaration ou une promotion **vers un rang dont les annonces sont activées**, un embed est posté dans le salon d'annonces (mention du membre, rang, playlist, GIF du rang, message personnalisable).
 5. Si activé, les rôles Discord du membre sont alignés sur son **meilleur rang validé, toutes playlists confondues**.
 
+## Mode potes
+
+Pour un serveur entre amis, une seule commande : `/config mode-potes actif:True`.
+
+- `/rang declarer playlist rang` **enregistre le rang tout de suite**, sans salon de validation ni modérateur (on se fait confiance ; la capture est ignorée).
+- **Tous les rangs sont annoncés**, sauf ceux coupés avec `/config rang-notification … actif:False`.
+- **Les chutes sont annoncées pour chambrer** : titre « 📉 Chute libre », phrase moqueuse (bon enfant) et GIF de chute (par défaut un GIF Giphy vérifié, modifiable avec `/config gif-chute`).
+- Messages variés : la phrase est choisie parmi plusieurs selon le numéro de la demande (`src/domain/messages.js`, `FUN_TEMPLATES`). Un message perso (`/config rang-message`) reste prioritaire pour les montées.
+- **Récompenses** (comptées dans tous les modes) : +5 pts à la première déclaration, +10 pts par rang gagné, +5 pts de bonus à partir de 3 montées d'affilée, −5 pts par rang perdu. L'annonce affiche le gain (« Récompense ») ou la perte (« Sanction »), la série en cours (🔥 montées / 🤡 chutes d'affilée).
+- `/rang classement` : classement public des points avec ⬆️ montées, ⬇️ chutes et titres (🔥 En feu, 🤡 En chute libre).
+
+Revenir au fonctionnement avec validation : `/config mode-potes actif:False`.
+
 ## Commandes
 
 | Commande | Qui | Rôle |
@@ -24,6 +37,7 @@ Bot Discord (Node.js, discord.js v14, SQLite) qui annonce dans un salon quand un
 | `/lier plateforme pseudo` | tous | Associe un compte Rocket League au membre (indicatif, non vérifié) |
 | `/rang declarer playlist rang [capture]` | tous | Demande de validation d'un rang |
 | `/rang voir [membre]` | tous | Rangs validés d'un membre, par playlist |
+| `/rang classement` | tous | Classement des points (montées, chutes, séries) |
 | `/rang-definir membre playlist rang` | modérateurs | Enregistre un rang sans passer par une demande (même détection et même annonce) |
 | `/config canal-annonces` · `canal-validation` | admins | Salons (le bot vérifie ses permissions dans le salon) |
 | `/config role-moderateur` | admins | Rôle autorisé à valider, en plus des admins |
@@ -32,6 +46,8 @@ Bot Discord (Node.js, discord.js v14, SQLite) qui annonce dans un salon quand un
 | `/config rang-message rang [message]` | admins | Message personnalisé. Variables : `{membre}` `{rang}` `{ancien_rang}` `{playlist}` ; sans `message` = défaut |
 | `/config rang-role rang [role]` | admins | Rôle Discord associé au rang |
 | `/config roles-actifs actif` | admins | Active l'attribution automatique des rôles |
+| `/config mode-potes actif` | admins | Mode potes (voir ci-dessus) |
+| `/config gif-chute [url]` | admins | GIF des chutes en mode potes ; sans `url` = GIF par défaut |
 | `/config afficher` | admins | Affiche la configuration |
 
 Aucun GIF n'est fourni par défaut : l'annonce est envoyée sans image tant qu'aucun lien n'est configuré.

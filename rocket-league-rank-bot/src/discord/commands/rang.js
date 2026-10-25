@@ -1,8 +1,12 @@
 import { AttachmentBuilder, DiscordAPIError, EmbedBuilder, InteractionContextType, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { PLAYLISTS, RANKS, playlistLabel, rankLabel } from '../../domain/ranks.js';
+import { CHANGE_LABELS } from '../../domain/messages.js';
+import { rewardLine, titleFor } from '../../domain/rewards.js';
 import { RankError } from '../../services/rankService.js';
 import { buildReviewMessage } from '../../notifications/reviewMessage.js';
+import { resolveGuild } from '../guildContext.js';
 import { NO_MENTIONS } from '../member.js';
+import { afterApproval } from '../postApproval.js';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -28,7 +32,8 @@ export const data = new SlashCommandBuilder()
       .setName('voir')
       .setDescription('Voir le rang validé d’un membre')
       .addUserOption((o) => o.setName('membre').setDescription('Membre (vous par défaut)')),
-  );
+  )
+  .addSubcommand((s) => s.setName('classement').setDescription('Classement des points : montées, chutes et séries'));
 
 const reply = (interaction, content) =>
   interaction.reply({ content, flags: MessageFlags.Ephemeral, allowedMentions: NO_MENTIONS });
@@ -39,11 +44,45 @@ const ERROR_TEXT = {
 };
 
 export async function execute(interaction, ctx) {
-  return interaction.options.getSubcommand() === 'voir' ? voir(interaction, ctx) : declarer(interaction, ctx);
+  const sub = interaction.options.getSubcommand();
+  if (sub === 'voir') return voir(interaction, ctx);
+  if (sub === 'classement') return classement(interaction, ctx);
+  return declarer(interaction, ctx);
+}
+
+/** Mode potes : le rang est enregistré tout de suite, sans validation par un modérateur. */
+async function declarerDirect(interaction, ctx) {
+  const guildId = interaction.guildId;
+  const playlist = interaction.options.getString('playlist', true);
+  const rank = interaction.options.getString('rang', true);
+  if (ctx.repo.getValidatedRank(guildId, interaction.user.id, playlist)?.rank === rank) {
+    return reply(interaction, ERROR_TEXT.already_validated);
+  }
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+  // Avant toute écriture : si la guilde est introuvable, rien n'est enregistré.
+  const guild = await resolveGuild(interaction);
+  const result = ctx.rankService.recordTrusted({
+    guildId,
+    userId: interaction.user.id,
+    playlist,
+    rank,
+    reviewerId: interaction.user.id,
+    origin: 'auto',
+  });
+  const warnings = await afterApproval(guild, result, ctx);
+  const reward = rewardLine(result.request);
+  await interaction.editReply({
+    content:
+      `✅ **${rankLabel(rank)}** en **${playlistLabel(playlist)}** enregistré (${CHANGE_LABELS[result.changeType].toLowerCase()}).` +
+      (reward ? `\n${reward}` : '') +
+      (warnings.length ? `\n⚠️ ${warnings.join('\n⚠️ ')}` : ''),
+    allowedMentions: NO_MENTIONS,
+  });
 }
 
 async function declarer(interaction, ctx) {
   const settings = ctx.repo.getGuildSettings(interaction.guildId);
+  if (settings.fun_mode) return declarerDirect(interaction, ctx);
   if (!settings.review_channel_id) {
     return reply(interaction, 'Le serveur n’est pas encore configuré : un administrateur doit définir le salon de validation (`/config canal-validation`).');
   }
@@ -128,4 +167,21 @@ async function voir(interaction, ctx) {
     );
   if (account) embed.setFooter({ text: `Compte déclaré : ${account.handle} (${account.platform}), non vérifié` });
   await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral, allowedMentions: NO_MENTIONS });
+}
+
+const MEDALS = ['🥇', '🥈', '🥉'];
+
+/** Public, pour chambrer en groupe ; aucune mention ne notifie personne. */
+async function classement(interaction, ctx) {
+  const rows = ctx.rankService.getLeaderboard(interaction.guildId, 10);
+  const lines = rows.map((r, i) => {
+    const title = titleFor(r);
+    return `${MEDALS[i] ?? `**${i + 1}.**`} <@${r.user_id}> — **${r.points} pts** · ⬆️ ${r.promotions} · ⬇️ ${r.demotions}${title ? ` · ${title}` : ''}`;
+  });
+  const embed = new EmbedBuilder()
+    .setTitle('🏁 Classement Rocket League')
+    .setColor(0xf1c40f)
+    .setDescription(lines.length ? lines.join('\n') : 'Personne n’a encore déclaré de rang. Lancez-vous avec `/rang declarer` !')
+    .setFooter({ text: 'Montée : +10 pts par rang (+5 dès 3 d’affilée) · Chute : −5 pts par rang' });
+  await interaction.reply({ embeds: [embed], allowedMentions: NO_MENTIONS });
 }

@@ -71,6 +71,18 @@ export const data = new SlashCommandBuilder()
       .setDescription('Activer l’attribution automatique des rôles de rang')
       .addBooleanOption((o) => o.setName('actif').setDescription('Activer ?').setRequired(true)),
   )
+  .addSubcommand((s) =>
+    s
+      .setName('mode-potes')
+      .setDescription('Entre potes : rangs enregistrés sans validation, tous annoncés, chutes chambrées')
+      .addBooleanOption((o) => o.setName('actif').setDescription('Activer ?').setRequired(true)),
+  )
+  .addSubcommand((s) =>
+    s
+      .setName('gif-chute')
+      .setDescription('GIF affiché quand un membre perd un rang (mode potes)')
+      .addStringOption((o) => o.setName('url').setDescription('Lien https du GIF (vide = GIF par défaut)').setMaxLength(500)),
+  )
   .addSubcommand((s) => s.setName('afficher').setDescription('Afficher la configuration actuelle'));
 
 /** État lisible d'un salon configuré, pour /config afficher. Ne lève jamais. */
@@ -155,6 +167,21 @@ export async function execute(interaction, ctx) {
       ctx.repo.setGuildSetting(guildId, 'roles_enabled', actif ? 1 : 0);
       return say(`✅ Attribution automatique des rôles : ${actif ? 'activée' : 'désactivée'}. Le rôle du bot doit être placé au-dessus des rôles de rang.`);
     }
+    case 'mode-potes': {
+      const actif = interaction.options.getBoolean('actif', true);
+      ctx.repo.setGuildSetting(guildId, 'fun_mode', actif ? 1 : 0);
+      return say(
+        actif
+          ? '✅ Mode potes activé : `/rang declarer` enregistre le rang tout de suite, tous les rangs sont annoncés et les chutes sont chambrées. Points : `/rang classement`.'
+          : '✅ Mode potes désactivé : retour à la validation par un modérateur, sans annonce des chutes.',
+      );
+    }
+    case 'gif-chute': {
+      const url = interaction.options.getString('url');
+      if (url && !isValidGifUrl(url)) return say('❌ Le lien doit être une URL https valide.');
+      ctx.repo.setGuildSetting(guildId, 'demotion_gif_url', url ?? null);
+      return say(url ? '✅ GIF des chutes défini.' : '✅ GIF des chutes : GIF par défaut.');
+    }
     case 'afficher': {
       const s = ctx.repo.getGuildSettings(guildId);
       let announce = s.announce_channel_id ? `<#${s.announce_channel_id}>` : 'Non défini';
@@ -169,7 +196,8 @@ export async function execute(interaction, ctx) {
       }
       const lines = RANKS.map((r) => {
         const c = ctx.repo.getRankSettings(guildId, r.id);
-        return `**${r.label}** — annonce : ${c.notify ? 'oui' : 'non'} · GIF : ${c.gif_url ? 'oui' : 'non'} · message : ${c.message_template ? 'perso' : 'défaut'} · rôle : ${c.role_id ? `<@&${c.role_id}>` : '—'}`;
+        const notify = s.fun_mode && !c.notify_configured ? true : c.notify;
+        return `**${r.label}** — annonce : ${notify ? 'oui' : 'non'} · GIF : ${c.gif_url ? 'oui' : 'non'} · message : ${c.message_template ? 'perso' : 'défaut'} · rôle : ${c.role_id ? `<@&${c.role_id}>` : '—'}`;
       });
       const embed = new EmbedBuilder()
         .setTitle('Configuration')
@@ -179,6 +207,11 @@ export async function execute(interaction, ctx) {
           { name: 'Salon de validation', value: review },
           { name: 'Rôle modérateur', value: s.moderator_role_id ? `<@&${s.moderator_role_id}>` : 'Aucun', inline: true },
           { name: 'Rôles automatiques', value: s.roles_enabled ? 'Activés' : 'Désactivés', inline: true },
+          {
+            name: 'Mode potes',
+            value: s.fun_mode ? `Activé · GIF des chutes : ${s.demotion_gif_url ? 'perso' : 'par défaut'}` : 'Désactivé (validation par un modérateur)',
+            inline: true,
+          },
           { name: 'Rangs', value: lines.join('\n') },
         );
       return interaction.editReply({ embeds: [embed], allowedMentions: NO_MENTIONS });

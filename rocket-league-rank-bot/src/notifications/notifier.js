@@ -24,7 +24,7 @@ export class Notifier {
     try {
       const settings = this.repo.getGuildSettings(request.guild_id);
       if (!settings.announce_channel_id) throw new Error('Salon d’annonces non configuré');
-      const payload = buildAnnouncement(request, this.repo.getRankSettings(request.guild_id, request.rank));
+      const payload = buildAnnouncement(request, this.repo.getRankSettings(request.guild_id, request.rank), settings);
       const messageId = await this.transport.send(settings.announce_channel_id, payload);
       this.repo.markNotificationSent(requestId, messageId);
       return 'sent';
