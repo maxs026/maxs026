@@ -222,6 +222,13 @@ describe('logs, configuration et invitation', () => {
     expect(bits & P.SendMessages).toBeTruthy();
     expect(bits & P.ManageRoles).toBe(0n);
     expect(BigInt(new URL(buildInviteUrl('123456789012345678', { roles: true })).searchParams.get('permissions')) & P.ManageRoles).toBeTruthy();
+    expect(u.searchParams.get('integration_type')).toBe('0');
+    expect(u.searchParams.has('guild_id')).toBe(false);
+  });
+  it('le lien d’invitation présélectionne le serveur quand DISCORD_GUILD_ID est connu', () => {
+    const u = new URL(buildInviteUrl('123456789012345678', { guildId: '1554557817283944518' }));
+    expect(u.searchParams.get('guild_id')).toBe('1554557817283944518');
+    expect(u.searchParams.get('disable_guild_select')).toBe('true');
   });
 });
 

@@ -47,12 +47,12 @@ Aucun GIF n'est fourni par défaut : l'annonce est envoyée sans image tant qu'a
 
 | Source | Constat | Décision |
 |---|---|---|
-| API officielle Psyonix/Epic | Pas d'endpoint public de rang trouvé (accès « bêta fermée » mentionné par une source tierce non datée) | Non utilisable |
-| Tracker Network | Pas d'API publique Rocket League | Écartée |
+| API officielle Psyonix/Epic | Bêta fermée : accès uniquement sur demande à Psyonix (`RLPublicAPI@psyonix.com`, d'après la bibliothèque `rlapi`), sans garantie de réponse | Non utilisable sans identifiants Psyonix |
+| Tracker Network | Pas d'API publique Rocket League ; son API interne répond `403` à un appel non authentifié (vérifié le 25/10/2026) | Écartée |
 | Scraping de sites de stats | Fragile, probablement contraire aux conditions d'usage | Écartée |
 | API tierces payantes | Fiabilité et conditions non vérifiées | Hors périmètre (aucun connecteur) |
 
-Ces conclusions viennent de recherches web (sources secondaires), pas d'essais d'API réels.
+Ces conclusions viennent de recherches web et d'un appel HTTP non authentifié ; aucune API de rang n'a pu être testée faute d'accès. **Ce qui manque pour la détection automatique** : des identifiants API Psyonix (ou une autre source officielle), puis un connecteur qui appelle `recordTrusted`.
 
 **Pour brancher une source automatique plus tard** : elle n'a qu'à appeler `RankService.recordTrusted({ guildId, userId, playlist, rank, reviewerId, origin })`. La détection de changement, l'anti-doublon, l'annonce et les rôles sont ensuite identiques et ne sont pas modifiés. Les annonces sont gérées par `src/notifications/`, qui ignore d'où vient le rang.
 
@@ -106,6 +106,8 @@ Ces conclusions viennent de recherches web (sources secondaires), pas d'essais d
 | Log de démarrage `guilds: 0` + avertissement ; `/config canal-*` répond « le bot n'est pas membre de ce serveur » | Bot invité sans le scope `bot` : il reçoit les commandes mais n'est dans aucun serveur | Réinvitez-le avec `npm run invite-url` (retirer d'abord l'ancienne intégration n'est pas nécessaire) |
 | « Une erreur inattendue est survenue (réf. xxxxxx) » | Erreur non prévue | Cherchez `xxxxxx` dans le terminal : la ligne JSON contient la stack trace (`err.stack`) |
 | `/config canal-…` liste des permissions manquantes | Le bot n'a pas accès au salon | Salon privé : ajoutez le bot (ou son rôle) dans *Modifier le salon > Permissions* avec Voir le salon, Envoyer des messages, Intégrer des liens, Lire l'historique (+ Joindre des fichiers pour le salon de validation) |
+| `/config canal-annonces` : « Envoyer des messages » manquant alors que le rôle du bot l'a | Le salon refuse « Envoyer des messages » à `@everyone` (salon d'annonces en lecture seule) : ce refus s'applique aussi au bot | *Modifier le salon > Permissions > Permissions avancées* : ajoutez le rôle du bot et autorisez Envoyer des messages et Intégrer des liens |
+| Le bot a été « ajouté » au salon privé mais `/config canal-validation` refuse toujours « Voir le salon » | L'ajout n'a pas été enregistré | Vérifiez que le rôle du bot apparaît bien sous *Qui a accès à ce salon ?* |
 | Configuration « perdue » après un redémarrage | Mauvaise base lue | Le chemin `DATABASE_PATH` relatif est résolu depuis la racine du projet ; le chemin absolu utilisé est affiché au démarrage (`database`) |
 
 `npm run doctor` se connecte en lecture seule et vérifie : serveurs du bot, salons configurés et leurs permissions, hiérarchie des rôles de rang. `/config afficher` montre aussi l'état (✅/⚠️) de chaque salon configuré.
@@ -159,6 +161,10 @@ docker compose logs -f
 Le volume `bot-data` contient la base (`/data/bot.sqlite`). Enregistrez les commandes une fois depuis n'importe quelle machine disposant du `.env` (`npm run deploy-commands`), et à chaque modification des commandes.
 
 Sur une plateforme (Fly.io, Railway…) : définissez `DISCORD_TOKEN` et `DISCORD_CLIENT_ID` comme variables secrètes de la plateforme (pas dans l'image), montez un volume sur `/data`, et ne lancez qu'**une seule instance** (SQLite n'est pas fait pour plusieurs instances).
+
+### Sur un Mac (tant qu'il est allumé)
+
+Un LaunchAgent relance le bot à l'ouverture de session et après un plantage. Créez `~/Library/LaunchAgents/com.rocket-league-rank-bot.plist` avec `ProgramArguments` = `[chemin de node, src/index.js]`, `WorkingDirectory` = le dossier du bot, `RunAtLoad` et `KeepAlive` à `true`, puis `launchctl load ~/Library/LaunchAgents/com.rocket-league-rank-bot.plist`. Arrêtez d'abord tout `npm start` manuel : **une seule instance** doit tourner. Le bot s'arrête quand le Mac est éteint ou en veille.
 
 ### Sans Docker
 
