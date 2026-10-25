@@ -1,4 +1,4 @@
-import { AttachmentBuilder, EmbedBuilder, InteractionContextType, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { AttachmentBuilder, DiscordAPIError, EmbedBuilder, InteractionContextType, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { PLAYLISTS, RANKS, playlistLabel, rankLabel } from '../../domain/ranks.js';
 import { RankError } from '../../services/rankService.js';
 import { buildReviewMessage } from '../../notifications/reviewMessage.js';
@@ -100,7 +100,12 @@ async function declarer(interaction, ctx) {
   } catch (err) {
     ctx.logger.error({ err, requestId: request.id }, 'Envoi au salon de validation impossible');
     ctx.repo.deleteRequest(request.id);
-    return interaction.editReply('Impossible de transmettre votre demande aux modérateurs (salon introuvable ou permissions manquantes). Prévenez un administrateur.');
+    const denied = err instanceof DiscordAPIError && [50001, 50013, 10003].includes(err.code);
+    return interaction.editReply(
+      denied
+        ? 'Impossible de transmettre votre demande : le bot n’a pas accès au salon de validation (permissions ou salon supprimé). Un administrateur doit refaire `/config canal-validation`.'
+        : 'Impossible de transmettre votre demande aux modérateurs pour le moment. Réessayez ou prévenez un administrateur.',
+    );
   }
   await interaction.editReply(
     `Demande n°${request.id} envoyée : **${rankLabel(request.rank)}** en **${playlistLabel(request.playlist)}**. Un modérateur doit la valider.`,

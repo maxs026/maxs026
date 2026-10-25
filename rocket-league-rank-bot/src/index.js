@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import { PROJECT_ROOT } from './env.js';
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { loadConfig } from './config.js';
 import { DiscordTransport } from './discord/transport.js';
@@ -11,7 +11,7 @@ import { Repository } from './storage/repository.js';
 
 const RETRY_INTERVAL_MS = 60_000;
 
-const config = loadConfig();
+const config = loadConfig(process.env, { root: PROJECT_ROOT });
 const logger = createLogger(config.LOG_LEVEL);
 const db = openDatabase(config.DATABASE_PATH);
 const repo = new Repository(db);
@@ -28,7 +28,18 @@ const ctx = {
 let retryTimer;
 
 client.once(Events.ClientReady, async (c) => {
-  logger.info({ user: c.user.tag, guilds: c.guilds.cache.size }, 'Bot connecté à Discord');
+  logger.info(
+    { user: c.user.tag, guilds: c.guilds.cache.size, guildList: c.guilds.cache.map((g) => ({ id: g.id, name: g.name })), database: config.DATABASE_PATH },
+    'Bot connecté à Discord',
+  );
+  if (c.guilds.cache.size === 0) {
+    logger.warn(
+      'Le bot n’est membre d’aucun serveur : les commandes répondent, mais il ne peut ni voir les salons ni envoyer de messages. ' +
+        'Il a sans doute été invité sans le scope « bot ». Générez le bon lien avec : npm run invite-url',
+    );
+  } else if (config.DISCORD_GUILD_ID && !c.guilds.cache.has(config.DISCORD_GUILD_ID)) {
+    logger.warn({ guildId: config.DISCORD_GUILD_ID }, 'DISCORD_GUILD_ID ne fait pas partie des serveurs du bot');
+  }
   try {
     // Reprise après redémarrage : annonces restées en attente ou interrompues.
     await ctx.notifier.recover();

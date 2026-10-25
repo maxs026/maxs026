@@ -1,14 +1,28 @@
+import { randomBytes } from 'node:crypto';
 import { MessageFlags } from 'discord.js';
 import { commandMap } from './commands/index.js';
 import { handleReviewButton, isReviewButton } from './interactions/reviewButtons.js';
+import { UserFacingError } from './userError.js';
+
+/** Répond une seule fois, quel que soit l'état de l'interaction (non répondue, différée, déjà répondue). */
+async function respond(interaction, content) {
+  const payload = { content, flags: MessageFlags.Ephemeral, allowedMentions: { parse: [] } };
+  if (interaction.replied) return interaction.followUp(payload);
+  if (interaction.deferred) return interaction.editReply({ content, allowedMentions: payload.allowedMentions });
+  return interaction.reply(payload);
+}
 
 /** Route les interactions et garantit une réponse en cas d'erreur. */
 export async function routeInteraction(interaction, ctx) {
+  const where = {
+    command: interaction.commandName,
+    subcommand: interaction.options?.getSubcommand?.(false) ?? undefined,
+    customId: interaction.customId,
+    guildId: interaction.guildId,
+  };
   try {
     if (!interaction.inGuild()) {
-      if (interaction.isRepliable()) {
-        await interaction.reply({ content: 'Ce bot fonctionne uniquement sur un serveur.', flags: MessageFlags.Ephemeral });
-      }
+      if (interaction.isRepliable()) await respond(interaction, 'Ce bot fonctionne uniquement sur un serveur.');
       return;
     }
     if (interaction.isChatInputCommand()) {
@@ -18,13 +32,20 @@ export async function routeInteraction(interaction, ctx) {
       await handleReviewButton(interaction, ctx);
     }
   } catch (err) {
-    ctx.logger.error({ err, command: interaction.commandName, customId: interaction.customId }, 'Erreur pendant le traitement d’une interaction');
-    const content = 'Une erreur est survenue. Réessayez ou prévenez un administrateur.';
+    let content;
+    if (err instanceof UserFacingError) {
+      ctx.logger.warn({ ...where, reason: err.message }, 'Interaction refusée (erreur prévisible)');
+      content = err.message;
+    } else {
+      // Référence courte : visible de l'utilisateur ET dans les logs, pour retrouver la stack trace.
+      const ref = randomBytes(3).toString('hex');
+      ctx.logger.error({ err, ref, ...where }, 'Erreur inattendue pendant le traitement d’une interaction');
+      content = `Une erreur inattendue est survenue (réf. ${ref}). Prévenez un administrateur en lui donnant cette référence.`;
+    }
     try {
-      if (interaction.deferred || interaction.replied) await interaction.followUp({ content, flags: MessageFlags.Ephemeral });
-      else await interaction.reply({ content, flags: MessageFlags.Ephemeral });
+      await respond(interaction, content);
     } catch (replyErr) {
-      ctx.logger.error({ err: replyErr }, 'Impossible de répondre à l’interaction');
+      ctx.logger.error({ err: replyErr, ...where }, 'Impossible de répondre à l’interaction');
     }
   }
 }

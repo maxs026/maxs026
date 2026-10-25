@@ -3,6 +3,7 @@ import { canReview } from '../../domain/permissions.js';
 import { buildReviewMessage, APPROVE_PREFIX, REJECT_PREFIX } from '../../notifications/reviewMessage.js';
 import { memberInfo } from '../member.js';
 import { afterApproval } from '../postApproval.js';
+import { resolveGuild } from '../guildContext.js';
 
 const ephemeral = (content) => ({ content, flags: MessageFlags.Ephemeral, allowedMentions: { parse: [] } });
 
@@ -40,6 +41,8 @@ export async function handleReviewButton(interaction, ctx) {
     return interaction.update(buildReviewMessage(res.request, {}));
   }
 
+  // Avant toute écriture : si la guilde est introuvable, la demande reste en attente.
+  const guild = await resolveGuild(interaction);
   const result = ctx.rankService.approve(id, reviewer);
   if (result.alreadyProcessed) return interaction.reply(ephemeral('Cette demande a déjà été traitée.'));
 
@@ -51,7 +54,7 @@ export async function handleReviewButton(interaction, ctx) {
       screenshot: existingEmbed ? { url: existingEmbed } : null,
     }),
   );
-  const warnings = await afterApproval(interaction.guild, result, ctx);
+  const warnings = await afterApproval(guild, result, ctx);
   if (warnings.length) {
     await interaction.followUp(ephemeral(`⚠️ ${warnings.join('\n⚠️ ')}`));
   }

@@ -87,7 +87,7 @@ Ces conclusions viennent de recherches web (sources secondaires), pas d'essais d
 4. Onglet **Installation** (ou OAuth2 > URL Generator), scopes **`bot`** et **`applications.commands`**. Permissions du bot :
    - Voir les salons, Envoyer des messages, Intégrer des liens, Joindre des fichiers, Lire l'historique des messages ;
    - **Gérer les rôles** seulement si vous activez les rôles automatiques.
-5. Invitez le bot sur votre serveur avec l'URL générée.
+5. Invitez le bot avec le lien généré par `npm run invite-url` (ajoutez `-- --roles` pour « Gérer les rôles »). **Les deux scopes `bot` ET `applications.commands` sont indispensables** : avec le seul scope `applications.commands`, les commandes apparaissent et répondent, mais le bot n'est *pas membre* du serveur (voir Dépannage).
 6. **Rôles automatiques (optionnel)** : *Paramètres du serveur > Rôles*, glissez le rôle du bot **au-dessus** de tous les rôles de rang. Un bot ne peut pas attribuer un rôle placé au-dessus du sien ni un rôle « géré » par une intégration.
 7. Enregistrez les commandes : `npm run deploy-commands` (voir ci-dessous). Avec `DISCORD_GUILD_ID` elles sont disponibles immédiatement ; en global, Discord peut mettre un peu de temps à les propager.
 8. Dans Discord, en tant qu'administrateur :
@@ -99,6 +99,17 @@ Ces conclusions viennent de recherches web (sources secondaires), pas d'essais d
    ```
    Les salons de validation doivent être **privés** (réservés aux modérateurs).
 
+## Dépannage
+
+| Symptôme | Cause | Solution |
+|---|---|---|
+| Log de démarrage `guilds: 0` + avertissement ; `/config canal-*` répond « le bot n'est pas membre de ce serveur » | Bot invité sans le scope `bot` : il reçoit les commandes mais n'est dans aucun serveur | Réinvitez-le avec `npm run invite-url` (retirer d'abord l'ancienne intégration n'est pas nécessaire) |
+| « Une erreur inattendue est survenue (réf. xxxxxx) » | Erreur non prévue | Cherchez `xxxxxx` dans le terminal : la ligne JSON contient la stack trace (`err.stack`) |
+| `/config canal-…` liste des permissions manquantes | Le bot n'a pas accès au salon | Salon privé : ajoutez le bot (ou son rôle) dans *Modifier le salon > Permissions* avec Voir le salon, Envoyer des messages, Intégrer des liens, Lire l'historique (+ Joindre des fichiers pour le salon de validation) |
+| Configuration « perdue » après un redémarrage | Mauvaise base lue | Le chemin `DATABASE_PATH` relatif est résolu depuis la racine du projet ; le chemin absolu utilisé est affiché au démarrage (`database`) |
+
+`npm run doctor` se connecte en lecture seule et vérifie : serveurs du bot, salons configurés et leurs permissions, hiérarchie des rôles de rang. `/config afficher` montre aussi l'état (✅/⚠️) de chaque salon configuré.
+
 ## Lancement local
 
 Prérequis : Node.js ≥ 20 (testé avec Node 22).
@@ -107,17 +118,20 @@ Prérequis : Node.js ≥ 20 (testé avec Node 22).
 cd rocket-league-rank-bot
 npm install
 cp .env.example .env        # puis remplissez DISCORD_TOKEN et DISCORD_CLIENT_ID
+npm run invite-url          # lien d'invitation correct (bot + applications.commands)
 npm run deploy-commands     # enregistre les commandes slash
+npm run doctor              # (optionnel) vérifie connexion, salons, permissions
 npm start
 ```
 
 ## Tests
 
 ```bash
-npm test
+npm test          # Vitest
+npm run check     # vérification de syntaxe de tous les fichiers
 ```
 
-Les tests couvrent la logique métier, la base SQLite (en mémoire et sur fichier, avec redémarrage simulé), les embeds, les commandes et les boutons avec des **objets Discord factices**. **Ils ne se connectent pas à Discord** : la connexion réelle, l'enregistrement des commandes et les permissions effectives d'un vrai serveur doivent être vérifiés à la main (checklist ci-dessous).
+Les tests couvrent la logique métier, la base SQLite (en mémoire et sur fichier, avec redémarrage simulé), les embeds, et — avec de **vrais objets discord.js construits hors ligne** (interactions, cache de guilde, salons privés avec overwrites, hiérarchie des rôles) — les commandes `/config`, `/rang`, `/lier`, `/rang-definir` et les boutons (double clic, permissions). **Ils ne se connectent pas à Discord** : la connexion réelle, l'enregistrement des commandes et les permissions effectives d'un vrai serveur doivent être vérifiés à la main (checklist ci-dessous).
 
 ### Checklist de test manuel (après le premier lancement)
 

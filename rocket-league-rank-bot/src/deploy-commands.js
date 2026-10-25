@@ -1,9 +1,9 @@
-import 'dotenv/config';
+import { PROJECT_ROOT } from './env.js';
 import { REST, Routes } from 'discord.js';
 import { loadConfig } from './config.js';
 import { commandsJson } from './discord/commands/index.js';
 
-const config = loadConfig();
+const config = loadConfig(process.env, { root: PROJECT_ROOT });
 const rest = new REST().setToken(config.DISCORD_TOKEN);
 const body = commandsJson();
 

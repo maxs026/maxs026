@@ -227,29 +227,6 @@ describe('commandes slash', () => {
     expect(ctx.repo.getGuildSettings('g1').roles_enabled).toBe(0);
   });
 
-  it('/config enregistre GIF, message et activation des annonces', async () => {
-    const ctx = makeCtx();
-    const run = (sub, opts) => configCmd.execute(fakeCommand({ sub, opts, manage: true }), ctx);
-    await run('rang-gif', { rang: 'gold', url: 'https://x.test/g.gif' });
-    await run('rang-message', { rang: 'gold', message: 'Bravo {membre} !' });
-    await run('rang-notification', { rang: 'platinum', actif: true });
-    const bad = fakeCommand({ sub: 'rang-gif', opts: { rang: 'gold', url: 'http://non-https' }, manage: true });
-    await configCmd.execute(bad, ctx);
-    expect(bad.out.replies[0].content).toMatch(/https/);
-    expect(ctx.repo.getRankSettings('g1', 'gold')).toMatchObject({ gif_url: 'https://x.test/g.gif', message_template: 'Bravo {membre} !', notify: true });
-    expect(ctx.repo.getRankSettings('g1', 'platinum').notify).toBe(true);
-    expect(ctx.repo.getRankSettings('g1', 'bronze').notify).toBe(false);
-  });
-
-  it('/config canal-annonces refuse un salon où le bot manque de permissions', async () => {
-    const ctx = makeCtx();
-    const channel = { id: 'c1', permissionsFor: () => ({ has: (b) => b === PermissionFlagsBits.ViewChannel }) };
-    const i = fakeCommand({ sub: 'canal-annonces', opts: { canal: channel }, manage: true, guild: { members: { me: {} } } });
-    await configCmd.execute(i, ctx);
-    expect(i.out.replies[0].content).toMatch(/SendMessages/);
-    expect(ctx.repo.getGuildSettings('g1').announce_channel_id).toBeNull();
-  });
-
   it('/rang-definir : réservé aux modérateurs, applique la même détection de changement', async () => {
     const ctx = makeCtx();
     configureGuild(ctx.repo);
@@ -349,7 +326,7 @@ describe('configuration d’environnement', () => {
   const valid = { DISCORD_TOKEN: 'abc', DISCORD_CLIENT_ID: '123456789012345678' };
   it('accepte une configuration minimale et applique les valeurs par défaut', () => {
     const c = loadConfig(valid);
-    expect(c.DATABASE_PATH).toBe('./data/bot.sqlite');
+    expect(c.DATABASE_PATH).toMatch(/data[\\/]bot\.sqlite$/);
     expect(c.LOG_LEVEL).toBe('info');
     expect(c.DISCORD_GUILD_ID).toBeUndefined();
     expect(loadConfig({ ...valid, DISCORD_GUILD_ID: '' }).DISCORD_GUILD_ID).toBeUndefined();

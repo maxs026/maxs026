@@ -3,6 +3,7 @@ import { isModerator } from '../../domain/permissions.js';
 import { playlistLabel, rankLabel } from '../../domain/ranks.js';
 import { memberInfo, NO_MENTIONS } from '../member.js';
 import { afterApproval } from '../postApproval.js';
+import { resolveGuild } from '../guildContext.js';
 import { playlistChoices, rankChoices } from './rang.js';
 
 export const data = new SlashCommandBuilder()
@@ -27,6 +28,8 @@ export async function execute(interaction, ctx) {
     return reply('Vous ne pouvez pas valider votre propre rang : passez par `/rang declarer`.');
   }
 
+  // Avant toute écriture : si la guilde est introuvable, rien n'est enregistré.
+  const guild = await resolveGuild(interaction);
   const result = ctx.rankService.recordTrusted({
     guildId: interaction.guildId,
     userId: user.id,
@@ -35,7 +38,7 @@ export async function execute(interaction, ctx) {
     reviewerId: interaction.user.id,
   });
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-  const warnings = await afterApproval(interaction.guild, result, ctx);
+  const warnings = await afterApproval(guild, result, ctx);
   const labels = { first: 'première déclaration', promotion: 'promotion', demotion: 'rétrogradation', same: 'aucun changement' };
   await interaction.editReply({
     content:

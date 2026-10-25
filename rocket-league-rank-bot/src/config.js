@@ -1,3 +1,4 @@
+import { isAbsolute, resolve } from 'node:path';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -14,11 +15,17 @@ const schema = z.object({
 });
 
 /** Valide l'environnement. Lève une erreur lisible sans jamais afficher le token. */
-export function loadConfig(env = process.env) {
+export function loadConfig(env = process.env, { root = process.cwd() } = {}) {
   const parsed = schema.safeParse(env);
   if (!parsed.success) {
     const lines = parsed.error.issues.map((i) => `- ${i.path.join('.')} : ${i.message}`);
     throw new Error(`Configuration invalide :\n${lines.join('\n')}`);
   }
-  return parsed.data;
+  const data = parsed.data;
+  // Un chemin relatif est résolu depuis la racine du projet, pas depuis le dossier courant :
+  // lancer le bot d'ailleurs ne doit jamais créer une seconde base vide (« configuration perdue »).
+  if (data.DATABASE_PATH !== ':memory:' && !isAbsolute(data.DATABASE_PATH)) {
+    data.DATABASE_PATH = resolve(root, data.DATABASE_PATH);
+  }
+  return data;
 }

@@ -10,7 +10,10 @@
   "scripts": {
     "start": "node src/index.js",
     "deploy-commands": "node src/deploy-commands.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check": "node scripts/check-syntax.js",
+    "doctor": "node src/doctor.js",
+    "invite-url": "node src/invite-url.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
