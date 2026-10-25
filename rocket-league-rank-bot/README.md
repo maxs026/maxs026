@@ -166,6 +166,21 @@ Sur une plateforme (Fly.io, Railway…) : définissez `DISCORD_TOKEN` et `DISCOR
 
 Un LaunchAgent relance le bot à l'ouverture de session et après un plantage. Créez `~/Library/LaunchAgents/com.rocket-league-rank-bot.plist` avec `ProgramArguments` = `[chemin de node, src/index.js]`, `WorkingDirectory` = le dossier du bot, `RunAtLoad` et `KeepAlive` à `true`, puis `launchctl load ~/Library/LaunchAgents/com.rocket-league-rank-bot.plist`. Arrêtez d'abord tout `npm start` manuel : **une seule instance** doit tourner. Le bot s'arrête quand le Mac est éteint ou en veille.
 
+### VPS gratuit (Debian/Ubuntu) avec `deploy/migrate-to-vps.sh`
+
+VPS « toujours gratuits » adaptés (inscription avec carte bancaire de vérification, non débitée si l'on reste dans les limites ; vérifiez les conditions du jour) :
+
+- **Oracle Cloud Always Free** : instance `VM.Standard.E2.1.Micro` (1 Go, x86) ou Ampere A1 (ARM, souvent en rupture de capacité). Choisissez bien la région d'origine : l'offre gratuite y est liée.
+- **Google Cloud** : une `e2-micro` dans `us-west1`, `us-central1` ou `us-east1`, disque standard ≤ 30 Go. Une seule VM gratuite par compte de facturation.
+
+Créez une VM Ubuntu 24.04 avec une clé SSH (aucun port entrant n'est nécessaire hormis SSH), puis depuis ce dossier :
+
+```bash
+deploy/migrate-to-vps.sh ubuntu@IP_DU_VPS ~/.ssh/ma_cle
+```
+
+Le script copie le code, installe Node 22 et les dépendances, **arrête le bot du Mac**, sauvegarde et vérifie la base, copie `.env` (chmod 600) et la base dans `/var/lib/rocket-league-rank-bot`, puis démarre le service systemd `rocket-league-rank-bot` (redémarrage automatique). En cas d'échec après l'arrêt local, il relance le bot du Mac. Journaux : `journalctl -u rocket-league-rank-bot -f`.
+
 ### Sans Docker
 
 `npm ci --omit=dev` puis un gestionnaire de processus (systemd, pm2) avec redémarrage automatique. Sauvegardez régulièrement `DATABASE_PATH`.

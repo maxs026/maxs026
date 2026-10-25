@@ -1,0 +1,24 @@
+# Service systemd du bot (installé par deploy/migrate-to-vps.sh).
+# __USER__ et __HOME__ sont remplacés à l'installation.
+[Unit]
+Description=Rocket League Rank Bot (Discord)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__HOME__/rocket-league-rank-bot
+# Le .env du projet est lu par le bot (dotenv) ; cette variable a priorité sur lui.
+Environment=NODE_ENV=production
+Environment=DATABASE_PATH=/var/lib/rocket-league-rank-bot/bot.sqlite
+ExecStart=/usr/bin/node src/index.js
+Restart=on-failure
+RestartSec=10
+# Une seule instance : systemd ne lance jamais deux fois la même unité.
+NoNewPrivileges=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/rocket-league-rank-bot
+
+[Install]
+WantedBy=multi-user.target
