@@ -27,6 +27,8 @@ Pour un serveur entre amis, une seule commande : `/config mode-potes actif:True`
 - Messages variés : la phrase est choisie parmi plusieurs selon le numéro de la demande (`src/domain/messages.js`, `FUN_TEMPLATES`). Un message perso (`/config rang-message`) reste prioritaire pour les montées.
 - **Récompenses** (comptées dans tous les modes) : +5 pts à la première déclaration, +10 pts par rang gagné, +5 pts de bonus à partir de 3 montées d'affilée, −5 pts par rang perdu. L'annonce affiche le gain (« Récompense ») ou la perte (« Sanction »), la série en cours (🔥 montées / 🤡 chutes d'affilée).
 - `/rang classement` : classement public des points avec ⬆️ montées, ⬇️ chutes et titres (🔥 En feu, 🤡 En chute libre).
+- **Réactions automatiques** sous chaque annonce (👋🚀 nouveau, 🔥👏🐐 montée, 🤡😂🪦 chute) : il ne reste qu'à cliquer. Permission « Ajouter des réactions » nécessaire dans le salon d'annonces (`npm run doctor` la vérifie) ; sans elle, l'annonce part quand même.
+- **Récap du dimanche** à 20 h (heure de Paris) dans le salon d'annonces : 🚀 grimpeur de la semaine, 🤡 clown de la semaine, 🔥 plus longue série. Un seul par semaine, même après redémarrage ; rattrapé jusqu'au lundi soir si le Mac était en veille ; rien n'est posté si personne n'a déclaré de rang. Aperçu privé à tout moment : `/rang recap`.
 
 Revenir au fonctionnement avec validation : `/config mode-potes actif:False`.
 
@@ -38,6 +40,7 @@ Revenir au fonctionnement avec validation : `/config mode-potes actif:False`.
 | `/rang declarer playlist rang [capture]` | tous | Demande de validation d'un rang |
 | `/rang voir [membre]` | tous | Rangs validés d'un membre, par playlist |
 | `/rang classement` | tous | Classement des points (montées, chutes, séries) |
+| `/rang recap` | tous | Aperçu privé du récap des 7 derniers jours |
 | `/rang-definir membre playlist rang` | modérateurs | Enregistre un rang sans passer par une demande (même détection et même annonce) |
 | `/config canal-annonces` · `canal-validation` | admins | Salons (le bot vérifie ses permissions dans le salon) |
 | `/config role-moderateur` | admins | Rôle autorisé à valider, en plus des admins |

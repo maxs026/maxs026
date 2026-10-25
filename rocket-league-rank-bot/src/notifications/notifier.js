@@ -1,5 +1,12 @@
 import { buildAnnouncement, footerMarker } from './embed.js';
 
+/** Réactions ajoutées par le bot sous les annonces, en mode potes : il ne reste qu'à cliquer. */
+export const REACTIONS = {
+  first: ['👋', '🚀'],
+  promotion: ['🔥', '👏', '🐐'],
+  demotion: ['🤡', '😂', '🪦'],
+};
+
 /**
  * Envoie les annonces. Ne connaît ni la source des rangs ni Discord :
  * il parle à un `transport` ({ send, findMarker }) injecté.
@@ -27,12 +34,24 @@ export class Notifier {
       const payload = buildAnnouncement(request, this.repo.getRankSettings(request.guild_id, request.rank), settings);
       const messageId = await this.transport.send(settings.announce_channel_id, payload);
       this.repo.markNotificationSent(requestId, messageId);
+      if (settings.fun_mode) await this.#react(settings.announce_channel_id, messageId, request);
       return 'sent';
     } catch (err) {
       this.repo.failNotification(requestId, this.maxAttempts);
       const state = this.repo.getRequest(requestId).notify_state;
       this.log.error({ err, requestId, state }, 'Échec de l’envoi de l’annonce');
       return state === 'failed' ? 'failed' : 'retry';
+    }
+  }
+
+  /** Mode potes : réactions de départ sous l'annonce. Ne lève jamais (l'annonce est déjà envoyée). */
+  async #react(channelId, messageId, request) {
+    const emojis = REACTIONS[request.change_type];
+    if (!emojis || !this.transport.react) return;
+    try {
+      await this.transport.react(channelId, messageId, emojis);
+    } catch (err) {
+      this.log.warn({ err, requestId: request.id }, 'Réactions impossibles (permission « Ajouter des réactions » ?)');
     }
   }
 

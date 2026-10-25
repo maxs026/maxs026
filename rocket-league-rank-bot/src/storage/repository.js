@@ -26,7 +26,7 @@ export class Repository {
   }
 
   setGuildSetting(guildId, column, value) {
-    const allowed = ['announce_channel_id', 'review_channel_id', 'moderator_role_id', 'roles_enabled', 'fun_mode', 'demotion_gif_url'];
+    const allowed = ['announce_channel_id', 'review_channel_id', 'moderator_role_id', 'roles_enabled', 'fun_mode', 'demotion_gif_url', 'last_recap_key'];
     if (!allowed.includes(column)) throw new Error(`Colonne non autorisée : ${column}`);
     this.db.prepare('INSERT OR IGNORE INTO guild_settings (guild_id) VALUES (?)').run(guildId);
     this.db.prepare(`UPDATE guild_settings SET ${column} = ? WHERE guild_id = ?`).run(value, guildId);
@@ -157,6 +157,35 @@ export class Repository {
            demotions=excluded.demotions, streak=excluded.streak`,
       )
       .run(guildId, userId, points, promotions, demotions, streak);
+  }
+
+  // --- Récap hebdomadaire -------------------------------------------------
+  listFunGuilds() {
+    return this.db.prepare('SELECT * FROM guild_settings WHERE fun_mode = 1').all();
+  }
+
+  /** Changements de rang validés depuis `since` (ms). */
+  listChangesSince(guildId, since) {
+    return this.db
+      .prepare(
+        `SELECT * FROM rank_requests WHERE guild_id=? AND status='approved' AND reviewed_at >= ?
+           AND change_type IN ('first','promotion','demotion') ORDER BY reviewed_at`,
+      )
+      .all(guildId, since);
+  }
+
+  /** Réserve le récap `key` (atomique) : false s'il a déjà été pris. */
+  claimRecap(guildId, key) {
+    const info = this.db
+      .prepare(
+        `UPDATE guild_settings SET last_recap_key=? WHERE guild_id=? AND (last_recap_key IS NULL OR last_recap_key <> ?)`,
+      )
+      .run(key, guildId, key);
+    return info.changes === 1;
+  }
+
+  listMemberStats(guildId) {
+    return this.db.prepare('SELECT * FROM member_stats WHERE guild_id=?').all(guildId);
   }
 
   listLeaderboard(guildId, limit = 10) {

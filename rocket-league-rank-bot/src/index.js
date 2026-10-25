@@ -5,6 +5,7 @@ import { DiscordTransport } from './discord/transport.js';
 import { routeInteraction } from './discord/router.js';
 import { createLogger } from './logger.js';
 import { Notifier } from './notifications/notifier.js';
+import { WeeklyRecap } from './notifications/recap.js';
 import { RankService } from './services/rankService.js';
 import { openDatabase } from './storage/db.js';
 import { Repository } from './storage/repository.js';
@@ -24,6 +25,7 @@ const ctx = {
   transport,
   logger,
 };
+const recap = new WeeklyRecap({ repo, transport, logger });
 
 let retryTimer;
 
@@ -46,9 +48,14 @@ client.once(Events.ClientReady, async (c) => {
   } catch (err) {
     logger.error({ err }, 'Reprise des annonces en échec');
   }
-  retryTimer = setInterval(() => {
-    ctx.notifier.dispatchPending().catch((err) => logger.error({ err }, 'Relance des annonces en échec'));
-  }, RETRY_INTERVAL_MS);
+  // Une fois par minute : annonces en attente, puis récap du dimanche (sans effet hors créneau).
+  const tick = async () => {
+    await ctx.notifier.dispatchPending().catch((err) => logger.error({ err }, 'Relance des annonces en échec'));
+    const sent = await recap.tick().catch((err) => (logger.error({ err }, 'Récap hebdomadaire en échec'), []));
+    if (sent.length) logger.info({ guilds: sent }, 'Récap hebdomadaire envoyé');
+  };
+  retryTimer = setInterval(tick, RETRY_INTERVAL_MS);
+  tick();
 });
 
 client.on(Events.InteractionCreate, (interaction) => routeInteraction(interaction, ctx));

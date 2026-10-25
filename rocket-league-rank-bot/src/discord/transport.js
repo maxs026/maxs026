@@ -17,6 +17,12 @@ export class DiscordTransport {
     return message.id;
   }
 
+  /** Ajoute des réactions, dans l'ordre, à un message du salon. */
+  async react(channelId, messageId, emojis) {
+    const message = await (await this.#channel(channelId)).messages.fetch(messageId);
+    for (const emoji of emojis) await message.react(emoji);
+  }
+
   /** Cherche, parmi les derniers messages du bot, un embed dont le pied contient le marqueur. */
   async findMarker(channelId, marker) {
     const channel = await this.#channel(channelId);

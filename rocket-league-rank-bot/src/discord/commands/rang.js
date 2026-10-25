@@ -3,6 +3,7 @@ import { PLAYLISTS, RANKS, playlistLabel, rankLabel } from '../../domain/ranks.j
 import { CHANGE_LABELS } from '../../domain/messages.js';
 import { rewardLine, titleFor } from '../../domain/rewards.js';
 import { RankError } from '../../services/rankService.js';
+import { buildRecap, weekSummary } from '../../notifications/recap.js';
 import { buildReviewMessage } from '../../notifications/reviewMessage.js';
 import { resolveGuild } from '../guildContext.js';
 import { NO_MENTIONS } from '../member.js';
@@ -22,7 +23,7 @@ export const data = new SlashCommandBuilder()
   .addSubcommand((s) =>
     s
       .setName('declarer')
-      .setDescription('Déclarer votre rang, à faire valider par un modérateur')
+      .setDescription('Déclarer votre rang actuel')
       .addStringOption((o) => o.setName('playlist').setDescription('Playlist').setRequired(true).addChoices(...playlistChoices))
       .addStringOption((o) => o.setName('rang').setDescription('Votre rang actuel').setRequired(true).addChoices(...rankChoices))
       .addAttachmentOption((o) => o.setName('capture').setDescription('Capture d’écran de votre rang (recommandée)')),
@@ -33,7 +34,8 @@ export const data = new SlashCommandBuilder()
       .setDescription('Voir le rang validé d’un membre')
       .addUserOption((o) => o.setName('membre').setDescription('Membre (vous par défaut)')),
   )
-  .addSubcommand((s) => s.setName('classement').setDescription('Classement des points : montées, chutes et séries'));
+  .addSubcommand((s) => s.setName('classement').setDescription('Classement des points : montées, chutes et séries'))
+  .addSubcommand((s) => s.setName('recap').setDescription('Aperçu du récap des 7 derniers jours (visible par vous seul)'));
 
 const reply = (interaction, content) =>
   interaction.reply({ content, flags: MessageFlags.Ephemeral, allowedMentions: NO_MENTIONS });
@@ -47,7 +49,18 @@ export async function execute(interaction, ctx) {
   const sub = interaction.options.getSubcommand();
   if (sub === 'voir') return voir(interaction, ctx);
   if (sub === 'classement') return classement(interaction, ctx);
+  if (sub === 'recap') return recapPreview(interaction, ctx);
   return declarer(interaction, ctx);
+}
+
+/** Aperçu privé : le vrai récap part tout seul le dimanche à 20 h (mode potes). */
+async function recapPreview(interaction, ctx) {
+  const embed = buildRecap(weekSummary(ctx.repo, interaction.guildId, Date.now()));
+  if (!embed) return reply(interaction, 'Rien à raconter sur les 7 derniers jours : aucune déclaration de rang.');
+  const auto = ctx.repo.getGuildSettings(interaction.guildId).fun_mode
+    ? 'Envoyé automatiquement le dimanche à 20 h dans le salon d’annonces.'
+    : 'Le récap automatique du dimanche nécessite le mode potes (`/config mode-potes`).';
+  await interaction.reply({ content: auto, embeds: [embed], flags: MessageFlags.Ephemeral, allowedMentions: NO_MENTIONS });
 }
 
 /** Mode potes : le rang est enregistré tout de suite, sans validation par un modérateur. */

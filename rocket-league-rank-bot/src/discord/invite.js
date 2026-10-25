@@ -6,6 +6,7 @@ const BASE = [
   PermissionFlagsBits.EmbedLinks,
   PermissionFlagsBits.AttachFiles,
   PermissionFlagsBits.ReadMessageHistory,
+  PermissionFlagsBits.AddReactions, // réactions sous les annonces (mode potes)
 ];
 
 /**

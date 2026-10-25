@@ -1,7 +1,7 @@
 // Diagnostic en lecture seule : se connecte, liste les serveurs du bot et vérifie la configuration
 // enregistrée (salons, permissions, hiérarchie des rôles). N'envoie aucun message, n'affiche aucun secret.
 import { existsSync } from 'node:fs';
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Events, GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { PROJECT_ROOT } from './env.js';
 import { loadConfig } from './config.js';
 import { buildInviteUrl } from './discord/invite.js';
@@ -42,6 +42,9 @@ client.once(Events.ClientReady, async (c) => {
         const missing = missingPermissions(channel, me, kind);
         if (missing.length) flag(`${label} #${channel.name} : permissions manquantes : ${missing.join(', ')}`);
         else say(`  ✅ ${label} #${channel.name} : accessible`);
+        if (kind === 'announce' && settings.fun_mode && !channel.permissionsFor(me)?.has(PermissionFlagsBits.AddReactions)) {
+          flag(`${label} #${channel.name} : « Ajouter des réactions » manquant (réactions du mode potes).`);
+        }
       }
       if (settings?.roles_enabled) {
         for (const rank of RANK_IDS) {

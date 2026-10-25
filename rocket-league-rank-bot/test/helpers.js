@@ -30,6 +30,12 @@ export function makeTransport() {
     async findMarker(channelId, marker) {
       return t.markers.get(`${channelId}:${marker}`) ?? null;
     },
+    reactions: [],
+    failReact: false,
+    async react(channelId, messageId, emojis) {
+      if (t.failReact) throw new Error('Missing Permissions');
+      t.reactions.push({ channelId, messageId, emojis });
+    },
   };
   return t;
 }

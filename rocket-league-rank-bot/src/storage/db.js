@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS member_stats (
 const ADDED_COLUMNS = [
   ['guild_settings', 'fun_mode', 'INTEGER NOT NULL DEFAULT 0'], // mode potes
   ['guild_settings', 'demotion_gif_url', 'TEXT'],
+  ['guild_settings', 'last_recap_key', 'TEXT'], // date du dernier récap hebdomadaire envoyé
   ['rank_requests', 'points_delta', 'INTEGER'],
   ['rank_requests', 'points_total', 'INTEGER'],
   ['rank_requests', 'streak', 'INTEGER'],
