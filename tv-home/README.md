@@ -26,7 +26,7 @@ de la télécommande dans l'appli = liste des applis installées avec leurs vrai
 
 ## Télécommande
 Haut / Bas : défiler la liste (en boucle, sans fin). OK : ouvrir. Retour : quitter. Bleu : liste des applis et de leurs `id`.
-Jaune : active ou coupe le **mode éco** (sans lueurs d'ambiance, transitions plus courtes). Il s'active
+Vert : affiche ou masque les stats CPU / RAM. Jaune : active ou coupe le **mode éco** (sans lueurs d'ambiance, transitions plus courtes). Il s'active
 aussi tout seul si la TV rame, et le choix est mémorisé.
 
 ## Limites
@@ -38,3 +38,13 @@ aussi tout seul si la TV rame, et le choix est mémorisé.
 Seuls `transform` et `opacity` sont animés (GPU) : échelle verticale infinie (la sélection reste au centre et la liste défile
 autour, avec rebouclage), lueurs d'ambiance qui dérivent. Aucun flou, aucune ombre animée.
 La répétition des flèches est limitée pour éviter les saccades quand on maintient la touche.
+
+## HDMI 1 / HDMI 2
+Les tuiles HDMI utilisent l'API `tizen.tvwindow` (privilège `tv.window`) : la TV affiche la source derrière
+l'appli, Retour revient à l'accueil. Les stats utilisent `tizen.systeminfo` (privilège `system`).
+Si l'installation est refusée pour une histoire de privilège, retire la ligne `tv.window` ou `system`
+de `config.xml` (les tuiles HDMI ou les stats CPU/RAM ne marcheront alors plus).
+
+## Optimisations
+Appuis regroupés par image, défilement accéléré quand on maintient la touche, calques `contain`,
+animations gelées après 45 s d'inactivité ou page cachée, stats et météo suspendues en veille.

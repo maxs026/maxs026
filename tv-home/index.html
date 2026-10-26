@@ -7,49 +7,75 @@
 <style>
 /* Règle d'or : on n'anime que transform et opacity (composités par le GPU).
    Pas de flou, pas d'ombre animée, pas de layout animé. */
-:root{--bg:#05070b;--fg:#f2f4f8;--dim:#8b93a3;--accent:#6ee7d8;--ease:cubic-bezier(.2,.8,.2,1)}
+:root{--bg:#05070b;--fg:#f2f4f8;--dim:#8b93a3;--accent:#6ee7d8;
+  --ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.3,1.3,.5,1)}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;overflow:hidden}
 body{
   background-color:var(--bg);
   background-image:radial-gradient(ellipse at 20% 0%,#10222b 0%,transparent 55%),
                    radial-gradient(ellipse at 90% 100%,#1a1230 0%,transparent 50%);
-  color:var(--fg);font:400 24px/1.2 Helvetica,Arial,sans-serif;position:relative;display:flex}
+  color:var(--fg);font:400 24px/1.2 Helvetica,Arial,sans-serif;position:relative;display:flex;
+  -webkit-font-smoothing:antialiased}
 .blob{position:fixed;width:55vw;height:55vw;border-radius:50%;pointer-events:none;
   will-change:transform;animation:drift 26s ease-in-out infinite alternate}
 .b1{left:-12vw;top:-18vw;background:radial-gradient(circle,rgba(40,160,170,.22) 0%,transparent 65%)}
 .b2{right:-14vw;bottom:-22vw;background:radial-gradient(circle,rgba(110,70,200,.20) 0%,transparent 65%);animation-duration:34s;animation-direction:alternate-reverse}
 @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(9vw,7vh,0)}}
 
-/* Échelle verticale à gauche */
-#ladder{position:relative;width:46vw;height:100%;padding-left:6vw;animation:in .6s var(--ease) both}
+/* Échelle verticale infinie à gauche */
+#ladder{position:relative;width:46vw;height:100%;contain:layout style;animation:in .6s var(--ease) both}
 @keyframes in{from{opacity:0;transform:translate3d(-40px,0,0)}to{opacity:1;transform:none}}
 .item{position:absolute;left:6vw;top:50%;width:520px;height:120px;margin-top:-60px;border-radius:26px;
   display:flex;align-items:center;padding-left:40px;font-size:40px;font-weight:600;color:#fff;
-  will-change:transform,opacity;transition:transform .26s var(--ease),opacity .26s var(--ease)}
+  will-change:transform,opacity;transition:transform .34s var(--spring),opacity .26s var(--ease)}
 .item.jump{transition:none}
+/* Reflet « verre » sur l'élément sélectionné (statique, seule son opacité change) */
+.item::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;border-radius:26px;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,0) 48%);opacity:0;transition:opacity .3s}
+.item.on::after{opacity:1}
 /* Cadre fixe au centre : c'est la liste qui défile sous lui */
 #ring{position:absolute;left:calc(6vw - 38px);top:50%;width:596px;height:148px;margin-top:-74px;
   border:4px solid var(--accent);border-radius:34px;pointer-events:none}
+.fast .item{transition-duration:.15s,.15s}
 
-/* Infos à droite */
-#info{flex:1;position:relative;padding:5vh 6vw 5vh 2vw;display:flex;flex-direction:column;justify-content:space-between}
+/* Panneau d'infos à droite */
+#info{flex:1;position:relative;padding:5vh 5vw 5vh 2vw;display:flex;flex-direction:column;min-width:0}
 #time{font-size:96px;font-weight:200;letter-spacing:-2px}
 #time i{font-style:normal;animation:blink 2s steps(1) infinite}
 @keyframes blink{50%{opacity:.25}}
 #date{font-size:26px;color:var(--dim);margin-top:6px;text-transform:capitalize}
-#wx{font-size:34px;font-weight:300;margin-top:28px;opacity:0;transition:opacity .6s}
+#wx{font-size:34px;font-weight:300;margin-top:24px;opacity:0;transition:opacity .6s}
 #wx.in{opacity:1}
 #wx small{display:block;font-size:20px;color:var(--dim);margin-top:6px}
-#name{font-size:64px;font-weight:300;min-height:76px}
-#name.swap{animation:swap .28s var(--ease)}
-@keyframes swap{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
-#hint{font-size:20px;color:var(--dim);margin-top:10px}
+#stats{margin-top:28px;font-size:20px;color:var(--dim);line-height:2}
+.nostats #stats{display:none}
+.st b{display:inline-block;width:56px;font-weight:600;color:var(--fg)}
+.bar{display:inline-block;width:170px;height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;vertical-align:middle;margin-right:12px}
+.bar i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:0 50%;transform:scaleX(0);transition:transform .8s linear}
+.st em{font-style:normal;color:var(--fg)}
+/* Grande carte façon « top shelf » : deux calques qui se fondent l'un dans l'autre */
+#hero{position:relative;margin-top:auto;height:290px;border-radius:34px;overflow:hidden;background:#0e1219}
+.hl{position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;transition:opacity .4s}
+.hl.show{opacity:1}
+#heroTxt{position:absolute;left:40px;bottom:30px;right:40px}
+#name{font-size:64px;font-weight:300;line-height:1.1}
+#name.swap{animation:swap .3s var(--ease)}
+@keyframes swap{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}
+#hint{font-size:20px;color:rgba(255,255,255,.7);margin-top:8px}
+#toast{position:fixed;left:50%;bottom:6vh;margin-left:-260px;width:520px;text-align:center;padding:18px 24px;border-radius:20px;
+  background:rgba(20,24,32,.94);font-size:22px;opacity:0;transform:translate3d(0,20px,0);transition:opacity .3s,transform .3s var(--ease);pointer-events:none}
+#toast.show{opacity:1;transform:none}
 #dbg{display:none;position:fixed;top:4vh;left:4vw;right:4vw;bottom:4vh;background:#000;border:2px solid var(--accent);padding:24px;font-size:20px;line-height:1.5;overflow:hidden;word-break:break-all}
+
+/* Mode source vidéo (HDMI) : l'interface s'efface, la vidéo de la TV apparaît derrière */
+.tv,.tv body{background:transparent}
+.tv .blob,.tv #ladder,.tv #info{display:none}
+/* Mode éco et veille : on coupe tout ce qui tourne en continu */
 .eco .blob{display:none}
 .eco .item{transition-duration:.12s}
-.eco #time i{animation:none}
-.eco #ladder{animation:none}
+.eco #time i,.eco #ladder{animation:none}
+.idle .blob,.idle #time i{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){.blob{display:none}}
 </style>
 </head>
@@ -57,16 +83,28 @@ body{
 <div class="blob b1"></div><div class="blob b2"></div>
 <main id="ladder"><div id="ring"></div></main>
 <section id="info">
-  <div><div id="time">--<i>:</i>--</div><div id="date"></div><div id="wx"></div></div>
-  <div><div id="name"></div><div id="hint">▲ ▼ pour défiler · OK pour ouvrir</div></div>
+  <div id="time">--<i>:</i>--</div>
+  <div id="date"></div>
+  <div id="wx"></div>
+  <div id="stats">
+    <div class="st"><b>CPU</b><span class="bar"><i id="bc"></i></span><em id="vc">--</em></div>
+    <div class="st"><b>RAM</b><span class="bar"><i id="br"></i></span><em id="vr">--</em></div>
+    <div class="st"><b>JS</b><em id="vj">--</em></div>
+  </div>
+  <div id="hero">
+    <div class="hl show" id="hA"></div><div class="hl" id="hB"></div>
+    <div id="heroTxt"><div id="name"></div><div id="hint">▲ ▼ pour défiler · OK pour ouvrir</div></div>
+  </div>
 </section>
+<div id="toast"></div>
 <div id="dbg"></div>
 <script>
 /* ===== Réglages ===== */
 var CONFIG = {
   // Météo : Open-Meteo, sans clé. Remplace par les coordonnées de ta ville.
   city: "Bordeaux", lat: 44.84, lon: -0.58,
-  // Raccourcis : nom, adresse (repli), couleur, et id = identifiant de l'appli Samsung (optionnel).
+  // Raccourcis : nom, adresse (repli), couleur, id = identifiant de l'appli Samsung (optionnel),
+  // hdmi = numéro d'entrée HDMI à afficher.
   // Touche BLEUE de la télécommande : liste des applis installées avec leurs id réels.
   apps: [
     {n: "YouTube", u: "https://www.youtube.com/tv", c: "#c4302b", id: "111299001912"},
@@ -74,22 +112,26 @@ var CONFIG = {
     {n: "Twitch",  u: "https://www.twitch.tv", c: "#6441a5"},
     {n: "Prime Video", u: "https://www.primevideo.com", c: "#146eb4", id: "3201512006785"},
     {n: "Disney+", u: "https://www.disneyplus.com", c: "#1a3a8a", id: "3201901017640"},
-    {n: "Canal+",  u: "https://www.canalplus.com", c: "#222"},
+    {n: "Canal+",  u: "https://www.canalplus.com", c: "#2b2f3a"},
     {n: "Google",  u: "https://www.google.com", c: "#2b6cb0"},
     {n: "Météo",   u: "https://www.meteofrance.com", c: "#0e7490"},
     {n: "Actus",   u: "https://www.francetvinfo.fr", c: "#9a3412"},
     {n: "Foot",    u: "https://www.lequipe.fr", c: "#15803d"},
-    {n: "HDMI",    c: "#475569", id: "org.tizen.hdmicec"}   // appli HDMI-CEC de la TV, sans adresse web
+    {n: "HDMI 1",  c: "#475569", hdmi: 1},
+    {n: "HDMI 2",  c: "#475569", hdmi: 2}
   ],
   visible: 3   // nombre d'applis visibles au-dessus et en dessous de la sélection
 };
 
-/* ===== Échelle verticale infinie ===== */
 var root = document.documentElement;
+var TZ = typeof tizen !== "undefined";
+
+/* ===== Échelle verticale infinie ===== */
 var ladder = document.getElementById("ladder"), label = document.getElementById("name");
 var items = [], prevD = [], cur = 0, n = CONFIG.apps.length;
 var STEP = 132, GAP = 14;
 var half = Math.floor(n / 2), vis = Math.min(CONFIG.visible, Math.max(1, half - 1));
+var hA = document.getElementById("hA"), hB = document.getElementById("hB"), heroFront = hA;
 
 CONFIG.apps.forEach(function (a) {
   var el = document.createElement("div");
@@ -109,6 +151,7 @@ function layout() {
     if (Math.abs(d - prevD[i]) > 1) { el.classList.add("jump"); jumped.push(el); }
     el.style.transform = "translate3d(" + x + "px," + y + "px,0) scale(" + sc + ")";
     el.style.opacity = op;
+    if (d === 0) el.classList.add("on"); else el.classList.remove("on");
     prevD[i] = d;
   }
   if (jumped.length) {
@@ -116,11 +159,18 @@ function layout() {
     for (var j = 0; j < jumped.length; j++) jumped[j].classList.remove("jump");
   }
 }
+/* Carte du haut : la couleur de l'appli se fond dans la précédente */
+function hero(c) {
+  var back = heroFront === hA ? hB : hA;
+  back.style.background = "linear-gradient(135deg," + c + " 0%,rgba(0,0,0,0) 90%)";
+  back.classList.add("show"); heroFront.classList.remove("show");
+  heroFront = back;
+}
 function focus(i) {
   cur = ((i % n) + n) % n;
   label.textContent = CONFIG.apps[cur].n;
   label.classList.remove("swap"); void label.offsetWidth; label.classList.add("swap");
-  layout();
+  layout(); hero(CONFIG.apps[cur].c);
 }
 /* Premier placement sans animation */
 for (var q = 0; q < n; q++) items[q].classList.add("jump");
@@ -128,34 +178,92 @@ focus(0);
 void ladder.offsetWidth;
 for (var r = 0; r < n; r++) items[r].classList.remove("jump");
 
+/* Les appuis rapprochés sont regroupés : un seul recalcul par image */
+var pend = 0, rafId = 0;
+function step(dir) {
+  pend += dir;
+  if (rafId) return;
+  rafId = requestAnimationFrame(function () {
+    rafId = 0; var p = pend; pend = 0;
+    if (p) focus(cur + p);
+  });
+}
+
 /* ===== Mode éco : manuel (touche jaune) ou automatique si la TV rame ===== */
+function setClass(name, on) {
+  if (on) root.classList.add(name); else root.classList.remove(name);
+}
 function eco(on) {
-  root.className = on ? "eco" : "";
+  setClass("eco", on);
   try { localStorage.setItem("eco", on ? "1" : "0"); } catch (e) {}
 }
 var saved = null;
 try { saved = localStorage.getItem("eco"); } catch (e) {}
 if (saved === "1") eco(true);
 else if (saved === null) {
-  /* Mesure 45 images après l'animation d'entrée ; trop lent => mode éco */
   setTimeout(function () {
-    var n = 0, t0 = 0, raf = window.requestAnimationFrame;
+    var k = 0, t0 = 0, raf = window.requestAnimationFrame;
     (function f(t) {
       if (!t0) t0 = t;
-      if (++n < 45) { raf(f); return; }
-      if ((t - t0) / n > 28) eco(true);
+      if (++k < 45) { raf(f); return; }
+      if ((t - t0) / k > 28) eco(true);
     })(0);
     raf(function (t) { t0 = t; });
   }, 1500);
 }
 
+/* ===== Veille d'interface : après 45 s sans touche, ou page cachée, on gèle les animations ===== */
+var idleT = 0, idle = false;
+function wake() {
+  clearTimeout(idleT);
+  if (idle) { idle = false; setClass("idle", false); }
+  idleT = setTimeout(function () { idle = true; setClass("idle", true); }, 45000);
+}
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) { idle = true; setClass("idle", true); } else wake();
+});
+wake();
+
+/* ===== Message temporaire ===== */
+var toastEl = document.getElementById("toast"), toastT = 0;
+function toast(msg, ms) {
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(function () { toastEl.classList.remove("show"); }, ms || 3000);
+}
+
 /* ===== Tizen (absent dans un navigateur de PC : tout reste utilisable) ===== */
-var TZ = typeof tizen !== "undefined";
 var dbg = document.getElementById("dbg");
 if (TZ) {
-  try { tizen.tvinputdevice.registerKey("ColorF3Blue"); tizen.tvinputdevice.registerKey("ColorF2Yellow"); } catch (e) {}
+  try {
+    tizen.tvinputdevice.registerKey("ColorF1Green");
+    tizen.tvinputdevice.registerKey("ColorF2Yellow");
+    tizen.tvinputdevice.registerKey("ColorF3Blue");
+  } catch (e) {}
 }
+
+/* Entrée vidéo HDMI : la TV affiche la source derrière l'appli (API tvwindow) */
+var tvOn = false;
+function hdmiOff() {
+  tvOn = false; setClass("tv", false);
+  try { tizen.tvwindow.hide(function () {}, function () {}, "MAIN"); } catch (e) {}
+  wake();
+}
+function hdmiOn(num) {
+  if (!TZ || !tizen.tvwindow) { toast("Sources indisponibles ici. Utilise la touche SOURCE.", 3500); return; }
+  var fail = function (e) { toast("HDMI " + num + " : " + (e && e.message ? e.message : "erreur") + ". Touche SOURCE.", 4500); };
+  try {
+    tizen.tvwindow.setSource({type: "HDMI", number: num}, function () {
+      tizen.tvwindow.show(function () {
+        tvOn = true; setClass("tv", true);
+        toast("Retour pour revenir à l'accueil", 2500);
+      }, fail, ["0px", "0px", "1920px", "1080px"], "MAIN");
+    }, fail, "MAIN");
+  } catch (e) { fail(e); }
+}
+
 function openApp(a) {
+  if (a.hdmi) { hdmiOn(a.hdmi); return; }
   if (TZ && a.id) {
     try { tizen.application.launch(a.id, null, function () { if (a.u) location.href = a.u; }); return; } catch (e) {}
   }
@@ -173,24 +281,32 @@ function showApps() {
   }, function (e) { dbg.textContent = "Erreur : " + e.message; });
 }
 
-/* Haut/Bas : défiler (en boucle), OK : ouvrir, Retour (10009), bleu (406) = applis, jaune (405) = éco */
-var lastMove = 0;
+/* Haut/Bas : défiler (en boucle) · OK : ouvrir · Retour (10009) · vert 404 : stats · jaune 405 : éco · bleu 406 : applis */
+var lastMove = 0, fastT = 0;
 document.addEventListener("keydown", function (e) {
   var k = e.keyCode;
-  if (k === 406) { showApps(); return; }
-  if (k === 405) { eco(root.className !== "eco"); return; }
+  wake();
   if (k === 10009) {
-    if (dbg.style.display === "block") dbg.style.display = "none";
+    if (tvOn) hdmiOff();
+    else if (dbg.style.display === "block") dbg.style.display = "none";
     else if (TZ) tizen.application.getCurrentApplication().exit();
     return;
   }
+  if (tvOn) return;
+  if (k === 404) { setClass("nostats", root.className.indexOf("nostats") < 0); return; }
+  if (k === 405) { eco(root.className.indexOf("eco") < 0); return; }
+  if (k === 406) { showApps(); return; }
   if (k === 13) { openApp(CONFIG.apps[cur]); return; }
   if (k !== 38 && k !== 40) return;
   e.preventDefault();
   var now = Date.now();
-  if (e.repeat && now - lastMove < 85) return;
+  if (e.repeat) {
+    if (now - lastMove < 85) return;
+    setClass("fast", true); clearTimeout(fastT);
+    fastT = setTimeout(function () { setClass("fast", false); }, 220);
+  }
   lastMove = now;
-  focus(cur + (k === 40 ? 1 : -1));
+  step(k === 40 ? 1 : -1);
 });
 
 /* ===== Heure : une mise à jour par minute, pas par seconde ===== */
@@ -205,9 +321,34 @@ function tick() {
 }
 tick(); setInterval(tick, 10000);
 
+/* ===== Charge système en direct (toutes les 2 s, gelée en veille ou en mode source) ===== */
+var bc = document.getElementById("bc"), br = document.getElementById("br");
+var vc = document.getElementById("vc"), vr = document.getElementById("vr"), vj = document.getElementById("vj");
+function bar(el, txt, v) {
+  el.style.transform = "scaleX(" + Math.max(0, Math.min(1, v)) + ")";
+  txt.textContent = Math.round(v * 100) + " %";
+}
+function pollStats() {
+  if (idle || tvOn || root.className.indexOf("nostats") >= 0) return;
+  if (TZ && tizen.systeminfo) {
+    try {
+      tizen.systeminfo.getPropertyValue("CPU", function (c) { bar(bc, vc, c.load); }, function () {});
+    } catch (e) {}
+    try {
+      var tot = tizen.systeminfo.getTotalMemory(), av = tizen.systeminfo.getAvailableMemory();
+      if (tot > 0) bar(br, vr, (tot - av) / tot);
+    } catch (e) {}
+  }
+  if (window.performance && performance.memory) {
+    vj.textContent = Math.round(performance.memory.usedJSHeapSize / 1048576) + " Mo";
+  }
+}
+pollStats(); setInterval(pollStats, 2000);
+
 /* ===== Météo : une requête toutes les 30 min ===== */
 var elW = document.getElementById("wx");
 function weather() {
+  if (idle || tvOn) return;
   var x = new XMLHttpRequest();
   x.open("GET", "https://api.open-meteo.com/v1/forecast?latitude=" + CONFIG.lat + "&longitude=" + CONFIG.lon +
     "&current=temperature_2m,weather_code&timezone=auto");
