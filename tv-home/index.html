@@ -76,6 +76,9 @@ body{
 .eco .item{transition-duration:.12s}
 .eco #time i,.eco #ladder{animation:none}
 .idle .blob,.idle #time i{animation-play-state:paused}
+.ultra .blob{display:none}
+.ultra *{transition:none!important;animation:none!important}
+.ultra .item{will-change:auto}
 @media (prefers-reduced-motion:reduce){.blob{display:none}}
 </style>
 </head>
@@ -128,9 +131,9 @@ var TZ = typeof tizen !== "undefined";
 
 /* ===== Échelle verticale infinie ===== */
 var ladder = document.getElementById("ladder"), label = document.getElementById("name");
-var items = [], prevD = [], cur = 0, n = CONFIG.apps.length;
+var items = [], prevD = [], cur = 0, n = CONFIG.apps.length, ultra = false;
 var STEP = 132, GAP = 14;
-var half = Math.floor(n / 2), vis = Math.min(CONFIG.visible, Math.max(1, half - 1));
+var half = Math.floor(n / 2), vis = Math.min(CONFIG.visible, Math.max(1, half - 1)), visEff = vis;
 var hA = document.getElementById("hA"), hB = document.getElementById("hB"), heroFront = hA;
 
 CONFIG.apps.forEach(function (a) {
@@ -146,11 +149,12 @@ function layout() {
     var d = (((i - cur + half) % n) + n) % n - half, ad = Math.abs(d);
     var y = d * STEP + (d === 0 ? 0 : (d > 0 ? GAP : -GAP));
     var x = -ad * 22, sc = d === 0 ? 1.12 : Math.max(.6, 1 - ad * .08);
-    var op = ad > vis ? 0 : d === 0 ? 1 : Math.max(.12, .6 - (ad - 1) * .2);
+    var op = ad > visEff ? 0 : d === 0 ? 1 : Math.max(.12, .6 - (ad - 1) * .2);
     var el = items[i];
     if (Math.abs(d - prevD[i]) > 1) { el.classList.add("jump"); jumped.push(el); }
     el.style.transform = "translate3d(" + x + "px," + y + "px,0) scale(" + sc + ")";
     el.style.opacity = op;
+    el.style.display = (ultra && ad > visEff) ? "none" : "";
     if (d === 0) el.classList.add("on"); else el.classList.remove("on");
     prevD[i] = d;
   }
@@ -185,31 +189,46 @@ function step(dir) {
   if (rafId) return;
   rafId = requestAnimationFrame(function () {
     rafId = 0; var p = pend; pend = 0;
-    if (p) focus(cur + p);
+    if (p) { focus(cur + p); sample(); }
   });
 }
 
-/* ===== Mode éco : manuel (touche jaune) ou automatique si la TV rame ===== */
+/* ===== Message temporaire ===== */
+var toastEl = document.getElementById("toast"), toastT = 0;
+function toast(msg, ms) {
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(function () { toastEl.classList.remove("show"); }, ms || 3000);
+}
+
+/* ===== Niveaux de qualité : 0 Normal · 1 Éco · 2 Ultra (touche jaune) ===== */
 function setClass(name, on) {
   if (on) root.classList.add(name); else root.classList.remove(name);
 }
-function eco(on) {
-  setClass("eco", on);
-  try { localStorage.setItem("eco", on ? "1" : "0"); } catch (e) {}
+var level = 0, LEVELS = ["Normal", "Éco", "Ultra"], slow = 0, sampling = false;
+function setLevel(l, why) {
+  level = Math.max(0, Math.min(2, l));
+  ultra = level === 2; visEff = ultra ? 1 : vis;
+  setClass("eco", level >= 1); setClass("ultra", ultra);
+  layout();
+  try { localStorage.setItem("lvl", String(level)); } catch (e) {}
+  if (why) toast("Mode " + LEVELS[level] + (why === true ? "" : " · " + why), 2500);
 }
-var saved = null;
-try { saved = localStorage.getItem("eco"); } catch (e) {}
-if (saved === "1") eco(true);
-else if (saved === null) {
-  setTimeout(function () {
-    var k = 0, t0 = 0, raf = window.requestAnimationFrame;
-    (function f(t) {
-      if (!t0) t0 = t;
-      if (++k < 45) { raf(f); return; }
-      if ((t - t0) / k > 28) eco(true);
-    })(0);
-    raf(function (t) { t0 = t; });
-  }, 1500);
+try { var sv = localStorage.getItem("lvl"); if (sv !== null) setLevel(parseInt(sv, 10) || 0); } catch (e) {}
+
+/* Adaptatif : pendant la navigation on mesure le temps par image ; si la TV rame, on baisse d'un niveau */
+function sample() {
+  if (sampling || level >= 2) return;
+  sampling = true;
+  var k = 0, t0 = 0;
+  (function f(t) {
+    if (!t0) t0 = t;
+    if (++k < 14) { requestAnimationFrame(f); return; }
+    sampling = false;
+    var avg = (t - t0) / k;
+    if (avg > 38) { if (++slow >= 2) { slow = 0; setLevel(level + 1, "activé automatiquement"); } }
+    else if (slow > 0) slow--;
+  })(0);
 }
 
 /* ===== Veille d'interface : après 45 s sans touche, ou page cachée, on gèle les animations ===== */
@@ -224,18 +243,11 @@ document.addEventListener("visibilitychange", function () {
 });
 wake();
 
-/* ===== Message temporaire ===== */
-var toastEl = document.getElementById("toast"), toastT = 0;
-function toast(msg, ms) {
-  toastEl.textContent = msg; toastEl.classList.add("show");
-  clearTimeout(toastT);
-  toastT = setTimeout(function () { toastEl.classList.remove("show"); }, ms || 3000);
-}
-
 /* ===== Tizen (absent dans un navigateur de PC : tout reste utilisable) ===== */
 var dbg = document.getElementById("dbg");
 if (TZ) {
   try {
+    tizen.tvinputdevice.registerKey("ColorF0Red");
     tizen.tvinputdevice.registerKey("ColorF1Green");
     tizen.tvinputdevice.registerKey("ColorF2Yellow");
     tizen.tvinputdevice.registerKey("ColorF3Blue");
@@ -281,7 +293,7 @@ function showApps() {
   }, function (e) { dbg.textContent = "Erreur : " + e.message; });
 }
 
-/* Haut/Bas : défiler (en boucle) · OK : ouvrir · Retour (10009) · vert 404 : stats · jaune 405 : éco · bleu 406 : applis */
+/* Haut/Bas : défiler (en boucle) · OK : ouvrir · Retour (10009) · vert 404 : stats · jaune 405 : qualité (Normal/Éco/Ultra) · rouge 403 : Ultra on/off · bleu 406 : applis */
 var lastMove = 0, fastT = 0;
 document.addEventListener("keydown", function (e) {
   var k = e.keyCode;
@@ -294,7 +306,8 @@ document.addEventListener("keydown", function (e) {
   }
   if (tvOn) return;
   if (k === 404) { setClass("nostats", root.className.indexOf("nostats") < 0); return; }
-  if (k === 405) { eco(root.className.indexOf("eco") < 0); return; }
+  if (k === 405) { setLevel((level + 1) % 3, true); return; }
+  if (k === 403) { setLevel(level === 2 ? 0 : 2, true); return; }
   if (k === 406) { showApps(); return; }
   if (k === 13) { openApp(CONFIG.apps[cur]); return; }
   if (k !== 38 && k !== 40) return;
@@ -343,7 +356,8 @@ function pollStats() {
     vj.textContent = Math.round(performance.memory.usedJSHeapSize / 1048576) + " Mo";
   }
 }
-pollStats(); setInterval(pollStats, 2000);
+var pk = 0;
+pollStats(); setInterval(function () { if (!ultra || ++pk % 3 === 0) pollStats(); }, 2000);
 
 /* ===== Météo : une requête toutes les 30 min ===== */
 var elW = document.getElementById("wx");

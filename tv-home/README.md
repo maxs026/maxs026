@@ -26,8 +26,10 @@ de la télécommande dans l'appli = liste des applis installées avec leurs vrai
 
 ## Télécommande
 Haut / Bas : défiler la liste (en boucle, sans fin). OK : ouvrir. Retour : quitter. Bleu : liste des applis et de leurs `id`.
-Vert : affiche ou masque les stats CPU / RAM. Jaune : active ou coupe le **mode éco** (sans lueurs d'ambiance, transitions plus courtes). Il s'active
-aussi tout seul si la TV rame, et le choix est mémorisé.
+Vert : affiche ou masque les stats CPU / RAM. Jaune : change le niveau de qualité (**Normal → Éco → Ultra**). Rouge : Ultra on/off.
+Éco : sans lueurs d'ambiance, transitions plus courtes. Ultra : aucune animation, 3 éléments seulement
+rendus, stats ralenties. Pendant la navigation l'appli mesure le temps par image et baisse d'un niveau
+toute seule si la TV rame ; le niveau est mémorisé.
 
 ## Limites
 - Appli de développeur : le certificat expire (~1 an), à réinstaller ensuite.
